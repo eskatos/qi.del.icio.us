@@ -6,7 +6,9 @@ import org.qi4j.api.property.Property;
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface TagState extends EntityComposite {
+public interface TagState extends EntityComposite
+{
 
     Property<String> tag();
+
 }
