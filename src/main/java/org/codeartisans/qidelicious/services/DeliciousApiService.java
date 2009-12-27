@@ -21,14 +21,11 @@
  */
 package org.codeartisans.qidelicious.services;
 
-import org.codeartisans.qidelicious.domain.day.Day;
-import org.codeartisans.qidelicious.domain.post.Post;
-import org.codeartisans.qidelicious.domain.tag.Tag;
+import org.codeartisans.qidelicious.domain.Day;
+import org.codeartisans.qidelicious.domain.Post;
+import org.codeartisans.qidelicious.domain.Tag;
 
 /**
- * Only for internal use, Mixins are HTTP delicious api wrappers.
- * See: http://delicious.com/help/api
- * 
  * @author Paul Merlin <paul@nosphere.org>
  */
 public interface DeliciousApiService

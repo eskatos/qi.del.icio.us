@@ -21,8 +21,8 @@
  */
 package org.codeartisans.qidelicious.factories;
 
-import org.codeartisans.qidelicious.domain.post.Post;
-import org.codeartisans.qidelicious.domain.tag.Tag;
+import org.codeartisans.qidelicious.domain.Post;
+import org.codeartisans.qidelicious.domain.Tag;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
@@ -30,7 +30,7 @@ import org.codeartisans.qidelicious.domain.tag.Tag;
 public interface DeliciousFactory
 {
 
-    Tag createTag(String tag);
+    Tag createTag(String tag, int count);
 
     Post createPost(String url, String title, String description);
 

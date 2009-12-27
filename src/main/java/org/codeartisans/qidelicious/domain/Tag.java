@@ -19,44 +19,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.services;
+package org.codeartisans.qidelicious.domain;
 
-import org.codeartisans.java.toolbox.async.AsyncCallbackWithE;
-import org.codeartisans.qidelicious.DeliciousConfiguration;
-import org.codeartisans.qidelicious.DeliciousException;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.property.Property;
 
 /**
- * Writes are done remotely and then applied to the cache.
- * TODO In memory or persistent cache depending on EntityStore assembled with DeliciousCacheService
- * 
- * @author Paul Merlin <paul@nosphere.org>
+ * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface DeliciousCacheService
+public interface Tag
+        extends EntityComposite
 {
 
-    void updateCache();
+    Property<String> tag();
 
-    void updateCache(AsyncCallbackWithE<String, DeliciousException> updatedIdsCallback);
-
-    class Mixin
-            implements DeliciousCacheService
-    {
-
-        @This
-        Configuration<DeliciousConfiguration> config;
-
-        public void updateCache()
-        {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        public void updateCache(AsyncCallbackWithE<String, DeliciousException> updatedIdsCallback)
-        {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-    }
+    @UseDefaults
+    Property<Integer> count();
 
 }

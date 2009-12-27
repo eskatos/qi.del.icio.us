@@ -21,8 +21,8 @@
  */
 package org.codeartisans.qidelicious.repositories;
 
-import org.codeartisans.qidelicious.domain.post.Post;
-import org.codeartisans.qidelicious.domain.tag.Tag;
+import org.codeartisans.qidelicious.domain.Post;
+import org.codeartisans.qidelicious.domain.Tag;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>

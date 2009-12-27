@@ -19,44 +19,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.services;
+package org.codeartisans.qidelicious.domain;
 
-import org.codeartisans.java.toolbox.async.AsyncCallbackWithE;
-import org.codeartisans.qidelicious.DeliciousConfiguration;
-import org.codeartisans.qidelicious.DeliciousException;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.This;
+import java.util.Date;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.property.Property;
 
 /**
- * Writes are done remotely and then applied to the cache.
- * TODO In memory or persistent cache depending on EntityStore assembled with DeliciousCacheService
- * 
- * @author Paul Merlin <paul@nosphere.org>
+ * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface DeliciousCacheService
+public interface Post
 {
 
-    void updateCache();
+    Property<String> href();
 
-    void updateCache(AsyncCallbackWithE<String, DeliciousException> updatedIdsCallback);
+    Property<String> description();
 
-    class Mixin
-            implements DeliciousCacheService
-    {
+    Property<String> extendedDescription(); // extended
 
-        @This
-        Configuration<DeliciousConfiguration> config;
+    Property<String> deliciousIdentity(); // hash
 
-        public void updateCache()
-        {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+    Property<String> hash(); // meta
 
-        public void updateCache(AsyncCallbackWithE<String, DeliciousException> updatedIdsCallback)
-        {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+    ManyAssociation<Tag> tags(); // tag
 
-    }
+    Property<Date> date(); // time
+
+    Property<Boolean> shared();
 
 }
