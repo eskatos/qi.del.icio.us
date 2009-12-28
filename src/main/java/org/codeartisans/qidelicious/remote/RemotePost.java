@@ -21,32 +21,31 @@
  */
 package org.codeartisans.qidelicious.remote;
 
+import org.joda.time.DateTime;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.property.Property;
+
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface RemoteDelicious
+public interface RemotePost
+        extends TransientComposite
 {
 
-    Iterable<RemoteDay> findAllDeliciousDays();
+    Property<String> href();
 
-    Iterable<RemoteDay> findDeliciousDaysByTags(Iterable<RemoteTag> tags);
+    Property<String> description();
 
-    Iterable<RemoteTag> findAllTags();
+    Property<String> extended(); // extended
 
-    Iterable<RemoteTagBundle> findAllTagBundles();
+    Property<String> hash(); // hash
 
-    Iterable<RemotePost> findAllPosts();
+    Property<String> meta(); // meta
 
-    Iterable<RemotePost> findPostsByTags(Iterable<RemoteTag> tags);
+    Property<Iterable<String>> tags(); // tag
 
-    Iterable<RemotePost> findPostsByDay(RemoteDay day);
+    Property<DateTime> date(); // time
 
-    Iterable<RemotePost> findPostsByTagsAndDay(Iterable<RemoteTag> tags, RemoteDay day);
-
-    RemotePost findPostByURL(String url);
-
-    Iterable<RemotePost> findAllRecentPosts(); // ???
-
-    Iterable<RemotePost> findRecentPostsByTags(Iterable<RemoteTag> tags); // ???
+    Property<Boolean> shared();
 
 }

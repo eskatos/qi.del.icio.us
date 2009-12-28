@@ -22,6 +22,7 @@
 package org.codeartisans.qidelicious;
 
 import org.codeartisans.qidelicious.remote.RemoteDelicious;
+import org.codeartisans.qidelicious.remote.RemoteDeliciousService;
 import org.codeartisans.qidelicious.sync.SyncService;
 import org.junit.Before;
 import org.qi4j.api.service.ServiceReference;

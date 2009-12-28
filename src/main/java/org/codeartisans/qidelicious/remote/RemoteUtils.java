@@ -21,32 +21,32 @@
  */
 package org.codeartisans.qidelicious.remote;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 /**
- * @author Paul Merlin <p.merlin@nosphere.org>
+ * @author Paul Merlin <paul@nosphere.org>
  */
-public interface RemoteDelicious
+public final class RemoteUtils
 {
 
-    Iterable<RemoteDay> findAllDeliciousDays();
+    static Iterable<String> splitStringTags(String tags)
+    {
+        return Arrays.asList(tags.split(" "));
+    }
 
-    Iterable<RemoteDay> findDeliciousDaysByTags(Iterable<RemoteTag> tags);
-
-    Iterable<RemoteTag> findAllTags();
-
-    Iterable<RemoteTagBundle> findAllTagBundles();
-
-    Iterable<RemotePost> findAllPosts();
-
-    Iterable<RemotePost> findPostsByTags(Iterable<RemoteTag> tags);
-
-    Iterable<RemotePost> findPostsByDay(RemoteDay day);
-
-    Iterable<RemotePost> findPostsByTagsAndDay(Iterable<RemoteTag> tags, RemoteDay day);
-
-    RemotePost findPostByURL(String url);
-
-    Iterable<RemotePost> findAllRecentPosts(); // ???
-
-    Iterable<RemotePost> findRecentPostsByTags(Iterable<RemoteTag> tags); // ???
+    static String joinRemoteTags(Iterable<RemoteTag> tags)
+    {
+        StringBuilder sb = new StringBuilder();
+        Iterator<RemoteTag> it = tags.iterator();
+        while (it.hasNext()) {
+            RemoteTag eachTag = it.next();
+            sb.append(eachTag.tag().get());
+            if (it.hasNext()) {
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
+    }
 
 }

@@ -22,7 +22,10 @@
 package org.codeartisans.qidelicious.sync;
 
 import java.util.Date;
+import org.codeartisans.qidelicious.remote.RemoteDelicious;
+import org.codeartisans.qidelicious.remote.RemoteFactory;
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
@@ -47,6 +50,10 @@ public interface SyncService
 
         @This
         private Configuration<SyncState> config;
+        @Service
+        private RemoteDelicious remoteDelicious;
+        @Service
+        private RemoteFactory remoteFactory;
 
         /**
          * For each (owned) entity type, remove all instances ?

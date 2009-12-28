@@ -27,8 +27,11 @@ import org.codeartisans.qidelicious.sync.SyncService;
 import org.codeartisans.qidelicious.core.Tag;
 import org.codeartisans.qidelicious.core.TagBundle;
 import org.codeartisans.qidelicious.remote.RemoteConfiguration;
-import org.codeartisans.qidelicious.remote.RemoteDelicious;
+import org.codeartisans.qidelicious.remote.RemoteDay;
+import org.codeartisans.qidelicious.remote.RemoteDeliciousService;
+import org.codeartisans.qidelicious.remote.RemoteFactory;
 import org.codeartisans.qidelicious.remote.RemoteTag;
+import org.codeartisans.qidelicious.remote.RemoteTagBundle;
 import org.codeartisans.qidelicious.sync.SyncState;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
@@ -55,14 +58,17 @@ public class QiDeliciousAssembler
 
         // Internal Services
         module.addServices(SyncService.class,
-                           RemoteDelicious.class);
+                           RemoteDeliciousService.class,
+                           RemoteFactory.class);
 
         // Internal Configuration Entities
         module.addEntities(SyncState.class,
                            RemoteConfiguration.class);
 
         // Internal Transients
-        module.addTransients(RemoteTag.class);
+        module.addTransients(RemoteDay.class,
+                             RemoteTag.class,
+                             RemoteTagBundle.class);
 
         // Infrastructure Services
         module.addServices(MemoryEntityStoreService.class,
