@@ -21,9 +21,47 @@
  */
 package org.codeartisans.qidelicious;
 
+import org.codeartisans.qidelicious.remote.RemoteDelicious;
+import org.codeartisans.qidelicious.sync.SyncService;
+import org.junit.Before;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.test.AbstractQi4jTest;
+
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public class DeliciousException extends RuntimeException
+public abstract class AbstractQiDeliciousTest
+        extends AbstractQi4jTest
 {
+
+    protected RemoteDelicious remoteDelicious;
+    protected SyncService syncService;
+
+    public void assemble(ModuleAssembly module) throws AssemblyException
+    {
+        new QiDeliciousAssembler().assemble(module);
+    }
+
+    @Before
+    public void before()
+    {
+        ServiceReference<RemoteDelicious> remoteRef = serviceLocator.findService(RemoteDelicious.class);
+        remoteDelicious = remoteRef.get();
+        ServiceReference<SyncService> syncRef = serviceLocator.findService(SyncService.class);
+        syncService = syncRef.get();
+    }
+
+    // Qi4j runtime needs inner on assembly mixins to be public and static
+    static abstract class AssemblyTimeInnerMixinExample_NotUsedAnymore
+            implements SyncService
+    {
+
+        public void updateWorkingCopy()
+        {
+        }
+
+    }
+
 }

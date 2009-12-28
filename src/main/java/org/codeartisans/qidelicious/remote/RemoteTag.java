@@ -19,36 +19,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.services;
+package org.codeartisans.qidelicious.remote;
 
-import org.codeartisans.qidelicious.domain.Day;
-import org.codeartisans.qidelicious.domain.Post;
-import org.codeartisans.qidelicious.domain.Tag;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.property.Property;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface DeliciousApiService
+public interface RemoteTag
+        extends TransientComposite
 {
 
-    Iterable<Day> findAllDeliciousDays();
+    Property<String> tag();
 
-    Iterable<Day> findDeliciousDaysByTags(Iterable<Tag> tags);
-
-    Iterable<Tag> findAllTags();
-
-    Iterable<Post> findAllPosts();
-
-    Iterable<Post> findPostsByTags(Iterable<Tag> tags);
-
-    Iterable<Post> findPostsByDay(Day day);
-
-    Iterable<Post> findPostsByTagsAndDay(Iterable<Tag> tags, Day day);
-
-    Post findPostByURL(String url);
-
-    Iterable<Post> findAllRecentPosts(); // ???
-
-    Iterable<Post> findRecentPostsByTags(Iterable<Tag> tags); // ???
+    @UseDefaults
+    Property<Integer> count();
 
 }

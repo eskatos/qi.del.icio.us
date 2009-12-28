@@ -19,11 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.domain;
+package org.codeartisans.qidelicious.core;
+
+import org.joda.time.DateMidnight;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.property.Property;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
 public interface Day
+        extends EntityComposite
 {
+
+    Property<WeekName> weekName();
+
+    Property<DateMidnight> dateMidnight();
+
 }

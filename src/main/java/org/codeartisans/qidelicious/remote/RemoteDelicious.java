@@ -19,46 +19,68 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.services;
+package org.codeartisans.qidelicious.remote;
 
 import del.icio.us.Delicious;
 import java.util.LinkedList;
 import java.util.List;
-import org.codeartisans.qidelicious.domain.Day;
-import org.codeartisans.qidelicious.domain.Post;
-import org.codeartisans.qidelicious.domain.Tag;
-import org.qi4j.api.entity.EntityBuilder;
+import org.codeartisans.qidelicious.core.Day;
+import org.codeartisans.qidelicious.core.Post;
+import org.codeartisans.qidelicious.core.Tag;
+import org.qi4j.api.composite.TransientBuilder;
+import org.qi4j.api.composite.TransientBuilderFactory;
+import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 /**
- * For unit tests to pass and before configuration is working, change the username and password below.
- * 
  * @author Paul Merlin <paul@nosphere.org>
  */
-@Mixins(DeliciousApiServiceComposite.Mixin.class)
-public interface DeliciousApiServiceComposite
-        extends DeliciousApiService, ServiceComposite
+@Mixins(RemoteDelicious.Mixin.class)
+public interface RemoteDelicious
+        extends ServiceComposite
 {
 
+    Iterable<Day> findAllDeliciousDays();
+
+    Iterable<Day> findDeliciousDaysByTags(Iterable<Tag> tags);
+
+    Iterable<RemoteTag> findAllTags();
+
+    Iterable<Post> findAllPosts();
+
+    Iterable<Post> findPostsByTags(Iterable<Tag> tags);
+
+    Iterable<Post> findPostsByDay(Day day);
+
+    Iterable<Post> findPostsByTagsAndDay(Iterable<Tag> tags, Day day);
+
+    Post findPostByURL(String url);
+
+    Iterable<Post> findAllRecentPosts(); // ???
+
+    Iterable<Post> findRecentPostsByTags(Iterable<Tag> tags); // ???
+
     abstract class Mixin
-            implements DeliciousApiService
+            implements RemoteDelicious
     {
 
-        private static final String USERNAME = "USERNAME";
-        private static final String PASSWORD = "PASSWORD";
-        private static Delicious delicious;
         @Structure
-        private UnitOfWorkFactory uowf;
+        private TransientBuilderFactory tbf;
+        @This
+        private Configuration<RemoteConfiguration> config;
+        private Delicious delicious;
 
-        public Mixin()
+        private Delicious ensureDelicious()
         {
             if (delicious == null) {
-                delicious = new Delicious(USERNAME, PASSWORD, "https://api.delicious.com/v1/");
+                RemoteConfiguration cfg = config.configuration();
+                System.out.println("RemoteDelicious will use the following credentials: " + cfg.username().get() + ":" + cfg.password().get());
+                delicious = new Delicious(cfg.username().get(), cfg.password().get(), "https://api.delicious.com/v1/");
             }
+            return delicious;
         }
 
         public Iterable<Day> findAllDeliciousDays()
@@ -71,20 +93,18 @@ public interface DeliciousApiServiceComposite
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public Iterable<Tag> findAllTags()
+        public Iterable<RemoteTag> findAllTags()
         {
-            List<del.icio.us.beans.Tag> remoteTags = delicious.getTags();
-            List<Tag> tags = new LinkedList<Tag>();
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            System.out.println(uow);
-            for (del.icio.us.beans.Tag eachRemoteTag : remoteTags) {
-                EntityBuilder<Tag> tagBuilder = uow.newEntityBuilder(Tag.class);
-                Tag proto = tagBuilder.instance();
-                proto.tag().set(eachRemoteTag.getTag());
-                proto.count().set(eachRemoteTag.getCount());
-                tags.add(tagBuilder.newInstance());
+            List<del.icio.us.beans.Tag> deliciousTags = ensureDelicious().getTags();
+            List<RemoteTag> remoteTags = new LinkedList<RemoteTag>();
+            for (del.icio.us.beans.Tag eachDeliciousTag : deliciousTags) {
+                TransientBuilder<RemoteTag> tagBuilder = tbf.newTransientBuilder(RemoteTag.class);
+                RemoteTag proto = tagBuilder.prototype();
+                proto.tag().set(eachDeliciousTag.getTag());
+                proto.count().set(eachDeliciousTag.getCount());
+                remoteTags.add(tagBuilder.newInstance());
             }
-            return tags;
+            return remoteTags;
         }
 
         public Iterable<Post> findAllPosts()

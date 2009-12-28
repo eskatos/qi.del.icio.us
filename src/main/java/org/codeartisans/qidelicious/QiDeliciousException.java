@@ -19,22 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.domain;
-
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.property.Property;
+package org.codeartisans.qidelicious;
 
 /**
- * @author Paul Merlin <p.merlin@nosphere.org>
+ * @author Paul Merlin <paul@nosphere.org>
  */
-public interface Tag
-        extends EntityComposite
+public class QiDeliciousException extends RuntimeException
 {
-
-    Property<String> tag();
-
-    @UseDefaults
-    Property<Integer> count();
-
 }

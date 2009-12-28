@@ -19,11 +19,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.domain;
+package org.codeartisans.qidelicious.remote;
+
+import org.codeartisans.qidelicious.AbstractQiDeliciousTest;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 /**
- * @author Paul Merlin <p.merlin@nosphere.org>
+ * @author Paul Merlin <paul@nosphere.org>
  */
-public interface TagBundle
+public class RemoteDeliciousTest
+        extends AbstractQiDeliciousTest
 {
+
+    @Ignore
+    @Test
+    public void findAllTags()
+            throws UnitOfWorkCompletionException
+    {
+        UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+
+        // TODO do a real test with assertions ...
+        for (RemoteTag eachTag : remoteDelicious.findAllTags()) { // WARN This issue http requests to delicious.com!
+            System.out.println(eachTag.tag().get() + ":" + eachTag.count().get());
+        }
+
+        uow.complete();
+    }
+
 }

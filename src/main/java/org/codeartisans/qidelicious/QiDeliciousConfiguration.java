@@ -24,7 +24,7 @@ package org.codeartisans.qidelicious;
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface DeliciousConfiguration
+public interface QiDeliciousConfiguration
 {
 
     String username();

@@ -19,15 +19,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.repositories;
+package org.codeartisans.qidelicious.core;
 
-import org.codeartisans.qidelicious.domain.Post;
-import org.codeartisans.qidelicious.domain.Tag;
+import org.codeartisans.qidelicious.core.Post;
+import org.codeartisans.qidelicious.core.Tag;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface DeliciousRepository
+public interface CoreDomainRepository
 {
 
     Iterable<Tag> findAllTags();

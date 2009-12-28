@@ -19,32 +19,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.domain;
+package org.codeartisans.qidelicious.core;
 
-import java.util.Date;
-import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface Post
+public interface Tag
+        extends EntityComposite
 {
 
-    Property<String> href();
+    @Immutable
+    Property<String> tag();
 
-    Property<String> description();
-
-    Property<String> extendedDescription(); // extended
-
-    Property<String> deliciousIdentity(); // hash
-
-    Property<String> hash(); // meta
-
-    ManyAssociation<Tag> tags(); // tag
-
-    Property<Date> date(); // time
-
-    Property<Boolean> shared();
+    @UseDefaults
+    @Immutable
+    Property<Integer> count();
 
 }
