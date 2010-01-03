@@ -19,38 +19,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.remote;
+package org.codeartisans.blob.domain.composites.entities;
 
-import org.joda.time.DateTime;
+import org.codeartisans.blob.domain.model.Tag;
+import org.qi4j.api.entity.EntityComposite;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface RemoteDelicious
+public interface TagEntityComposite
+        extends Tag, EntityComposite
 {
-
-    DateTime findLastRemoteUpdate();
-
-    Iterable<RemoteDay> findAllDeliciousDays();
-
-    Iterable<RemoteDay> findDeliciousDaysByTags(Iterable<RemoteTag> tags);
-
-    Iterable<RemoteTag> findAllTags();
-
-    Iterable<RemoteTagBundle> findAllTagBundles();
-
-    Iterable<RemotePost> findAllPosts();
-
-    Iterable<RemotePost> findPostsByTags(Iterable<RemoteTag> tags);
-
-    Iterable<RemotePost> findPostsByDay(RemoteDay day);
-
-    Iterable<RemotePost> findPostsByTagsAndDay(Iterable<RemoteTag> tags, RemoteDay day);
-
-    RemotePost findPostByURL(String url);
-
-    Iterable<RemotePost> findAllRecentPosts(); // ???
-
-    Iterable<RemotePost> findRecentPostsByTags(Iterable<RemoteTag> tags); // ???
-
 }

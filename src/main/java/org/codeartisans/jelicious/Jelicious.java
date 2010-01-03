@@ -19,38 +19,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.remote;
+package org.codeartisans.jelicious;
 
+import org.codeartisans.jelicious.domain.Bookmark;
+import org.codeartisans.jelicious.domain.Tag;
 import org.joda.time.DateTime;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface RemoteDelicious
+public interface Jelicious
 {
 
-    DateTime findLastRemoteUpdate();
+    Iterable<Tag> fetchAllTags();
 
-    Iterable<RemoteDay> findAllDeliciousDays();
+    DateTime fetchLastBookmarkDateTime();
 
-    Iterable<RemoteDay> findDeliciousDaysByTags(Iterable<RemoteTag> tags);
+    Iterable<Bookmark> fetchAllBookmarks();
 
-    Iterable<RemoteTag> findAllTags();
-
-    Iterable<RemoteTagBundle> findAllTagBundles();
-
-    Iterable<RemotePost> findAllPosts();
-
-    Iterable<RemotePost> findPostsByTags(Iterable<RemoteTag> tags);
-
-    Iterable<RemotePost> findPostsByDay(RemoteDay day);
-
-    Iterable<RemotePost> findPostsByTagsAndDay(Iterable<RemoteTag> tags, RemoteDay day);
-
-    RemotePost findPostByURL(String url);
-
-    Iterable<RemotePost> findAllRecentPosts(); // ???
-
-    Iterable<RemotePost> findRecentPostsByTags(Iterable<RemoteTag> tags); // ???
+    void updateBookmark(Bookmark bookmark);
 
 }

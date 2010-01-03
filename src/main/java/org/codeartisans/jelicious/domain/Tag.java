@@ -19,38 +19,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.remote;
-
-import org.joda.time.DateTime;
+package org.codeartisans.jelicious.domain;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface RemoteDelicious
+public class Tag
 {
 
-    DateTime findLastRemoteUpdate();
+    private final String tag;
+    private final Integer count;
 
-    Iterable<RemoteDay> findAllDeliciousDays();
+    public Tag(String tag, Integer count)
+    {
+        this.tag = tag;
+        this.count = count;
+    }
 
-    Iterable<RemoteDay> findDeliciousDaysByTags(Iterable<RemoteTag> tags);
+    public String tag()
+    {
+        return tag;
+    }
 
-    Iterable<RemoteTag> findAllTags();
-
-    Iterable<RemoteTagBundle> findAllTagBundles();
-
-    Iterable<RemotePost> findAllPosts();
-
-    Iterable<RemotePost> findPostsByTags(Iterable<RemoteTag> tags);
-
-    Iterable<RemotePost> findPostsByDay(RemoteDay day);
-
-    Iterable<RemotePost> findPostsByTagsAndDay(Iterable<RemoteTag> tags, RemoteDay day);
-
-    RemotePost findPostByURL(String url);
-
-    Iterable<RemotePost> findAllRecentPosts(); // ???
-
-    Iterable<RemotePost> findRecentPostsByTags(Iterable<RemoteTag> tags); // ???
+    public Integer count()
+    {
+        return count;
+    }
 
 }

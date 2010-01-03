@@ -38,6 +38,16 @@
             <version>1.14</version>
         </dependency>
         <dependency>
+            <groupId>oauth.signpost</groupId>
+            <artifactId>signpost-core</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>oauth.signpost</groupId>
+            <artifactId>signpost-commonshttp4</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>1.6</version>
@@ -45,6 +55,11 @@
         <dependency>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-bootstrap</artifactId>
+            <version>1.0-RC3-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.qi4j.extension</groupId>
+            <artifactId>qi4j-indexing-rdf</artifactId>
             <version>1.0-RC3-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -74,6 +89,10 @@
         <repository>
             <id>java.net</id>
             <url>http://download.java.net/maven/2</url>
+        </repository>
+        <repository>
+            <id>signpost-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/signpost</url>
         </repository>
     </repositories>
 </project>

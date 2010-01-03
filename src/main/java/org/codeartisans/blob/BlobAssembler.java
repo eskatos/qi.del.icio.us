@@ -19,58 +19,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious;
+package org.codeartisans.blob;
 
-import org.codeartisans.qidelicious.core.Post;
-import org.codeartisans.qidelicious.sync.SyncService;
-import org.codeartisans.qidelicious.core.Tag;
-import org.codeartisans.qidelicious.core.TagBundle;
-import org.codeartisans.qidelicious.remote.RemoteConfiguration;
-import org.codeartisans.qidelicious.remote.RemoteDay;
-import org.codeartisans.qidelicious.remote.RemoteDeliciousService;
-import org.codeartisans.qidelicious.remote.RemoteFactory;
-import org.codeartisans.qidelicious.remote.RemoteTag;
-import org.codeartisans.qidelicious.remote.RemoteTagBundle;
-import org.codeartisans.qidelicious.sync.SyncState;
-import org.qi4j.api.common.Visibility;
+import org.codeartisans.blob.domain.composites.entities.TagEntityComposite;
+import org.codeartisans.blob.domain.composites.entities.ThingEntityComposite;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
- * @author Paul Merlin <p.merlin@nosphere.org>
+ * See Qi4j Extensions - REST // Unit tests // Main.java & MainAssembler.java
+ * @author Paul Merlin <paul@nosphere.org>
  */
-public class QiDeliciousAssembler
+public class BlobAssembler
         implements Assembler
 {
 
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        // Public Entities
-        module.addEntities(Tag.class,
-                           TagBundle.class,
-                           Post.class).
-                visibleIn(Visibility.application);
 
-        // Internal Services
-        module.addServices(SyncService.class,
-                           RemoteDeliciousService.class,
-                           RemoteFactory.class);
-
-        // Internal Configuration Entities
-        module.addEntities(SyncState.class,
-                           RemoteConfiguration.class);
-
-        // Internal Transients
-        module.addTransients(RemoteDay.class,
-                             RemoteTag.class,
-                             RemoteTagBundle.class);
+        // Entities
+        module.addEntities(ThingEntityComposite.class,
+                           TagEntityComposite.class);
 
         // Infrastructure Services
         module.addServices(MemoryEntityStoreService.class,
                            UuidIdentityGeneratorService.class);
+        new RdfMemoryStoreAssembler().assemble(module);
+
     }
 
 }

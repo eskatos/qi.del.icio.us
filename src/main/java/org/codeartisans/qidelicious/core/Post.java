@@ -21,7 +21,7 @@
  */
 package org.codeartisans.qidelicious.core;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.property.Property;
@@ -45,7 +45,7 @@ public interface Post
 
     ManyAssociation<Tag> tags(); // tag
 
-    Property<Date> date(); // time
+    Property<DateTime> date(); // time
 
     Property<Boolean> shared();
 

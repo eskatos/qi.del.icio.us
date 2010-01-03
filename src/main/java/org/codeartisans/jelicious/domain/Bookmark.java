@@ -19,38 +19,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.remote;
-
-import org.joda.time.DateTime;
+package org.codeartisans.jelicious.domain;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface RemoteDelicious
+public class Bookmark
 {
 
-    DateTime findLastRemoteUpdate();
+    private Boolean shared;
+    private String url;
 
-    Iterable<RemoteDay> findAllDeliciousDays();
+    public Bookmark(String url, Boolean shared)
+    {
+        this.url = url;
+        this.shared = shared;
+    }
 
-    Iterable<RemoteDay> findDeliciousDaysByTags(Iterable<RemoteTag> tags);
+//
+//    String identity();
+//
+//    URL href();
+//
+//    String title();
+//
+//    String description();
+//
+//    String changeDetectionHash();
+    public Boolean shared()
+    {
+        return shared;
+    }
 
-    Iterable<RemoteTag> findAllTags();
+    public void share()
+    {
+        shared = true;
+    }
 
-    Iterable<RemoteTagBundle> findAllTagBundles();
-
-    Iterable<RemotePost> findAllPosts();
-
-    Iterable<RemotePost> findPostsByTags(Iterable<RemoteTag> tags);
-
-    Iterable<RemotePost> findPostsByDay(RemoteDay day);
-
-    Iterable<RemotePost> findPostsByTagsAndDay(Iterable<RemoteTag> tags, RemoteDay day);
-
-    RemotePost findPostByURL(String url);
-
-    Iterable<RemotePost> findAllRecentPosts(); // ???
-
-    Iterable<RemotePost> findRecentPostsByTags(Iterable<RemoteTag> tags); // ???
+    public String url()
+    {
+        return url;
+    }
 
 }

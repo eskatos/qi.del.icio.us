@@ -19,21 +19,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.core;
-
-import org.joda.time.DateMidnight;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.property.Property;
+package org.codeartisans.jelicious;
 
 /**
- * @author Paul Merlin <p.merlin@nosphere.org>
+ * @author Paul Merlin <paul@nosphere.org>
  */
-public interface Day
-        extends EntityComposite
+public class JeliciousException
+        extends RuntimeException
 {
 
-    Property<WeekName> weekName();
+    public JeliciousException(String message)
+    {
+        super(message);
+    }
 
-    Property<DateMidnight> dateMidnight();
+    public JeliciousException(Throwable cause)
+    {
+        super(cause);
+    }
+
+    public JeliciousException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 
 }

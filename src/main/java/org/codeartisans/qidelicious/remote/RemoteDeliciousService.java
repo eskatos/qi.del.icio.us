@@ -25,6 +25,7 @@ import del.icio.us.Delicious;
 import del.icio.us.beans.Bundle;
 import del.icio.us.beans.DeliciousDate;
 import del.icio.us.beans.Tag;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import org.joda.time.DateMidnight;
@@ -55,6 +56,14 @@ public interface RemoteDeliciousService
         private Delicious delicious;
         // For throttling
         private DateTime lastRequest;
+
+        public DateTime findLastRemoteUpdate()
+        {
+            throttleIfNeeded();
+            Date lastUpdate = ensureDelicious().getLastUpdate();
+            requestDone();
+            return new DateTime(lastUpdate);
+        }
 
         public Iterable<RemoteDay> findAllDeliciousDays()
         {

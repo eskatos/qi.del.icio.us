@@ -19,38 +19,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.qidelicious.remote;
+package org.codeartisans.jelicious;
 
+import org.codeartisans.jelicious.domain.BookmarkDay;
+import org.codeartisans.jelicious.domain.Tag;
+import org.codeartisans.jelicious.domain.Bookmark;
+import org.codeartisans.jelicious.domain.TagSet;
 import org.joda.time.DateTime;
+import org.w3c.dom.Node;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface RemoteDelicious
+public interface JeliciousFactory
 {
 
-    DateTime findLastRemoteUpdate();
+    Tag createTag(Node node);
 
-    Iterable<RemoteDay> findAllDeliciousDays();
+    TagSet createTagSet(Node node);
 
-    Iterable<RemoteDay> findDeliciousDaysByTags(Iterable<RemoteTag> tags);
+    Bookmark createBookmark(Node node);
 
-    Iterable<RemoteTag> findAllTags();
+    BookmarkDay createBookmarkDay(Node node);
 
-    Iterable<RemoteTagBundle> findAllTagBundles();
-
-    Iterable<RemotePost> findAllPosts();
-
-    Iterable<RemotePost> findPostsByTags(Iterable<RemoteTag> tags);
-
-    Iterable<RemotePost> findPostsByDay(RemoteDay day);
-
-    Iterable<RemotePost> findPostsByTagsAndDay(Iterable<RemoteTag> tags, RemoteDay day);
-
-    RemotePost findPostByURL(String url);
-
-    Iterable<RemotePost> findAllRecentPosts(); // ???
-
-    Iterable<RemotePost> findRecentPostsByTags(Iterable<RemoteTag> tags); // ???
+    DateTime createLastBookmarkDateTime(Node node);
 
 }
