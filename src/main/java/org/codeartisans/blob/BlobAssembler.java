@@ -21,8 +21,14 @@
  */
 package org.codeartisans.blob;
 
-import org.codeartisans.blob.domain.composites.entities.TagEntityComposite;
-import org.codeartisans.blob.domain.composites.entities.ThingEntityComposite;
+import org.codeartisans.blob.domain.entities.RootEntity;
+import org.codeartisans.blob.domain.entities.SetOfTagsEntity;
+import org.codeartisans.blob.domain.entities.TagEntity;
+import org.codeartisans.blob.domain.entities.TagRepository;
+import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.events.DomainEventsFactory;
+import org.codeartisans.blob.events.TagRenamedEvent;
+import org.codeartisans.blob.events.ThingCreatedEvent;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -32,18 +38,30 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
  * See Qi4j Extensions - REST // Unit tests // Main.java & MainAssembler.java
+ *
+ * TODO Two modules, one for DomainEvents, another one for DomainEntities. The first will contain a persistent
+ *      EntityStore, the latter a MemoryEntityStore and a RDF indexer.
+ * 
  * @author Paul Merlin <paul@nosphere.org>
  */
 public class BlobAssembler
         implements Assembler
 {
 
-    public void assemble(ModuleAssembly module) throws AssemblyException
+    public void assemble(ModuleAssembly module)
+            throws AssemblyException
     {
+        // Domain Events
+        module.addEntities(ThingCreatedEvent.class,
+                           TagRenamedEvent.class);
+        module.addServices(DomainEventsFactory.class);
 
         // Entities
-        module.addEntities(ThingEntityComposite.class,
-                           TagEntityComposite.class);
+        module.addEntities(RootEntity.class,
+                           ThingEntity.class,
+                           TagEntity.class,
+                           SetOfTagsEntity.class);
+        module.addServices(TagRepository.class);
 
         // Infrastructure Services
         module.addServices(MemoryEntityStoreService.class,

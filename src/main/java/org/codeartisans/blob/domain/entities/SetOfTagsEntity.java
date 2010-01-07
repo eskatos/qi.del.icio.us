@@ -19,16 +19,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.model;
+package org.codeartisans.blob.domain.entities;
 
-import org.qi4j.api.property.Property;
+import org.codeartisans.blob.domain.fragments.Listable;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.association.ManyAssociation;
 
 /**
- * @author Paul Merlin <p.merlin@nosphere.org>
+ * @author Paul Merlin <paul@nosphere.org>
  */
-public interface HasName
+public interface SetOfTagsEntity
+        extends Listable, EntityComposite
 {
 
-    Property<String> name();
+    ManyAssociation<TagEntity> tags();
 
 }

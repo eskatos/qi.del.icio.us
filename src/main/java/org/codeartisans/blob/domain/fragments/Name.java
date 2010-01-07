@@ -19,15 +19,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.composites.entities;
+package org.codeartisans.blob.domain.fragments;
 
-import org.codeartisans.blob.domain.model.Tag;
-import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.property.Property;
 
 /**
+ * FIXME: Cannot use such properties as subjects in the query api :'(
+ * 
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface TagEntityComposite
-        extends Tag, EntityComposite
+public interface Name
+        extends Property<String>
 {
 }

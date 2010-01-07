@@ -19,17 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.model;
+package org.codeartisans.blob.domain.fragments;
 
-import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.property.Property;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface SetOfTags
-        extends IsListable
+public interface Text
+        extends Property<String>
 {
-
-    ManyAssociation<Tag> tags();
-
 }

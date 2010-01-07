@@ -19,18 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.model;
+package org.codeartisans.blob.events;
 
-import org.qi4j.api.common.Optional;
+import org.codeartisans.blob.domain.fragments.Name;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.property.Property;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface Thing
-        extends IsListable, HasTags
+public interface TagRenamedEvent
+        extends DatedEvent, EntityComposite
 {
 
-    @Optional
-    MimeType mimeType();
+    Property<String> tagIdentity();
+
+    Name newName();
 
 }

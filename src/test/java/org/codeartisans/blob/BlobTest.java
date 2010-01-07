@@ -21,13 +21,16 @@
  */
 package org.codeartisans.blob;
 
-import org.codeartisans.blob.domain.model.Tag;
-import org.codeartisans.blob.domain.model.Thing;
-import org.codeartisans.blob.domain.composites.entities.ThingEntityComposite;
+import org.codeartisans.blob.FixtureBuilder.Fixtures;
+import org.codeartisans.blob.FixtureBuilder.FixtureSettings;
+import org.codeartisans.blob.domain.entities.TagEntity;
+import org.codeartisans.blob.domain.entities.ThingEntity;
 import org.codeartisans.java.toolbox.CollectionUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
@@ -48,95 +51,116 @@ public class BlobTest
             throws AssemblyException
     {
         new BlobAssembler().assemble(module);
+        module.addObjects(FixtureBuilder.class);
     }
 
-    @Test
-    public void createThingWithTags()
+    @Ignore
+    @Test // TODO
+    public void testFixtureBuilder()
             throws UnitOfWorkCompletionException
     {
+        FixtureBuilder builder = objectBuilderFactory.newObject(FixtureBuilder.class);
+        FixtureSettings settings = builder.settingsPrototype();
+        settings.thingsNumber(100);
+        settings.tagsNumber(100);
+        Fixtures fixtures = builder.populateStore();
+
         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
 
-        EntityBuilder<Tag> tagBuilder = uow.newEntityBuilder(Tag.class);
-        EntityBuilder<ThingEntityComposite> thingBuilder = uow.newEntityBuilder(ThingEntityComposite.class);
-
-        Tag tagProto = tagBuilder.instance();
-        tagProto.name().set("qi4j");
-
-        Tag tag = tagBuilder.newInstance();
-
-        Thing thingProto = thingBuilder.instance();
-        thingProto.mimeType().set("application/x-blob");
-        thingProto.name().set("Blob");
-        thingProto.shortdesc().set("A short blob");
-        thingProto.tags().add(tag);
-
-        ThingEntityComposite thingEntity = thingBuilder.newInstance();
-        String thingIdentity = thingEntity.identity().get();
-        Thing thing = thingEntity;
-
-        System.out.println("================================================");
-        System.out.println("tag: " + tag.toString());
-        System.out.println("  is named: " + tag.name().get());
-        System.out.println("");
-        System.out.println("thing: " + thing.toString());
-        System.out.println("  is named: " + thing.name().get());
-        System.out.println("  has shortdesc: " + thing.shortdesc().get());
-        System.out.println("  has mimetype: " + thing.mimeType().get());
-        System.out.println("  has tags: " + thing.tags().toSet());
-        System.out.println("================================================");
+        // TODO Write TagsRepository and ThingsRepository
+        // TODO Use them to test against fixtures invariants and settings
 
         uow.complete();
 
-        /* ************************************************************ */
-
-        uow = unitOfWorkFactory.newUnitOfWork();
-
-        Thing fetchedThing = uow.get(Thing.class, thingIdentity);
-
-        checkThing("fetchedByIdentity", fetchedThing);
-
-        uow.discard();
-
-        /* ************************************************************ */
-
-        uow = unitOfWorkFactory.newUnitOfWork();
-
-        QueryBuilder<Thing> queryBuilder = queryBuilderFactory.newQueryBuilder(Thing.class);
-        Thing thingTemplate = QueryExpressions.templateFor(Thing.class);
-        queryBuilder.where(QueryExpressions.eq(thingTemplate.name(), "Blob"));
-
-        Query<Thing> query = queryBuilder.newQuery(uow);
-        query.maxResults(1);
-
-        Thing thingFoundByName = CollectionUtils.firstElementOrNull(query);
-
-        checkThing("foundByName", thingFoundByName);
-
-        uow.discard();
-
-        /* ************************************************************ */
-
-        uow = unitOfWorkFactory.newUnitOfWork();
-
-        queryBuilder = queryBuilderFactory.newQueryBuilder(Thing.class);
-        thingTemplate = QueryExpressions.templateFor(Thing.class);
-        Tag tagTemplate = QueryExpressions.templateFor(Tag.class);
-        queryBuilder.where(QueryExpressions.and(
-                QueryExpressions.eq(tagTemplate.name(), "qi4j"),
-                QueryExpressions.contains(thingTemplate.tags(), tagTemplate)));
-
-        query = queryBuilder.newQuery(uow);
-        query.maxResults(1);
-
-        Thing thingFoundByTag = CollectionUtils.firstElementOrNull(query);
-
-        checkThing("foundByTag", thingFoundByTag);
-
-        uow.discard();
-
     }
 
-    private void checkThing(String name, Thing thing)
+    @Test
+    public void givenThingWithTagsWhenQueriedByIdentityNameOrTagThenIsFound()
+            throws UnitOfWorkCompletionException
+    {
+        ThingEntity thing;
+        {
+            UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+
+            EntityBuilder<TagEntity> tagBuilder = uow.newEntityBuilder(TagEntity.class);
+            EntityBuilder<ThingEntity> thingBuilder = uow.newEntityBuilder(ThingEntity.class);
+
+            TagEntity tagProto = tagBuilder.instance();
+            tagProto.name().set("qi4j");
+
+            TagEntity tag = tagBuilder.newInstance();
+
+            ThingEntity thingProto = thingBuilder.instance();
+            thingProto.mimeType().set("application/x-blob");
+            thingProto.name().set("Blob");
+            thingProto.shortdesc().set("A short blob");
+            thingProto.tags().add(tag);
+
+            thing = thingBuilder.newInstance();
+
+            System.out.println("================================================");
+            System.out.println("tag: " + tag.toString());
+            System.out.println("  is named: " + tag.name().get());
+            System.out.println("");
+            System.out.println("thing: " + thing.toString());
+            System.out.println("  is named: " + thing.name().get());
+            System.out.println("  has shortdesc: " + thing.shortdesc().get());
+            System.out.println("  has mimetype: " + thing.mimeType().get());
+            System.out.println("  has tags: " + thing.tags().toSet());
+            System.out.println("================================================");
+
+            uow.complete();
+        }
+
+        {
+            UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+
+            ThingEntity fetchedThing = uow.get(thing);
+
+            checkThing("fetchedByIdentity", fetchedThing);
+
+            uow.complete();
+        }
+
+        {
+            UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+
+            QueryBuilder<ThingEntity> queryBuilder = queryBuilderFactory.newQueryBuilder(ThingEntity.class);
+            ThingEntity thingTemplate = QueryExpressions.templateFor(ThingEntity.class);
+            queryBuilder.where(QueryExpressions.eq(thingTemplate.name(), "Blob"));
+
+            Query<ThingEntity> query = queryBuilder.newQuery(uow);
+            query.maxResults(1);
+
+            ThingEntity thingFoundByName = CollectionUtils.firstElementOrNull(query);
+
+            checkThing("foundByName", thingFoundByName);
+
+            uow.complete();
+        }
+
+        {
+            UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+
+            QueryBuilder<ThingEntity> queryBuilder = queryBuilderFactory.newQueryBuilder(ThingEntity.class);
+            ThingEntity thingTemplate = QueryExpressions.templateFor(ThingEntity.class);
+            TagEntity tagTemplate = QueryExpressions.templateFor(TagEntity.class);
+            queryBuilder.where(QueryExpressions.and(
+                    QueryExpressions.eq(tagTemplate.name(), "qi4j"),
+                    QueryExpressions.contains(thingTemplate.tags(), tagTemplate)));
+
+            Query<ThingEntity> query = queryBuilder.newQuery(uow);
+            query.maxResults(1);
+
+            ThingEntity thingFoundByTag = CollectionUtils.firstElementOrNull(query);
+
+            checkThing("foundByTag", thingFoundByTag);
+
+            uow.complete();
+        }
+    }
+
+    private void checkThing(String name, ThingEntity thing)
     {
         System.out.println("================================================");
         System.out.println(name + ": " + thing.toString());

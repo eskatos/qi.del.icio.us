@@ -19,19 +19,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.model;
+package org.codeartisans.blob.events;
 
-import org.qi4j.api.common.Optional;
+import org.joda.time.DateTime;
+import org.qi4j.api.entity.Lifecycle;
+import org.qi4j.api.entity.LifecycleException;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface IsListable
-        extends HasName
+@Mixins(DatedEvent.Mixin.class)
+public interface DatedEvent
+        extends Lifecycle
 {
 
-    @Optional
-    Property<String> shortdesc();
+    Property<DateTime> creationDate();
+
+    abstract class Mixin
+            implements DatedEvent
+    {
+
+        @This
+        private DatedEvent meAsDatedEvent;
+
+        public void create()
+                throws LifecycleException
+        {
+            meAsDatedEvent.creationDate().set(new DateTime());
+        }
+
+        public void remove()
+                throws LifecycleException
+        {
+            // NOOP
+        }
+
+    }
 
 }

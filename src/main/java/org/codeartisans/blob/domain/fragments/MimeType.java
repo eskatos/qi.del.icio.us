@@ -19,12 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.model;
+package org.codeartisans.blob.domain.fragments;
+
+import org.qi4j.api.property.Property;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface Tag
-        extends HasName
+public interface MimeType
+        extends Property<String>
 {
 }

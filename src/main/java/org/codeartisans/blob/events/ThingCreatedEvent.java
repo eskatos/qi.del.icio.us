@@ -19,14 +19,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.model;
+package org.codeartisans.blob.events;
 
+import java.util.List;
+import org.codeartisans.blob.domain.fragments.MimeType;
+import org.codeartisans.blob.domain.fragments.Name;
+import org.codeartisans.blob.domain.fragments.Text;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import org.qi4j.library.constraints.annotation.NotEmpty;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface MimeType
-        extends Property<String>
+public interface ThingCreatedEvent
+        extends DatedEvent, EntityComposite
 {
+
+    @NotEmpty
+    Property<String> thingIdentity();
+
+    @NotEmpty
+    @MaxLength(256)
+    Name name();
+
+    @Optional
+    @MaxLength(1024)
+    Text shortdesc();
+
+    @Optional
+    Property<List<String>> tags();
+
+    @Optional
+    MimeType mimetype();
+
 }

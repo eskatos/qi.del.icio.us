@@ -19,15 +19,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.composites.entities;
+package org.codeartisans.blob.domain.entities;
 
-import org.codeartisans.blob.domain.model.Thing;
+import org.codeartisans.blob.domain.fragments.MimeType;
+import org.codeartisans.blob.domain.fragments.Listable;
+import org.codeartisans.blob.domain.fragments.HasTags;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.mixin.Mixins;
 
 /**
+ * The Thing :)
+ *
+ * It seems Entities extending this type will be AggregateRoots.
+ * Relations to aggregated Entities shall be annotated with @Aggregated in the RootEntities.
+ *
+ * See AggregatedTest in qi4j-runtime
+ * See DeeplyAggregatedTest in this project
+ * See http://www.jroller.com/niclas/entry/entity_aggregates
+ * See http://lists.ops4j.org/pipermail/qi4j-dev/2008-September/003391.html (long thread)
+ *
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface ThingEntityComposite
-        extends Thing, EntityComposite
+@Mixins(ThingEntity.Mixin.class)
+public interface ThingEntity
+        extends Listable, HasTags, EntityComposite
 {
+
+    @Optional
+    MimeType mimeType();
+
+    void nameChanged(String name);
+
+    abstract class Mixin
+            implements ThingEntity
+    {
+
+        public void nameChanged(String name)
+        {
+            name().set(name);
+        }
+
+    }
+
 }
