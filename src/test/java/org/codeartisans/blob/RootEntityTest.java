@@ -58,6 +58,7 @@ public class RootEntityTest
         new BlobAssembler().assemble(module);
     }
 
+    @Ignore
     @Test
     public void envisage()
             throws InterruptedException
@@ -66,7 +67,6 @@ public class RootEntityTest
         Thread.sleep(1113000);
     }
 
-    @Ignore
     @Test
     public void test()
             throws UnitOfWorkCompletionException, InterruptedException

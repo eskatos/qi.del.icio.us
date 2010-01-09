@@ -51,7 +51,7 @@ public class CoolBlobAssembler
             throws AssemblyException
     {
         ApplicationAssembly app = applicationFactory.newApplicationAssembly();
-        app.setMode(Application.Mode.test);
+        app.setMode(Application.Mode.development);
         app.setVersion("0.1-testing");
         app.setName("CoolBlob");
         LayerAssembly domain = app.layerAssembly(CoolBlobStructure.Layers.DOMAIN);

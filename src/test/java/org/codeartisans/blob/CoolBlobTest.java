@@ -31,132 +31,36 @@ import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
 import org.joda.time.DateTime;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.qi4j.api.Qi4j;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.service.ServiceFinder;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.envisage.Envisage;
-import org.qi4j.envisage.model.descriptor.ApplicationDetailDescriptor;
-import org.qi4j.envisage.model.descriptor.ApplicationDetailDescriptorBuilder;
-import org.qi4j.envisage.model.descriptor.LayerDetailDescriptor;
-import org.qi4j.envisage.model.descriptor.ModuleDetailDescriptor;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.structure.ApplicationModelSPI;
-import org.qi4j.spi.structure.ApplicationSPI;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
 public class CoolBlobTest
-        implements ApplicationAssembler
+        extends AbstractQi4jApplicationTest
 {
-
-    // Qi4j
-    protected Qi4j api;
-    protected Qi4jSPI spi;
-    protected Energy4Java qi4j;
-    // Application under test
-    protected ApplicationModelSPI applicationModel;
-    protected ApplicationSPI application;
-    protected ApplicationDetailDescriptor descriptor;
-
-    @Before
-    public void setUp()
-            throws Exception
-    {
-        qi4j = new Energy4Java();
-        applicationModel = newApplication();
-        if (applicationModel == null) {
-            // An AssemblyException has occurred that the Test wants to check for.
-            return;
-        }
-        descriptor = ApplicationDetailDescriptorBuilder.createApplicationDetailDescriptor(applicationModel);
-
-        application = applicationModel.newInstance(qi4j.spi());
-        initApplication(application);
-        api = spi = qi4j.spi();
-        application.activate();
-
-    }
-
-    protected ApplicationModelSPI newApplication()
-            throws AssemblyException
-    {
-        try {
-            return qi4j.newApplicationModel(this);
-        } catch (AssemblyException e) {
-            assemblyException(e);
-            return null;
-        }
-    }
-
-    /**
-     * This method is called when there was an AssemblyException in the creation of the Qi4j application model.
-     * <p>Override this method to catch valid failures to place into test suites.
-     *
-     * @param exception the exception thrown.
-     * @throws AssemblyException The default implementation of this method will simply re-throw the exception.
-     */
-    protected void assemblyException(AssemblyException exception)
-            throws AssemblyException
-    {
-        throw exception;
-    }
-
-    protected void initApplication(Application app)
-            throws Exception
-    {
-    }
-
-    @After
-    public void tearDown()
-            throws Exception
-    {
-        for (LayerDetailDescriptor eachLayer : descriptor.layers()) {
-            for (ModuleDetailDescriptor eachModule : eachLayer.modules()) {
-                String layerName = eachLayer.descriptor().name();
-                String moduleName = eachModule.descriptor().name();
-                System.out.println("TearDown UOWF check in: Application > " + layerName + " > " + moduleName);
-                Module module = application.findModule(layerName, moduleName);
-                UnitOfWorkFactory eachUowf = module.unitOfWorkFactory();
-                if (eachUowf != null && eachUowf.currentUnitOfWork() != null) {
-                    UnitOfWork current;
-                    while ((current = eachUowf.currentUnitOfWork()) != null) {
-                        if (current.isOpen()) {
-                            current.discard();
-                        } else {
-                            throw new InternalError("I have seen a case where a UoW is on the stack, but not opened.");
-                        }
-                    }
-
-                    new Exception("UnitOfWork not properly cleaned up").printStackTrace();
-                }
-            }
-        }
-        if (application != null) {
-            application.passivate();
-        }
-    }
 
     public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
             throws AssemblyException
     {
-        return new CoolBlobAssembler().assemble(applicationFactory);
+        ApplicationAssembly assembly = new CoolBlobAssembler().assemble(applicationFactory);
+        assembly.setMode(Application.Mode.test);
+        return assembly;
     }
 
     @Ignore
@@ -207,8 +111,10 @@ public class CoolBlobTest
         {
             UnitOfWork uow = eventsUowf.newUnitOfWork();
 
-            UuidIdentityGeneratorService uuidGenerator = eventsServiceFinder.<UuidIdentityGeneratorService>findService(UuidIdentityGeneratorService.class).get();
-            DomainEventsFactory eventsFactory = eventsServiceFinder.<DomainEventsFactory>findService(DomainEventsFactory.class).get();
+            ServiceReference<UuidIdentityGeneratorService> uuidRef = eventsServiceFinder.findService(UuidIdentityGeneratorService.class);
+            ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService(DomainEventsFactory.class);
+            UuidIdentityGeneratorService uuidGenerator = uuidRef.get();
+            DomainEventsFactory eventsFactory = defRef.get();
 
             thingCreatedEvent = eventsFactory.newThingCreatedEvent(uuidGenerator.generate(ThingEntity.class),
                                                                    "Blob", "This is a blob",
@@ -244,9 +150,10 @@ public class CoolBlobTest
         {
             UnitOfWork uow = eventsUowf.newUnitOfWork();
 
-            UuidIdentityGeneratorService uuidGenerator = eventsServiceFinder.<UuidIdentityGeneratorService>findService(UuidIdentityGeneratorService.class).get();
-            DomainEventsFactory eventsFactory = eventsServiceFinder.<DomainEventsFactory>findService(DomainEventsFactory.class).get();
-            TagRepository tagRepos = modelServiceFinder.<TagRepository>findService(TagRepository.class).get();
+            ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService(DomainEventsFactory.class);
+            ServiceReference<TagRepository> trRef = modelServiceFinder.findService(TagRepository.class);
+            DomainEventsFactory eventsFactory = defRef.get();
+            TagRepository tagRepos = trRef.get();
 
 
             tagRenamedEvent = eventsFactory.newTagRenamedEvent(tagRepos.findByName("ddd").identity().get(),
