@@ -21,6 +21,7 @@
  */
 package org.codeartisans.blob;
 
+import org.codeartisans.blob.domain.RootEntityService;
 import org.codeartisans.blob.domain.entities.RootEntity;
 import org.codeartisans.blob.domain.entities.SetOfTagsEntity;
 import org.codeartisans.blob.domain.entities.TagEntity;
@@ -74,6 +75,7 @@ public class CoolBlobAssembler
                                     ThingEntity.class,
                                     TagEntity.class,
                                     SetOfTagsEntity.class);
+            domainModel.addServices(RootEntityService.class).instantiateOnStartup();
             domainModel.addServices(TagRepository.class);
 
             // Infrastructure Services

@@ -23,6 +23,8 @@ package org.codeartisans.blob;
 
 import java.util.Arrays;
 import junit.framework.Assert;
+import org.codeartisans.blob.FixtureBuilder.FixtureSettings;
+import org.codeartisans.blob.FixtureBuilder.Fixtures;
 import org.codeartisans.blob.domain.entities.RootEntity;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
@@ -33,10 +35,8 @@ import org.codeartisans.blob.events.ThingCreatedEvent;
 import org.joda.time.DateTime;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.service.ServiceFinder;
 import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
@@ -45,32 +45,53 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.envisage.Envisage;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
+ *
  * @author Paul Merlin <paul@nosphere.org>
  */
 public class CoolBlobTest
-        extends AbstractQi4jApplicationTest
+        extends AbstractCoolBlobTest
 {
-
-    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
-            throws AssemblyException
-    {
-        ApplicationAssembly assembly = new CoolBlobAssembler().assemble(applicationFactory);
-        assembly.setMode(Application.Mode.test);
-        return assembly;
-    }
 
     @Ignore
     @Test
     public void envisage()
             throws InterruptedException
     {
-        System.out.println("Testing Qi4j :)");
         new Envisage().run(applicationModel);
         Thread.sleep(1113000);
+    }
+
+    @Override
+    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
+            throws AssemblyException
+    {
+        ApplicationAssembly assembly = super.assemble(applicationFactory);
+        LayerAssembly domain = assembly.layerAssembly(CoolBlobStructure.Layers.DOMAIN);
+        ModuleAssembly events = domain.moduleAssembly(CoolBlobStructure.DomainModules.EVENTS);
+        events.addObjects(FixtureBuilder.class);
+        return assembly;
+    }
+
+    @Test // TODO
+    public void testFixtureBuilder()
+            throws UnitOfWorkCompletionException
+    {
+        Module eventsModule = application.findModule(CoolBlobStructure.Layers.DOMAIN, CoolBlobStructure.DomainModules.EVENTS);
+        FixtureBuilder builder = eventsModule.objectBuilderFactory().newObject(FixtureBuilder.class);
+        FixtureSettings settings = builder.settingsPrototype();
+        settings.thingsNumber(100);
+        settings.tagsNumber(100);
+        Fixtures fixtures = builder.populateStore();
+
+        UnitOfWork uow = eventsModule.unitOfWorkFactory().newUnitOfWork();
+
+        uow.complete();
     }
 
     @Test
@@ -78,7 +99,6 @@ public class CoolBlobTest
             throws InterruptedException, UnitOfWorkCompletionException
     {
 
-        final String rootIdentity = "FUCK_A_DUCK";
         ThingCreatedEvent thingCreatedEvent;
         TagRenamedEvent tagRenamedEvent;
 
@@ -89,23 +109,23 @@ public class CoolBlobTest
         UnitOfWorkFactory eventsUowf = eventsModule.unitOfWorkFactory();
         ServiceFinder eventsServiceFinder = eventsModule.serviceFinder();
 
-        // Creating RootEntity
+        // Checking RootEntity
         {
             UnitOfWork uow = modelUowf.newUnitOfWork();
 
             try {
-                uow.get(RootEntity.class, rootIdentity);
-                Assert.fail("Should not work.");
-            } catch (NoSuchEntityException ex) {
-            }
-            EntityBuilder<RootEntity> builder = uow.newEntityBuilder(RootEntity.class, rootIdentity);
-            RootEntity root = builder.newInstance();
+                RootEntity root = uow.get(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
+                Assert.assertEquals(CoolBlobStructure.ROOT_ENTITY_IDENTITY, root.identity().get());
+                Assert.assertNull(root.lastProcessedEventDateTime().get());
 
-            Assert.assertNull(root.lastProcessedEventDateTime().get());
+            } catch (NoSuchEntityException ex) {
+                ex.printStackTrace();
+                Assert.fail("Should work");
+            }
 
             uow.complete();
+            Thread.sleep(100);
         }
-        Thread.sleep(100);
 
         // Creating a DomainEvent : ThingCreatedEvent
         {
@@ -121,8 +141,8 @@ public class CoolBlobTest
                                                                    Arrays.asList("qi4j", "cop", "ddd"));
 
             uow.complete();
+            Thread.sleep(100);
         }
-        Thread.sleep(100);
 
         // Applying ThingCreatedEvent
         {
@@ -130,7 +150,7 @@ public class CoolBlobTest
 
             thingCreatedEvent = uow.get(thingCreatedEvent);
 
-            RootEntity root = uow.get(RootEntity.class, rootIdentity);
+            RootEntity root = uow.get(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
             ThingEntity thing = root.newThingCreated(thingCreatedEvent);
             Assert.assertEquals("Blob", thing.name().get());
 
@@ -169,7 +189,7 @@ public class CoolBlobTest
 
             tagRenamedEvent = uow.get(tagRenamedEvent);
 
-            RootEntity root = uow.get(RootEntity.class, rootIdentity);
+            RootEntity root = uow.get(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
             TagEntity renamedTag = root.tagRenamed(tagRenamedEvent);
             Assert.assertEquals("dddd", renamedTag.name().get());
 

@@ -21,6 +21,7 @@
  */
 package org.codeartisans.blob;
 
+import org.codeartisans.blob.domain.RootEntityService;
 import org.codeartisans.blob.domain.entities.RootEntity;
 import org.codeartisans.blob.domain.entities.SetOfTagsEntity;
 import org.codeartisans.blob.domain.entities.TagEntity;
@@ -64,6 +65,7 @@ public class BlobAssembler
                            ThingEntity.class,
                            TagEntity.class,
                            SetOfTagsEntity.class);
+        module.addServices(RootEntityService.class).instantiateOnStartup();
         module.addServices(TagRepository.class);
 
         // Infrastructure Services

@@ -21,25 +21,41 @@
  */
 package org.codeartisans.blob;
 
+import org.junit.Before;
+import org.qi4j.api.structure.Application;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.AssemblyException;
+import test.AbstractQi4jApplicationTest;
+
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface CoolBlobStructure
+public abstract class AbstractCoolBlobTest
+        extends AbstractQi4jApplicationTest
 {
 
-    static String ROOT_ENTITY_IDENTITY = "563daf02-3e3d-4e75-9a7e-86ab2719ca6c-0";
-
-    public interface Layers
+    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
+            throws AssemblyException
     {
-
-        static String DOMAIN = "Domain";
+        ApplicationAssembly assembly = new CoolBlobAssembler().assemble(applicationFactory);
+        assembly.setMode(Application.Mode.test);
+        return assembly;
     }
 
-    public interface DomainModules
+    @Before // TODO
+    public void createTestData()
     {
+        createTestDomainEvents();
+        populateDomainModelFromEvents();
+    }
 
-        static String EVENTS = "DomainEvents";
-        static String MODEL = "DomainModel";
+    private void createTestDomainEvents()
+    {
+    }
+
+    private void populateDomainModelFromEvents()
+    {
     }
 
 }

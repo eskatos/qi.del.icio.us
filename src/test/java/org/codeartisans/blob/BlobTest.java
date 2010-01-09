@@ -21,16 +21,12 @@
  */
 package org.codeartisans.blob;
 
-import org.codeartisans.blob.FixtureBuilder.Fixtures;
-import org.codeartisans.blob.FixtureBuilder.FixtureSettings;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.ThingEntity;
 import org.codeartisans.java.toolbox.CollectionUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.qi4j.api.entity.EntityBuilder;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
@@ -52,26 +48,6 @@ public class BlobTest
     {
         new BlobAssembler().assemble(module);
         module.addObjects(FixtureBuilder.class);
-    }
-
-    @Ignore
-    @Test // TODO
-    public void testFixtureBuilder()
-            throws UnitOfWorkCompletionException
-    {
-        FixtureBuilder builder = objectBuilderFactory.newObject(FixtureBuilder.class);
-        FixtureSettings settings = builder.settingsPrototype();
-        settings.thingsNumber(100);
-        settings.tagsNumber(100);
-        Fixtures fixtures = builder.populateStore();
-
-        UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-
-        // TODO Write TagsRepository and ThingsRepository
-        // TODO Use them to test against fixtures invariants and settings
-
-        uow.complete();
-
     }
 
     @Test
