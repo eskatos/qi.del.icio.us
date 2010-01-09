@@ -31,6 +31,7 @@ import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
 import org.joda.time.DateTime;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
@@ -38,6 +39,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.envisage.Envisage;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
 
@@ -56,6 +58,15 @@ public class RootEntityTest
         new BlobAssembler().assemble(module);
     }
 
+    @Test
+    public void envisage()
+            throws InterruptedException
+    {
+        new Envisage().run(applicationModel);
+        Thread.sleep(1113000);
+    }
+
+    @Ignore
     @Test
     public void test()
             throws UnitOfWorkCompletionException, InterruptedException
