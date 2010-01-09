@@ -29,48 +29,59 @@ import org.codeartisans.blob.domain.entities.ThingEntity;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
-import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
- * See Qi4j Extensions - REST // Unit tests // Main.java & MainAssembler.java
- *
- * TODO Two modules, one for DomainEvents, another one for DomainEntities. The first will contain a persistent
- *      EntityStore, the latter a MemoryEntityStore and a RDF indexer.
- * 
  * @author Paul Merlin <paul@nosphere.org>
  */
-public class BlobAssembler
-        implements Assembler
+public class CoolBlobAssembler
+        implements ApplicationAssembler
 {
 
-    public void assemble(ModuleAssembly module)
+    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
             throws AssemblyException
     {
-        // Domain Events
-        module.addEntities(ThingCreatedEvent.class,
-                           TagRenamedEvent.class);
-        module.addServices(DomainEventsFactory.class);
+        ApplicationAssembly app = applicationFactory.newApplicationAssembly();
+        app.setMode(Application.Mode.test);
+        app.setVersion("0.1-testing");
+        app.setName("CoolBlob");
+        LayerAssembly domain = app.layerAssembly(CoolBlobStructure.Layers.DOMAIN);
+        ModuleAssembly domainEvents = domain.moduleAssembly(CoolBlobStructure.DomainModules.EVENTS);
+        ModuleAssembly domainModel = domain.moduleAssembly(CoolBlobStructure.DomainModules.MODEL);
+        {
+            // Domain Events
+            domainEvents.addEntities(ThingCreatedEvent.class,
+                                     TagRenamedEvent.class);
+            domainEvents.addServices(DomainEventsFactory.class);
 
-        // Entities
-        module.addEntities(RootEntity.class,
-                           ThingEntity.class,
-                           TagEntity.class,
-                           SetOfTagsEntity.class);
-        module.addServices(TagRepository.class);
+            // Infrastructure Services
+            domainEvents.addServices(MemoryEntityStoreService.class,
+                                     UuidIdentityGeneratorService.class);
+            new RdfMemoryStoreAssembler().assemble(domainEvents);
+        }
+        {
+            // Entities
+            domainModel.addEntities(RootEntity.class,
+                                    ThingEntity.class,
+                                    TagEntity.class,
+                                    SetOfTagsEntity.class);
+            domainModel.addServices(TagRepository.class);
 
-        // Infrastructure Services
-        module.addServices(MemoryEntityStoreService.class,
-                           UuidIdentityGeneratorService.class);
-        new RdfMemoryStoreAssembler().assemble(module);
-
+            // Infrastructure Services
+            domainModel.addServices(MemoryEntityStoreService.class,
+                                    UuidIdentityGeneratorService.class);
+            new RdfMemoryStoreAssembler().assemble(domainModel);
+        }
+        return app;
     }
 
 }

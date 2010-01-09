@@ -24,7 +24,6 @@ package org.codeartisans.blob;
 import java.util.Arrays;
 import junit.framework.Assert;
 import org.codeartisans.blob.domain.entities.RootEntity;
-import org.codeartisans.blob.domain.entities.SetOfTagsEntity;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
 import org.codeartisans.blob.domain.entities.ThingEntity;
@@ -37,7 +36,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.qi4j.api.Qi4j;
-import org.qi4j.api.common.Visibility;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.service.ServiceFinder;
 import org.qi4j.api.structure.Application;
@@ -51,15 +49,11 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.envisage.Envisage;
 import org.qi4j.envisage.model.descriptor.ApplicationDetailDescriptor;
 import org.qi4j.envisage.model.descriptor.ApplicationDetailDescriptorBuilder;
 import org.qi4j.envisage.model.descriptor.LayerDetailDescriptor;
 import org.qi4j.envisage.model.descriptor.ModuleDetailDescriptor;
-import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ApplicationModelSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -162,38 +156,7 @@ public class CoolBlobTest
     public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
             throws AssemblyException
     {
-        ApplicationAssembly app = applicationFactory.newApplicationAssembly();
-        app.setMode(Application.Mode.test);
-        app.setVersion("0.1-testing");
-        app.setName("CoolBlob");
-        LayerAssembly domain = app.layerAssembly("Domain");
-        ModuleAssembly domainEvents = domain.moduleAssembly("DomainEvents");
-        ModuleAssembly domainModel = domain.moduleAssembly("DomainModel");
-        {
-            // Domain Events
-            domainEvents.addEntities(ThingCreatedEvent.class,
-                                     TagRenamedEvent.class);
-            domainEvents.addServices(DomainEventsFactory.class);
-
-            // Infrastructure Services
-            domainEvents.addServices(MemoryEntityStoreService.class,
-                                     UuidIdentityGeneratorService.class);
-            new RdfMemoryStoreAssembler().assemble(domainEvents);
-        }
-        {
-            // Entities
-            domainModel.addEntities(RootEntity.class,
-                                    ThingEntity.class,
-                                    TagEntity.class,
-                                    SetOfTagsEntity.class);
-            domainModel.addServices(TagRepository.class).visibleIn(Visibility.layer);
-
-            // Infrastructure Services
-            domainModel.addServices(MemoryEntityStoreService.class,
-                                    UuidIdentityGeneratorService.class);
-            new RdfMemoryStoreAssembler().assemble(domainModel);
-        }
-        return app;
+        return new CoolBlobAssembler().assemble(applicationFactory);
     }
 
     @Ignore
@@ -215,9 +178,12 @@ public class CoolBlobTest
         ThingCreatedEvent thingCreatedEvent;
         TagRenamedEvent tagRenamedEvent;
 
-        UnitOfWorkFactory modelUowf = application.findModule("Domain", "DomainModel").unitOfWorkFactory();
-        UnitOfWorkFactory eventsUowf = application.findModule("Domain", "DomainEvents").unitOfWorkFactory();
-        ServiceFinder eventsServiceFinder = application.findModule("Domain", "DomainEvents").serviceFinder();
+        Module eventsModule = application.findModule(CoolBlobStructure.Layers.DOMAIN, CoolBlobStructure.DomainModules.EVENTS);
+        Module modelModule = application.findModule(CoolBlobStructure.Layers.DOMAIN, CoolBlobStructure.DomainModules.MODEL);
+        UnitOfWorkFactory modelUowf = modelModule.unitOfWorkFactory();
+        ServiceFinder modelServiceFinder = modelModule.serviceFinder();
+        UnitOfWorkFactory eventsUowf = eventsModule.unitOfWorkFactory();
+        ServiceFinder eventsServiceFinder = eventsModule.serviceFinder();
 
         // Creating RootEntity
         {
@@ -280,7 +246,7 @@ public class CoolBlobTest
 
             UuidIdentityGeneratorService uuidGenerator = eventsServiceFinder.<UuidIdentityGeneratorService>findService(UuidIdentityGeneratorService.class).get();
             DomainEventsFactory eventsFactory = eventsServiceFinder.<DomainEventsFactory>findService(DomainEventsFactory.class).get();
-            TagRepository tagRepos = eventsServiceFinder.<TagRepository>findService(TagRepository.class).get();
+            TagRepository tagRepos = modelServiceFinder.<TagRepository>findService(TagRepository.class).get();
 
 
             tagRenamedEvent = eventsFactory.newTagRenamedEvent(tagRepos.findByName("ddd").identity().get(),
