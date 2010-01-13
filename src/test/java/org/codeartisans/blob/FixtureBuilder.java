@@ -21,6 +21,14 @@
  */
 package org.codeartisans.blob;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Random;
+import org.codeartisans.blob.events.DomainEventsFactory;
+import org.codeartisans.blob.events.ThingCreatedEvent;
+import org.codeartisans.java.toolbox.io.IterableBufferedReader;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -42,8 +50,8 @@ public class FixtureBuilder
     public class FixtureSettings
     {
 
-        private Integer things = 10;
-        private Integer tags = 10;
+        private Integer thingsNumber = 10;
+        private Integer tagsNumber = 10;
 
         private FixtureSettings()
         {
@@ -51,23 +59,25 @@ public class FixtureBuilder
 
         void thingsNumber(Integer count)
         {
-            things = count;
+            thingsNumber = count;
         }
 
         void tagsNumber(Integer count)
         {
-            tags = count;
+            tagsNumber = count;
         }
 
     }
-
-    @Structure
-    private UnitOfWorkFactory uowf;
 
     public class Fixtures
     {
     }
 
+    private static ArrayList<String> candidateTags;
+    @Structure
+    private UnitOfWorkFactory uowf;
+    @Service
+    private DomainEventsFactory eventsFactory;
     private FixtureSettings settings = new FixtureSettings();
 
     public FixtureBuilder()
@@ -79,16 +89,59 @@ public class FixtureBuilder
         return settings;
     }
 
-    public Fixtures populateStore()
+    public Fixtures populateEventsStore()
             throws UnitOfWorkCompletionException
     {
         UnitOfWork uow = uowf.newUnitOfWork();
 
-        
+        int candidatesCount = ensureCandidateTags().size();
+        if (settings.tagsNumber > candidatesCount) {
+            throw new IllegalArgumentException("Asked for " + settings.tagsNumber + " tags but there's only " + candidatesCount + " candidates.");
+        }
 
+        Random rand = new Random();
+        LoremIpsum loremIpsum = new LoremIpsum();
 
+        ArrayList<String> thingsNames = new ArrayList<String>(settings.thingsNumber);
+        for (int i = 0; i < settings.thingsNumber; i++) {
+            thingsNames.add(loremIpsum.getWords(5, rand.nextInt(49) + 1));
+        }
+
+        ArrayList<String> tagsNames = new ArrayList<String>(settings.tagsNumber);
+        // TODO Use FixturesInvariants
+        while (tagsNames.size() < settings.tagsNumber) {
+            tagsNames.add(candidateTags.get(rand.nextInt(candidatesCount)));
+        }
+
+        for (String eachThingName : thingsNames) {
+
+            ArrayList<String> eachThingTags = tagsNames; // TODO Randomize tags per thing
+
+            ThingCreatedEvent evt = eventsFactory.newThingCreatedEvent(eachThingName,
+                                                                       loremIpsum.getWords(15 + rand.nextInt(10), rand.nextInt(49) + 1),
+                                                                       eachThingTags);
+
+            System.out.println("ThingCreatedEvent::" + evt.identity().get());
+            System.out.println("\t" + evt.thingIdentity().get());
+            System.out.println("\t" + evt.name().get());
+            System.out.println("\t" + evt.shortdesc().get());
+            System.out.println("\t" + evt.tags());
+            System.out.println("");
+        }
         uow.complete();
         return null;
+    }
+
+    private static ArrayList<String> ensureCandidateTags()
+    {
+        if (candidateTags == null) {
+            candidateTags = new ArrayList<String>();
+            BufferedReader tagsReader = new BufferedReader(new InputStreamReader(FixtureBuilder.class.getResourceAsStream("tags.txt")));
+            for (String eachTag : new IterableBufferedReader(tagsReader)) {
+                candidateTags.add(eachTag);
+            }
+        }
+        return candidateTags;
     }
 
 }

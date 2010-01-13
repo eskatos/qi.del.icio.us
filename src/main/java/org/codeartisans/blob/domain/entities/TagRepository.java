@@ -24,6 +24,7 @@ package org.codeartisans.blob.domain.entities;
 import org.codeartisans.java.toolbox.CollectionUtils;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
@@ -40,6 +41,8 @@ public interface TagRepository
         extends ServiceComposite
 {
 
+    Query<TagEntity> findAll();
+
     TagEntity findByName(String name);
 
     abstract class Mixin
@@ -51,13 +54,19 @@ public interface TagRepository
         @Structure
         private QueryBuilderFactory qbf;
 
+        public Query<TagEntity> findAll()
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            QueryBuilder<TagEntity> queryBuilder = qbf.newQueryBuilder(TagEntity.class);
+            return queryBuilder.newQuery(uow);
+        }
+
         public TagEntity findByName(@NotEmpty String name)
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
             QueryBuilder<TagEntity> queryBuilder = qbf.newQueryBuilder(TagEntity.class);
             queryBuilder.where(QueryExpressions.eq(QueryExpressions.templateFor(TagEntity.class).name(), name));
-            TagEntity tag = CollectionUtils.firstElementOrNull(queryBuilder.newQuery(uow).maxResults(1));
-            return tag;
+            return CollectionUtils.firstElementOrNull(queryBuilder.newQuery(uow).maxResults(1));
         }
 
     }

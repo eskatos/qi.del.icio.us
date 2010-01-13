@@ -23,6 +23,8 @@ package org.codeartisans.blob;
 
 import java.util.Arrays;
 import junit.framework.Assert;
+import org.codeartisans.blob.CoolBlobStructure.DomainModules;
+import org.codeartisans.blob.CoolBlobStructure.Layers;
 import org.codeartisans.blob.FixtureBuilder.FixtureSettings;
 import org.codeartisans.blob.FixtureBuilder.Fixtures;
 import org.codeartisans.blob.domain.entities.RootEntity;
@@ -48,10 +50,8 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.envisage.Envisage;
-import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
- *
  * @author Paul Merlin <paul@nosphere.org>
  */
 public class CoolBlobTest
@@ -72,28 +72,29 @@ public class CoolBlobTest
             throws AssemblyException
     {
         ApplicationAssembly assembly = super.assemble(applicationFactory);
-        LayerAssembly domain = assembly.layerAssembly(CoolBlobStructure.Layers.DOMAIN);
-        ModuleAssembly events = domain.moduleAssembly(CoolBlobStructure.DomainModules.EVENTS);
+        LayerAssembly domain = assembly.layerAssembly(Layers.DOMAIN);
+        ModuleAssembly events = domain.moduleAssembly(DomainModules.EVENTS);
         events.addObjects(FixtureBuilder.class);
         return assembly;
     }
 
-    @Test // TODO
+    @Test // TODO Unit test FixtureBuilder itself asserting settings are strictly followed.
     public void testFixtureBuilder()
             throws UnitOfWorkCompletionException
     {
-        Module eventsModule = application.findModule(CoolBlobStructure.Layers.DOMAIN, CoolBlobStructure.DomainModules.EVENTS);
+        Module eventsModule = application.findModule(Layers.DOMAIN, DomainModules.EVENTS);
         FixtureBuilder builder = eventsModule.objectBuilderFactory().newObject(FixtureBuilder.class);
         FixtureSettings settings = builder.settingsPrototype();
         settings.thingsNumber(100);
         settings.tagsNumber(100);
-        Fixtures fixtures = builder.populateStore();
+        Fixtures fixtures = builder.populateEventsStore();
 
         UnitOfWork uow = eventsModule.unitOfWorkFactory().newUnitOfWork();
 
         uow.complete();
     }
 
+    @Ignore
     @Test
     public void test()
             throws InterruptedException, UnitOfWorkCompletionException
@@ -102,8 +103,8 @@ public class CoolBlobTest
         ThingCreatedEvent thingCreatedEvent;
         TagRenamedEvent tagRenamedEvent;
 
-        Module eventsModule = application.findModule(CoolBlobStructure.Layers.DOMAIN, CoolBlobStructure.DomainModules.EVENTS);
-        Module modelModule = application.findModule(CoolBlobStructure.Layers.DOMAIN, CoolBlobStructure.DomainModules.MODEL);
+        Module eventsModule = application.findModule(Layers.DOMAIN, DomainModules.EVENTS);
+        Module modelModule = application.findModule(Layers.DOMAIN, DomainModules.MODEL);
         UnitOfWorkFactory modelUowf = modelModule.unitOfWorkFactory();
         ServiceFinder modelServiceFinder = modelModule.serviceFinder();
         UnitOfWorkFactory eventsUowf = eventsModule.unitOfWorkFactory();
@@ -131,13 +132,10 @@ public class CoolBlobTest
         {
             UnitOfWork uow = eventsUowf.newUnitOfWork();
 
-            ServiceReference<UuidIdentityGeneratorService> uuidRef = eventsServiceFinder.findService(UuidIdentityGeneratorService.class);
             ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService(DomainEventsFactory.class);
-            UuidIdentityGeneratorService uuidGenerator = uuidRef.get();
             DomainEventsFactory eventsFactory = defRef.get();
 
-            thingCreatedEvent = eventsFactory.newThingCreatedEvent(uuidGenerator.generate(ThingEntity.class),
-                                                                   "Blob", "This is a blob",
+            thingCreatedEvent = eventsFactory.newThingCreatedEvent("Blob", "This is a blob",
                                                                    Arrays.asList("qi4j", "cop", "ddd"));
 
             uow.complete();

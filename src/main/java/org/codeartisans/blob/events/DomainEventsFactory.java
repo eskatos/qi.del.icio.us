@@ -22,12 +22,15 @@
 package org.codeartisans.blob.events;
 
 import java.util.List;
+import org.codeartisans.blob.domain.entities.ThingEntity;
 import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
@@ -37,7 +40,7 @@ public interface DomainEventsFactory
         extends ServiceComposite
 {
 
-    ThingCreatedEvent newThingCreatedEvent(String identity, String name, String shortdesc, List<String> tags);
+    ThingCreatedEvent newThingCreatedEvent(String name, String shortdesc, List<String> tags);
 
     TagRenamedEvent newTagRenamedEvent(String identity, String newName);
 
@@ -47,13 +50,15 @@ public interface DomainEventsFactory
 
         @Structure
         UnitOfWorkFactory unitOfWorkFactory;
+        @Service
+        UuidIdentityGeneratorService uuidGenerator;
 
-        public ThingCreatedEvent newThingCreatedEvent(String identity, String name, String shortdesc, List<String> tags)
+        public ThingCreatedEvent newThingCreatedEvent(String name, String shortdesc, List<String> tags)
         {
             UnitOfWork uow = unitOfWorkFactory.currentUnitOfWork();
             EntityBuilder<ThingCreatedEvent> builder = uow.newEntityBuilder(ThingCreatedEvent.class);
             ThingCreatedEvent state = builder.instance();
-            state.thingIdentity().set(identity);
+            state.thingIdentity().set(uuidGenerator.generate(ThingEntity.class));
             state.name().set(name);
             state.shortdesc().set(shortdesc);
             state.tags().set(tags);
