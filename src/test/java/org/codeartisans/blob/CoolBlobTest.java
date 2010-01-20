@@ -52,6 +52,27 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.envisage.Envisage;
 
 /**
+ * Graph navigation
+ *
+ *
+ * RootAggregates are the base navigational element, Aggregated Entities subgraphs are foldables.
+ * Association and ManyAssociation are vectors between Entities (RootAggregates and Aggregated)
+ *
+ * Selection vs Filter
+ *
+ * Choose focus (RootAggregates and then Aggregated Entities)
+ * Provide a way to create groupable queries? on Assocations, layout subgraphs in the ui and style them.
+ * At start implement RockBottom and TopLevel styles & layout.
+ * Links to RootAggregates are thicks and leads to big single nodes, when clicked the viewport move them at its center.
+ * Links to Aggregated Entities are thins and leads to
+ * A detail view show the current RootAggregate focused in navigation ui
+ *
+ *
+ *
+ * Faire des vues de parcours focalisées sur un type d'entité (RootAggregates per BoundedContext ?)
+ *
+ *
+ *
  * @author Paul Merlin <paul@nosphere.org>
  */
 public class CoolBlobTest
@@ -63,18 +84,18 @@ public class CoolBlobTest
     public void envisage()
             throws InterruptedException
     {
-        new Envisage().run(applicationModel);
-        Thread.sleep(1113000);
+        new Envisage().run( applicationModel );
+        Thread.sleep( 1113000 );
     }
 
     @Override
-    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
+    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory )
             throws AssemblyException
     {
-        ApplicationAssembly assembly = super.assemble(applicationFactory);
-        LayerAssembly domain = assembly.layerAssembly(Layers.DOMAIN);
-        ModuleAssembly events = domain.moduleAssembly(DomainModules.EVENTS);
-        events.addObjects(FixtureBuilder.class);
+        ApplicationAssembly assembly = super.assemble( applicationFactory );
+        LayerAssembly domain = assembly.layerAssembly( Layers.DOMAIN );
+        ModuleAssembly events = domain.moduleAssembly( DomainModules.EVENTS );
+        events.addObjects( FixtureBuilder.class );
         return assembly;
     }
 
@@ -82,11 +103,11 @@ public class CoolBlobTest
     public void testFixtureBuilder()
             throws UnitOfWorkCompletionException
     {
-        Module eventsModule = application.findModule(Layers.DOMAIN, DomainModules.EVENTS);
-        FixtureBuilder builder = eventsModule.objectBuilderFactory().newObject(FixtureBuilder.class);
+        Module eventsModule = application.findModule( Layers.DOMAIN, DomainModules.EVENTS );
+        FixtureBuilder builder = eventsModule.objectBuilderFactory().newObject( FixtureBuilder.class );
         FixtureSettings settings = builder.settingsPrototype();
-        settings.thingsNumber(100);
-        settings.tagsNumber(100);
+        settings.thingsNumber( 100 );
+        settings.tagsNumber( 100 );
         Fixtures fixtures = builder.populateEventsStore();
 
         UnitOfWork uow = eventsModule.unitOfWorkFactory().newUnitOfWork();
@@ -103,8 +124,8 @@ public class CoolBlobTest
         ThingCreatedEvent thingCreatedEvent;
         TagRenamedEvent tagRenamedEvent;
 
-        Module eventsModule = application.findModule(Layers.DOMAIN, DomainModules.EVENTS);
-        Module modelModule = application.findModule(Layers.DOMAIN, DomainModules.MODEL);
+        Module eventsModule = application.findModule( Layers.DOMAIN, DomainModules.EVENTS );
+        Module modelModule = application.findModule( Layers.DOMAIN, DomainModules.MODEL );
         UnitOfWorkFactory modelUowf = modelModule.unitOfWorkFactory();
         ServiceFinder modelServiceFinder = modelModule.serviceFinder();
         UnitOfWorkFactory eventsUowf = eventsModule.unitOfWorkFactory();
@@ -115,51 +136,51 @@ public class CoolBlobTest
             UnitOfWork uow = modelUowf.newUnitOfWork();
 
             try {
-                RootEntity root = uow.get(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
-                Assert.assertEquals(CoolBlobStructure.ROOT_ENTITY_IDENTITY, root.identity().get());
-                Assert.assertNull(root.lastProcessedEventDateTime().get());
+                RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
+                Assert.assertEquals( CoolBlobStructure.ROOT_ENTITY_IDENTITY, root.identity().get() );
+                Assert.assertNull( root.lastProcessedEventDateTime().get() );
 
-            } catch (NoSuchEntityException ex) {
+            } catch ( NoSuchEntityException ex ) {
                 ex.printStackTrace();
-                Assert.fail("Should work");
+                Assert.fail( "Should work" );
             }
 
             uow.complete();
-            Thread.sleep(100);
+            Thread.sleep( 100 );
         }
 
         // Creating a DomainEvent : ThingCreatedEvent
         {
             UnitOfWork uow = eventsUowf.newUnitOfWork();
 
-            ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService(DomainEventsFactory.class);
+            ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService( DomainEventsFactory.class );
             DomainEventsFactory eventsFactory = defRef.get();
 
-            thingCreatedEvent = eventsFactory.newThingCreatedEvent("Blob", "This is a blob",
-                                                                   Arrays.asList("qi4j", "cop", "ddd"));
+            thingCreatedEvent = eventsFactory.newThingCreatedEvent( "Blob", "This is a blob",
+                                                                    Arrays.asList( "qi4j", "cop", "ddd" ) );
 
             uow.complete();
-            Thread.sleep(100);
+            Thread.sleep( 100 );
         }
 
         // Applying ThingCreatedEvent
         {
             UnitOfWork uow = modelUowf.newUnitOfWork();
 
-            thingCreatedEvent = uow.get(thingCreatedEvent);
+            thingCreatedEvent = uow.get( thingCreatedEvent );
 
-            RootEntity root = uow.get(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
-            ThingEntity thing = root.newThingCreated(thingCreatedEvent);
-            Assert.assertEquals("Blob", thing.name().get());
+            RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
+            ThingEntity thing = root.newThingCreated( thingCreatedEvent );
+            Assert.assertEquals( "Blob", thing.name().get() );
 
             DateTime eventCreation = thingCreatedEvent.creationDate().get();
             DateTime lastProcessedEvent = root.lastProcessedEventDateTime().get();
             DateTime now = new DateTime();
-            System.out.println("Event created at: " + eventCreation);
-            System.out.println("Last processed event datetime: " + lastProcessedEvent);
-            System.out.println("Now is: " + now);
-            Assert.assertEquals(lastProcessedEvent, eventCreation);
-            Assert.assertTrue(now.isAfter(lastProcessedEvent));
+            System.out.println( "Event created at: " + eventCreation );
+            System.out.println( "Last processed event datetime: " + lastProcessedEvent );
+            System.out.println( "Now is: " + now );
+            Assert.assertEquals( lastProcessedEvent, eventCreation );
+            Assert.assertTrue( now.isAfter( lastProcessedEvent ) );
 
             uow.complete();
         }
@@ -168,14 +189,14 @@ public class CoolBlobTest
         {
             UnitOfWork uow = eventsUowf.newUnitOfWork();
 
-            ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService(DomainEventsFactory.class);
-            ServiceReference<TagRepository> trRef = modelServiceFinder.findService(TagRepository.class);
+            ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService( DomainEventsFactory.class );
+            ServiceReference<TagRepository> trRef = modelServiceFinder.findService( TagRepository.class );
             DomainEventsFactory eventsFactory = defRef.get();
             TagRepository tagRepos = trRef.get();
 
 
-            tagRenamedEvent = eventsFactory.newTagRenamedEvent(tagRepos.findByName("ddd").identity().get(),
-                                                               "dddd");
+            tagRenamedEvent = eventsFactory.newTagRenamedEvent( tagRepos.findByName( "ddd" ).identity().get(),
+                                                                "dddd" );
 
 
             uow.complete();
@@ -185,11 +206,11 @@ public class CoolBlobTest
         {
             UnitOfWork uow = modelUowf.newUnitOfWork();
 
-            tagRenamedEvent = uow.get(tagRenamedEvent);
+            tagRenamedEvent = uow.get( tagRenamedEvent );
 
-            RootEntity root = uow.get(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
-            TagEntity renamedTag = root.tagRenamed(tagRenamedEvent);
-            Assert.assertEquals("dddd", renamedTag.name().get());
+            RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
+            TagEntity renamedTag = root.tagRenamed( tagRenamedEvent );
+            Assert.assertEquals( "dddd", renamedTag.name().get() );
 
             uow.complete();
         }

@@ -35,14 +35,14 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins(DomainEventsFactory.Mixin.class)
+@Mixins( DomainEventsFactory.Mixin.class )
 public interface DomainEventsFactory
         extends ServiceComposite
 {
 
-    ThingCreatedEvent newThingCreatedEvent(String name, String shortdesc, List<String> tags);
+    ThingCreatedEvent newThingCreatedEvent( String name, String shortdesc, List<String> tags );
 
-    TagRenamedEvent newTagRenamedEvent(String identity, String newName);
+    TagRenamedEvent newTagRenamedEvent( String identity, String newName );
 
     abstract class Mixin
             implements DomainEventsFactory
@@ -53,25 +53,25 @@ public interface DomainEventsFactory
         @Service
         UuidIdentityGeneratorService uuidGenerator;
 
-        public ThingCreatedEvent newThingCreatedEvent(String name, String shortdesc, List<String> tags)
+        public ThingCreatedEvent newThingCreatedEvent( String name, String shortdesc, List<String> tags )
         {
             UnitOfWork uow = unitOfWorkFactory.currentUnitOfWork();
-            EntityBuilder<ThingCreatedEvent> builder = uow.newEntityBuilder(ThingCreatedEvent.class);
+            EntityBuilder<ThingCreatedEvent> builder = uow.newEntityBuilder( ThingCreatedEvent.class );
             ThingCreatedEvent state = builder.instance();
-            state.thingIdentity().set(uuidGenerator.generate(ThingEntity.class));
-            state.name().set(name);
-            state.shortdesc().set(shortdesc);
-            state.tags().set(tags);
+            state.thingIdentity().set( uuidGenerator.generate( ThingEntity.class ) );
+            state.name().set( name );
+            state.shortdesc().set( shortdesc );
+            state.tags().set( tags );
             return builder.newInstance();
         }
 
-        public TagRenamedEvent newTagRenamedEvent(String tagIdentity, String newName)
+        public TagRenamedEvent newTagRenamedEvent( String tagIdentity, String newName )
         {
             UnitOfWork uow = unitOfWorkFactory.currentUnitOfWork();
-            EntityBuilder<TagRenamedEvent> builder = uow.newEntityBuilder(TagRenamedEvent.class);
+            EntityBuilder<TagRenamedEvent> builder = uow.newEntityBuilder( TagRenamedEvent.class );
             TagRenamedEvent state = builder.instance();
-            state.tagIdentity().set(tagIdentity);
-            state.newName().set(newName);
+            state.tagIdentity().set( tagIdentity );
+            state.newName().set( newName );
             return builder.newInstance();
         }
 

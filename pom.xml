@@ -1,5 +1,6 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.codeartisans</groupId>
@@ -27,12 +28,8 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>org.codeartisans.java</groupId>
-            <artifactId>java-toolbox</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
+        <!-- Deactivated -->
+        <!--dependency>
             <groupId>net.sf.delicious-java</groupId>
             <artifactId>delicious</artifactId>
             <version>1.14</version>
@@ -46,12 +43,9 @@
             <groupId>oauth.signpost</groupId>
             <artifactId>signpost-commonshttp4</artifactId>
             <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>1.6</version>
-        </dependency>
+        </dependency-->
+
+        <!-- Qi4j -->
         <dependency>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-bootstrap</artifactId>
@@ -67,6 +61,52 @@
             <artifactId>qi4j-swing-envisage</artifactId>
             <version>1.0-RC3-SNAPSHOT</version>
         </dependency>
+
+        <!-- Libraries -->
+        <dependency>
+            <groupId>org.codeartisans.java</groupId>
+            <artifactId>java-toolbox</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>0.9.15</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>0.9.15</version>
+        </dependency>
+
+        <!-- Tests -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -91,19 +131,25 @@
             <version>2.4</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
     <repositories>
+
         <repository>
             <id>ops4j-repository</id>
             <url>http://repository.ops4j.org/maven2</url>
         </repository>
+
         <repository>
             <id>java.net</id>
             <url>http://download.java.net/maven/2</url>
         </repository>
-        <repository>
+
+        <!-- Deactivated -->
+        <!--repository>
             <id>signpost-snapshots</id>
             <url>http://oss.sonatype.org/content/repositories/signpost</url>
-        </repository>
+        </repository-->
+
     </repositories>
 </project>

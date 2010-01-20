@@ -21,6 +21,8 @@
  */
 package org.codeartisans.blob;
 
+import static org.codeartisans.blob.PlaceholderTextBuilder.TextLanguage.*;
+import static org.codeartisans.blob.PlaceholderTextBuilder.TextUnit.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -43,8 +45,8 @@ public class FixtureBuilder
     interface FixtureInvariants
     {
 
-        static String[] thingsNames = new String[]{"foo", "bar"};
-        static String[] tagsNames = new String[]{"qi4j cop ddd"};
+        static String[] thingsNames = new String[]{ "foo", "bar" };
+        static String[] tagsNames = new String[]{ "qi4j cop ddd" };
     }
 
     public class FixtureSettings
@@ -57,12 +59,12 @@ public class FixtureBuilder
         {
         }
 
-        void thingsNumber(Integer count)
+        void thingsNumber( Integer count )
         {
             thingsNumber = count;
         }
 
-        void tagsNumber(Integer count)
+        void tagsNumber( Integer count )
         {
             tagsNumber = count;
         }
@@ -95,38 +97,38 @@ public class FixtureBuilder
         UnitOfWork uow = uowf.newUnitOfWork();
 
         int candidatesCount = ensureCandidateTags().size();
-        if (settings.tagsNumber > candidatesCount) {
-            throw new IllegalArgumentException("Asked for " + settings.tagsNumber + " tags but there's only " + candidatesCount + " candidates.");
+        if ( settings.tagsNumber > candidatesCount ) {
+            throw new IllegalArgumentException( "Asked for " + settings.tagsNumber + " tags but there's only " + candidatesCount + " candidates." );
         }
 
         Random rand = new Random();
-        LoremIpsum loremIpsum = new LoremIpsum();
+        PlaceholderTextBuilder textBuilder = new PlaceholderTextBuilder();
 
-        ArrayList<String> thingsNames = new ArrayList<String>(settings.thingsNumber);
-        for (int i = 0; i < settings.thingsNumber; i++) {
-            thingsNames.add(loremIpsum.getWords(5, rand.nextInt(49) + 1));
+        ArrayList<String> thingsNames = new ArrayList<String>( settings.thingsNumber );
+        for ( int i = 0; i < settings.thingsNumber; i++ ) {
+            thingsNames.add( textBuilder.build( 5, words ).in( english ).toString() );
         }
 
-        ArrayList<String> tagsNames = new ArrayList<String>(settings.tagsNumber);
+        ArrayList<String> tagsNames = new ArrayList<String>( settings.tagsNumber );
         // TODO Use FixturesInvariants
-        while (tagsNames.size() < settings.tagsNumber) {
-            tagsNames.add(candidateTags.get(rand.nextInt(candidatesCount)));
+        while ( tagsNames.size() < settings.tagsNumber ) {
+            tagsNames.add( candidateTags.get( rand.nextInt( candidatesCount ) ) );
         }
 
-        for (String eachThingName : thingsNames) {
+        for ( String eachThingName : thingsNames ) {
 
             ArrayList<String> eachThingTags = tagsNames; // TODO Randomize tags per thing
 
-            ThingCreatedEvent evt = eventsFactory.newThingCreatedEvent(eachThingName,
-                                                                       loremIpsum.getWords(15 + rand.nextInt(10), rand.nextInt(49) + 1),
-                                                                       eachThingTags);
+            ThingCreatedEvent evt = eventsFactory.newThingCreatedEvent( eachThingName,
+                                                                        textBuilder.build( 15 + rand.nextInt( 10 ), words ).in( english ).toString(),
+                                                                        eachThingTags );
 
-            System.out.println("ThingCreatedEvent::" + evt.identity().get());
-            System.out.println("\t" + evt.thingIdentity().get());
-            System.out.println("\t" + evt.name().get());
-            System.out.println("\t" + evt.shortdesc().get());
-            System.out.println("\t" + evt.tags());
-            System.out.println("");
+            System.out.println( "ThingCreatedEvent::" + evt.identity().get() );
+            System.out.println( "\t" + evt.thingIdentity().get() );
+            System.out.println( "\t" + evt.name().get() );
+            System.out.println( "\t" + evt.shortdesc().get() );
+            System.out.println( "\t" + evt.tags() );
+            System.out.println( "" );
         }
         uow.complete();
         return null;
@@ -134,11 +136,11 @@ public class FixtureBuilder
 
     private static ArrayList<String> ensureCandidateTags()
     {
-        if (candidateTags == null) {
+        if ( candidateTags == null ) {
             candidateTags = new ArrayList<String>();
-            BufferedReader tagsReader = new BufferedReader(new InputStreamReader(FixtureBuilder.class.getResourceAsStream("tags.txt")));
-            for (String eachTag : new IterableBufferedReader(tagsReader)) {
-                candidateTags.add(eachTag);
+            BufferedReader tagsReader = new BufferedReader( new InputStreamReader( FixtureBuilder.class.getResourceAsStream( "tags.txt" ) ) );
+            for ( String eachTag : new IterableBufferedReader( tagsReader ) ) {
+                candidateTags.add( eachTag );
             }
         }
         return candidateTags;

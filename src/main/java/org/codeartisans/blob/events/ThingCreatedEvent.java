@@ -42,14 +42,15 @@ public interface ThingCreatedEvent
     Property<String> thingIdentity();
 
     @NotEmpty
-    @MaxLength(256)
+    @MaxLength( 256 )
     Name name();
 
     @Optional
-    @MaxLength(1024)
+    @MaxLength( 1024 )
     Text shortdesc();
 
     @Optional
+    // QUID How to ensure here that each tag is under 128 characters ?
     Property<List<String>> tags();
 
     @Optional

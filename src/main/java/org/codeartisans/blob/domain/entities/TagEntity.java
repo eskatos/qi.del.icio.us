@@ -28,6 +28,8 @@ import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.GreaterThan;
 
 /**
+ * TODO Taggee, Taggable !
+ * 
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
 public interface TagEntity
@@ -38,7 +40,7 @@ public interface TagEntity
     Property<String> name();
 
     @UseDefaults
-    @GreaterThan(-1)
+    @GreaterThan( -1 )
     Property<Integer> count();
 
 }

@@ -24,6 +24,7 @@ package org.codeartisans.blob.events;
 import org.codeartisans.blob.domain.fragments.Name;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.MaxLength;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
@@ -34,6 +35,7 @@ public interface TagRenamedEvent
 
     Property<String> tagIdentity();
 
+    @MaxLength( 128 )
     Name newName();
 
 }
