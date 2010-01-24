@@ -126,7 +126,7 @@ public class FixtureBuilder
             System.out.println( "ThingCreatedEvent::" + evt.identity().get() );
             System.out.println( "\t" + evt.thingIdentity().get() );
             System.out.println( "\t" + evt.name().get() );
-            System.out.println( "\t" + evt.shortdesc().get() );
+            System.out.println( "\t" + evt.description().get() );
             System.out.println( "\t" + evt.tags() );
             System.out.println( "" );
         }

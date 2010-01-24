@@ -21,26 +21,55 @@
  */
 package org.codeartisans.blob.domain.entities;
 
+import org.codeartisans.blob.domain.fragments.Name;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.GreaterThan;
 
 /**
- * TODO Taggee, Taggable !
+ * TODO Taggee, Taggable !?!
  * 
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
+@Mixins( TagEntity.Mixin.class )
 public interface TagEntity
         extends EntityComposite
 {
 
     @Optional
-    Property<String> name();
+    Name name();
 
     @UseDefaults
     @GreaterThan( -1 )
     Property<Integer> count();
+
+    void incrementCount();
+
+    void decrementCount();
+
+    abstract class Mixin
+            implements TagEntity
+    {
+
+        @This
+        private TagEntity state;
+
+        public void incrementCount()
+        {
+            state.count().set( state.count().get() + 1 );
+        }
+
+        public void decrementCount()
+        {
+            if ( state.count().get() > 0 ) {
+                state.count().set( state.count().get() - 1 );
+            }
+        }
+
+    }
 
 }

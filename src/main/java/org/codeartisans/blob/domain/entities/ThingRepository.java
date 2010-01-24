@@ -22,7 +22,6 @@
 package org.codeartisans.blob.domain.entities;
 
 import static org.qi4j.api.query.QueryExpressions.*;
-import org.codeartisans.java.toolbox.CollectionUtils;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
@@ -36,17 +35,17 @@ import org.qi4j.library.constraints.annotation.NotEmpty;
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins( TagRepository.Mixin.class )
-public interface TagRepository
+@Mixins( ThingRepository.Mixin.class )
+public interface ThingRepository
         extends ServiceComposite
 {
 
-    Query<TagEntity> findAll();
+    Query<ThingEntity> findAll();
 
-    TagEntity findByName( @NotEmpty String name );
+    Query<ThingEntity> findByTag( @NotEmpty String tag );
 
     abstract class Mixin
-            implements TagRepository
+            implements ThingRepository
     {
 
         @Structure
@@ -54,20 +53,22 @@ public interface TagRepository
         @Structure
         private QueryBuilderFactory qbf;
 
-        public Query<TagEntity> findAll()
+        public Query<ThingEntity> findAll()
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
-            QueryBuilder<TagEntity> queryBuilder = qbf.newQueryBuilder( TagEntity.class );
+            QueryBuilder<ThingEntity> queryBuilder = qbf.newQueryBuilder( ThingEntity.class );
             return queryBuilder.newQuery( uow );
         }
 
-        public TagEntity findByName( String name )
+        public Query<ThingEntity> findByTag( String tag )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
-            QueryBuilder<TagEntity> queryBuilder = qbf.newQueryBuilder( TagEntity.class );
-            TagEntity template = templateFor( TagEntity.class );
-            queryBuilder = queryBuilder.where( eq( template.name(), name ) );
-            return CollectionUtils.firstElementOrNull( queryBuilder.newQuery( uow ).maxResults( 1 ) );
+            QueryBuilder<ThingEntity> queryBuilder = qbf.newQueryBuilder( ThingEntity.class );
+            TagEntity tagTemplate = templateFor( TagEntity.class );
+            queryBuilder = queryBuilder.where(
+                    and( eq( tagTemplate.name(), tag ),
+                         contains( templateFor( ThingEntity.class ).tags(), tagTemplate ) ) );
+            return queryBuilder.newQuery( uow );
         }
 
     }

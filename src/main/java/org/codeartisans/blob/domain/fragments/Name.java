@@ -24,8 +24,6 @@ package org.codeartisans.blob.domain.fragments;
 import org.qi4j.api.property.Property;
 
 /**
- * FIXME: Cannot use such properties as subjects in the query api :'(
- * 
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
 public interface Name

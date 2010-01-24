@@ -22,7 +22,6 @@
 package org.codeartisans.blob.events;
 
 import java.util.List;
-import org.codeartisans.blob.domain.fragments.MimeType;
 import org.codeartisans.blob.domain.fragments.Name;
 import org.codeartisans.blob.domain.fragments.Text;
 import org.qi4j.api.common.Optional;
@@ -35,7 +34,7 @@ import org.qi4j.library.constraints.annotation.NotEmpty;
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
 public interface ThingCreatedEvent
-        extends DatedEvent, EntityComposite
+        extends DomainEvent, EntityComposite
 {
 
     @NotEmpty
@@ -47,13 +46,10 @@ public interface ThingCreatedEvent
 
     @Optional
     @MaxLength( 1024 )
-    Text shortdesc();
+    Text description();
 
     @Optional
     // QUID How to ensure here that each tag is under 128 characters ?
     Property<List<String>> tags();
-
-    @Optional
-    MimeType mimetype();
 
 }

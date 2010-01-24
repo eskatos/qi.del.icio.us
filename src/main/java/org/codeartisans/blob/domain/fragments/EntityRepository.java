@@ -21,19 +21,44 @@
  */
 package org.codeartisans.blob.domain.fragments;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.property.Property;
+import java.lang.reflect.ParameterizedType;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface Listable
+@Mixins( EntityRepository.Mixin.class )
+public interface EntityRepository<T extends EntityComposite>
 {
 
-    @Optional
-    Property<String> name();
+    T findByIdentity( String identity );
 
-    @Optional
-    Text shortdesc();
+    Query<T> findAll();
+
+    abstract class Mixin<T extends EntityComposite>
+            implements EntityRepository<T>
+    {
+
+        @Structure
+        private UnitOfWorkFactory uowf;
+        @Structure
+        private QueryBuilderFactory qbf;
+
+        public Query<T> findAll()
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            Class specializedClass = ( Class<T> ) ( ( ParameterizedType ) this.getClass().getGenericSuperclass() ).getActualTypeArguments()[0];
+            QueryBuilder<T> queryBuilder = qbf.newQueryBuilder( specializedClass );
+            return queryBuilder.newQuery( uow );
+        }
+
+    }
 
 }

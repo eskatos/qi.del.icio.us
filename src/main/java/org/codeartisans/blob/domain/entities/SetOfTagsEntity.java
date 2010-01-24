@@ -21,7 +21,9 @@
  */
 package org.codeartisans.blob.domain.entities;
 
-import org.codeartisans.blob.domain.fragments.Listable;
+import org.codeartisans.blob.domain.fragments.Name;
+import org.codeartisans.blob.domain.fragments.Text;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.ManyAssociation;
 
@@ -29,8 +31,14 @@ import org.qi4j.api.entity.association.ManyAssociation;
  * @author Paul Merlin <paul@nosphere.org>
  */
 public interface SetOfTagsEntity
-        extends Listable, EntityComposite
+        extends EntityComposite
 {
+
+    @Optional
+    Name name();
+
+    @Optional
+    Text description();
 
     ManyAssociation<TagEntity> tags();
 

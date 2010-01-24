@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import org.apache.commons.lang.RandomStringUtils;
 
@@ -83,31 +84,74 @@ public final class PlaceholderTextBuilder
 
     public PlaceholderTextBuilder()
     {
+        preparePseudoLatinSentences();
+        preparePseudoLatinWords();
+        prepareEnglishSentences();
+        prepareEnglishWords();
+    }
+
+    private void preparePseudoLatinSentences()
+    {
         if ( PSEUDO_LATIN_SENTENCES.isEmpty() ) {
-            for ( String eachLoremIpsumSentence : LOREM_IPSUM_original.split( "\\." ) ) {
+            for ( String eachLoremIpsumSentence : extractSentences( LOREM_IPSUM_original ) ) {
                 PSEUDO_LATIN_SENTENCES.add( eachLoremIpsumSentence.trim() );
             }
-            for ( String eachDeFinibus32Sentence : DE_FINIBUS_BONORUM_ET_MALORUM_1_10_32.split( ( "\\." ) ) ) {
+            for ( String eachDeFinibus32Sentence : extractSentences( DE_FINIBUS_BONORUM_ET_MALORUM_1_10_32 ) ) {
                 PSEUDO_LATIN_SENTENCES.add( eachDeFinibus32Sentence.trim() );
             }
-            for ( String eachDeFinibus33Sentence : DE_FINIBUS_BONORUM_ET_MALORUM_1_10_33.split( ( "\\." ) ) ) {
+            for ( String eachDeFinibus33Sentence : extractSentences( DE_FINIBUS_BONORUM_ET_MALORUM_1_10_33 ) ) {
                 PSEUDO_LATIN_SENTENCES.add( eachDeFinibus33Sentence.trim() );
             }
         }
+    }
+
+    private void preparePseudoLatinWords()
+    {
+        if ( PSEUDO_LATIN_WORDS.isEmpty() ) {
+            for ( String eachLoremIpsumWord : extractWords( LOREM_IPSUM_original ) ) {
+                PSEUDO_LATIN_WORDS.add( eachLoremIpsumWord.trim() );
+            }
+            for ( String eachDeFinibus32Word : extractWords( DE_FINIBUS_BONORUM_ET_MALORUM_1_10_32 ) ) {
+                PSEUDO_LATIN_WORDS.add( eachDeFinibus32Word.trim() );
+            }
+            for ( String eachDeFinibus33Word : extractWords( DE_FINIBUS_BONORUM_ET_MALORUM_1_10_33 ) ) {
+                PSEUDO_LATIN_WORDS.add( eachDeFinibus33Word.trim() );
+            }
+        }
+    }
+
+    private void prepareEnglishSentences()
+    {
         if ( ENGLISH_SENTENCES.isEmpty() ) {
-            for ( String eachDeFinibus32Sentence : DE_FINIBUS_BONORUM_ET_MALORUM_1_10_32_EN.split( ( "\\." ) ) ) {
+            for ( String eachDeFinibus32Sentence : extractSentences( DE_FINIBUS_BONORUM_ET_MALORUM_1_10_32_EN ) ) {
                 ENGLISH_SENTENCES.add( eachDeFinibus32Sentence.trim() );
             }
-            for ( String eachDeFinibus33Sentence : DE_FINIBUS_BONORUM_ET_MALORUM_1_10_33_EN.split( ( "\\." ) ) ) {
+            for ( String eachDeFinibus33Sentence : extractSentences( DE_FINIBUS_BONORUM_ET_MALORUM_1_10_33_EN ) ) {
                 ENGLISH_SENTENCES.add( eachDeFinibus33Sentence.trim() );
             }
         }
-        if ( PSEUDO_LATIN_WORDS.isEmpty() ) {
-            // TODO
-        }
+    }
+
+    private void prepareEnglishWords()
+    {
         if ( ENGLISH_WORDS.isEmpty() ) {
-            // TODO
+            for ( String eachDeFinibus32Word : extractWords( DE_FINIBUS_BONORUM_ET_MALORUM_1_10_32_EN ) ) {
+                ENGLISH_WORDS.add( eachDeFinibus32Word.trim() );
+            }
+            for ( String eachDeFinibus33Word : extractWords( DE_FINIBUS_BONORUM_ET_MALORUM_1_10_33_EN ) ) {
+                ENGLISH_WORDS.add( eachDeFinibus33Word.trim() );
+            }
         }
+    }
+
+    private String[] extractSentences( String text )
+    {
+        return text.split( "\\." );
+    }
+
+    private String[] extractWords( String text )
+    {
+        return text.toLowerCase( Locale.ENGLISH ).replaceAll( "[,.;:?!'\"\n\t\r]", " " ).split( " " );
     }
 
     public PlaceholderTextBuilder build( int count, TextUnit unit )
@@ -139,6 +183,9 @@ public final class PlaceholderTextBuilder
                 separator = " ";
                 break;
             case words:
+                strings = buildWords();
+                separator = " ";
+                break;
             default:
                 return RandomStringUtils.randomAlphanumeric( count * 5 );
         }
@@ -200,6 +247,22 @@ public final class PlaceholderTextBuilder
             }
         }
         return sentences;
+    }
+
+    private Iterable<String> buildWords()
+    {
+        List<String> words = new LinkedList<String>();
+        for ( int idx = 0; idx <= count; idx++ ) {
+            switch ( language ) {
+                case pseudoLatin:
+                    words.add( PSEUDO_LATIN_WORDS.get( rand.nextInt( PSEUDO_LATIN_WORDS.size() ) ) );
+                    break;
+                case english:
+                    words.add( ENGLISH_WORDS.get( rand.nextInt( ENGLISH_WORDS.size() ) ) );
+                    break;
+            }
+        }
+        return words;
     }
 
 }

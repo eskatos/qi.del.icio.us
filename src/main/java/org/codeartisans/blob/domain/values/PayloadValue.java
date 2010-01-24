@@ -19,44 +19,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.events;
+package org.codeartisans.blob.domain.values;
 
-import org.joda.time.DateTime;
-import org.qi4j.api.entity.Lifecycle;
-import org.qi4j.api.entity.LifecycleException;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
+import org.codeartisans.blob.domain.fragments.MimeType;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.value.ValueComposite;
 
 /**
+ * TODO Handle filesystem references.
+ * 
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins(DatedEvent.Mixin.class)
-public interface DatedEvent
-        extends Lifecycle
+public interface PayloadValue
+        extends ValueComposite
 {
 
-    Property<DateTime> creationDate();
-
-    abstract class Mixin
-            implements DatedEvent
-    {
-
-        @This
-        private DatedEvent meAsDatedEvent;
-
-        public void create()
-                throws LifecycleException
-        {
-            meAsDatedEvent.creationDate().set(new DateTime());
-        }
-
-        public void remove()
-                throws LifecycleException
-        {
-            // NOOP
-        }
-
-    }
+    @Optional
+    MimeType mimeType();
 
 }

@@ -43,11 +43,11 @@ public class BlobTest
         extends AbstractQi4jTest
 {
 
-    public void assemble(ModuleAssembly module)
+    public void assemble( ModuleAssembly module )
             throws AssemblyException
     {
-        new BlobAssembler().assemble(module);
-        module.addObjects(FixtureBuilder.class);
+        new BlobAssembler().assemble( module );
+        module.addObjects( FixtureBuilder.class );
     }
 
     @Test
@@ -58,32 +58,30 @@ public class BlobTest
         {
             UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
 
-            EntityBuilder<TagEntity> tagBuilder = uow.newEntityBuilder(TagEntity.class);
-            EntityBuilder<ThingEntity> thingBuilder = uow.newEntityBuilder(ThingEntity.class);
+            EntityBuilder<TagEntity> tagBuilder = uow.newEntityBuilder( TagEntity.class );
+            EntityBuilder<ThingEntity> thingBuilder = uow.newEntityBuilder( ThingEntity.class );
 
             TagEntity tagProto = tagBuilder.instance();
-            tagProto.name().set("qi4j");
+            tagProto.name().set( "qi4j" );
 
             TagEntity tag = tagBuilder.newInstance();
 
             ThingEntity thingProto = thingBuilder.instance();
-            thingProto.mimeType().set("application/x-blob");
-            thingProto.name().set("Blob");
-            thingProto.shortdesc().set("A short blob");
-            thingProto.tags().add(tag);
+            thingProto.name().set( "Blob" );
+            thingProto.description().set( "A short blob" );
+            thingProto.tags().add( tag );
 
             thing = thingBuilder.newInstance();
 
-            System.out.println("================================================");
-            System.out.println("tag: " + tag.toString());
-            System.out.println("  is named: " + tag.name().get());
-            System.out.println("");
-            System.out.println("thing: " + thing.toString());
-            System.out.println("  is named: " + thing.name().get());
-            System.out.println("  has shortdesc: " + thing.shortdesc().get());
-            System.out.println("  has mimetype: " + thing.mimeType().get());
-            System.out.println("  has tags: " + thing.tags().toSet());
-            System.out.println("================================================");
+            System.out.println( "================================================" );
+            System.out.println( "tag: " + tag.toString() );
+            System.out.println( "  is named: " + tag.name().get() );
+            System.out.println( "" );
+            System.out.println( "thing: " + thing.toString() );
+            System.out.println( "  is named: " + thing.name().get() );
+            System.out.println( "  has shortdesc: " + thing.description().get() );
+            System.out.println( "  has tags: " + thing.tags().toSet() );
+            System.out.println( "================================================" );
 
             uow.complete();
         }
@@ -91,26 +89,9 @@ public class BlobTest
         {
             UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
 
-            ThingEntity fetchedThing = uow.get(thing);
+            ThingEntity fetchedThing = uow.get( thing );
 
-            checkThing("fetchedByIdentity", fetchedThing);
-
-            uow.complete();
-        }
-
-        {
-            UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-
-            QueryBuilder<ThingEntity> queryBuilder = queryBuilderFactory.newQueryBuilder(ThingEntity.class);
-            ThingEntity thingTemplate = QueryExpressions.templateFor(ThingEntity.class);
-            queryBuilder.where(QueryExpressions.eq(thingTemplate.name(), "Blob"));
-
-            Query<ThingEntity> query = queryBuilder.newQuery(uow);
-            query.maxResults(1);
-
-            ThingEntity thingFoundByName = CollectionUtils.firstElementOrNull(query);
-
-            checkThing("foundByName", thingFoundByName);
+            checkThing( "fetchedByIdentity", fetchedThing );
 
             uow.complete();
         }
@@ -118,38 +99,53 @@ public class BlobTest
         {
             UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
 
-            QueryBuilder<ThingEntity> queryBuilder = queryBuilderFactory.newQueryBuilder(ThingEntity.class);
-            ThingEntity thingTemplate = QueryExpressions.templateFor(ThingEntity.class);
-            TagEntity tagTemplate = QueryExpressions.templateFor(TagEntity.class);
-            queryBuilder.where(QueryExpressions.and(
-                    QueryExpressions.eq(tagTemplate.name(), "qi4j"),
-                    QueryExpressions.contains(thingTemplate.tags(), tagTemplate)));
+            QueryBuilder<ThingEntity> queryBuilder = queryBuilderFactory.newQueryBuilder( ThingEntity.class );
+            ThingEntity thingTemplate = QueryExpressions.templateFor( ThingEntity.class );
+            queryBuilder.where( QueryExpressions.eq( thingTemplate.name(), "Blob" ) );
 
-            Query<ThingEntity> query = queryBuilder.newQuery(uow);
-            query.maxResults(1);
+            Query<ThingEntity> query = queryBuilder.newQuery( uow );
+            query.maxResults( 1 );
 
-            ThingEntity thingFoundByTag = CollectionUtils.firstElementOrNull(query);
+            ThingEntity thingFoundByName = CollectionUtils.firstElementOrNull( query );
 
-            checkThing("foundByTag", thingFoundByTag);
+            checkThing( "foundByName", thingFoundByName );
+
+            uow.complete();
+        }
+
+        {
+            UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+
+            QueryBuilder<ThingEntity> queryBuilder = queryBuilderFactory.newQueryBuilder( ThingEntity.class );
+            ThingEntity thingTemplate = QueryExpressions.templateFor( ThingEntity.class );
+            TagEntity tagTemplate = QueryExpressions.templateFor( TagEntity.class );
+            queryBuilder.where( QueryExpressions.and(
+                    QueryExpressions.eq( tagTemplate.name(), "qi4j" ),
+                    QueryExpressions.contains( thingTemplate.tags(), tagTemplate ) ) );
+
+            Query<ThingEntity> query = queryBuilder.newQuery( uow );
+            query.maxResults( 1 );
+
+            ThingEntity thingFoundByTag = CollectionUtils.firstElementOrNull( query );
+
+            checkThing( "foundByTag", thingFoundByTag );
 
             uow.complete();
         }
     }
 
-    private void checkThing(String name, ThingEntity thing)
+    private void checkThing( String name, ThingEntity thing )
     {
-        System.out.println("================================================");
-        System.out.println(name + ": " + thing.toString());
-        System.out.println("  is named: " + thing.name().get());
-        System.out.println("  has shortdesc: " + thing.shortdesc().get());
-        System.out.println("  has mimetype: " + thing.mimeType().get());
-        System.out.println("  has tag: " + thing.tags().get(0).name().get());
-        System.out.println("================================================");
+        System.out.println( "================================================" );
+        System.out.println( name + ": " + thing.toString() );
+        System.out.println( "  is named: " + thing.name().get() );
+        System.out.println( "  has shortdesc: " + thing.description().get() );
+        System.out.println( "  has tag: " + thing.tags().get( 0 ).name().get() );
+        System.out.println( "================================================" );
 
-        Assert.assertEquals("Blob", thing.name().get());
-        Assert.assertEquals("A short blob", thing.shortdesc().get());
-        Assert.assertEquals("application/x-blob", thing.mimeType().get());
-        Assert.assertEquals("qi4j", thing.tags().get(0).name().get());
+        Assert.assertEquals( "Blob", thing.name().get() );
+        Assert.assertEquals( "A short blob", thing.description().get() );
+        Assert.assertEquals( "qi4j", thing.tags().get( 0 ).name().get() );
     }
 
 }

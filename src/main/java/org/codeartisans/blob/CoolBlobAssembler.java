@@ -22,15 +22,18 @@
 package org.codeartisans.blob;
 
 import org.codeartisans.blob.domain.RootEntityService;
+import org.codeartisans.blob.domain.entities.IlkEntity;
 import org.codeartisans.blob.domain.entities.RootEntity;
 import org.codeartisans.blob.domain.entities.SetOfTagsEntity;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
 import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.domain.entities.ThingFactory;
+import org.codeartisans.blob.domain.entities.ThingRepository;
+import org.codeartisans.blob.domain.values.PayloadValue;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
-import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
@@ -49,40 +52,44 @@ public class CoolBlobAssembler
         implements ApplicationAssembler
 {
 
-    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
+    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory )
             throws AssemblyException
     {
         ApplicationAssembly app = applicationFactory.newApplicationAssembly();
-        app.setMode(Application.Mode.development);
-        app.setVersion("0.1-testing");
-        app.setName("CoolBlob");
-        LayerAssembly domain = app.layerAssembly(CoolBlobStructure.Layers.DOMAIN);
-        ModuleAssembly domainEvents = domain.moduleAssembly(CoolBlobStructure.DomainModules.EVENTS);
-        ModuleAssembly domainModel = domain.moduleAssembly(CoolBlobStructure.DomainModules.MODEL);
+        app.setMode( Application.Mode.development );
+        app.setVersion( "0.1-testing" );
+        app.setName( "CoolBlob" );
+        LayerAssembly domain = app.layerAssembly( CoolBlobStructure.Layers.DOMAIN );
+        ModuleAssembly domainEvents = domain.moduleAssembly( CoolBlobStructure.DomainModules.EVENTS );
+        ModuleAssembly domainModel = domain.moduleAssembly( CoolBlobStructure.DomainModules.MODEL );
         {
             // Domain Events
-            domainEvents.addEntities(ThingCreatedEvent.class,
-                                     TagRenamedEvent.class);
-            domainEvents.addServices(DomainEventsFactory.class);
+            domainEvents.addEntities( ThingCreatedEvent.class,
+                                      TagRenamedEvent.class );
+            domainEvents.addServices( DomainEventsFactory.class );
 
             // Infrastructure Services
-            domainEvents.addServices(MemoryEntityStoreService.class,
-                                     UuidIdentityGeneratorService.class);
-            new RdfMemoryStoreAssembler().assemble(domainEvents);
+            domainEvents.addServices( MemoryEntityStoreService.class,
+                                      UuidIdentityGeneratorService.class );
+            new RdfMemoryStoreAssembler().assemble( domainEvents );
         }
         {
             // Entities
-            domainModel.addEntities(RootEntity.class,
-                                    ThingEntity.class,
-                                    TagEntity.class,
-                                    SetOfTagsEntity.class);
-            domainModel.addServices(RootEntityService.class).instantiateOnStartup();
-            domainModel.addServices(TagRepository.class);
+            domainModel.addEntities( RootEntity.class,
+                                     ThingEntity.class,
+                                     IlkEntity.class,
+                                     TagEntity.class,
+                                     SetOfTagsEntity.class );
+            domainModel.addValues( PayloadValue.class );
+            domainModel.addServices( RootEntityService.class ).instantiateOnStartup();
+            domainModel.addServices( ThingFactory.class,
+                                     ThingRepository.class,
+                                     TagRepository.class );
 
             // Infrastructure Services
-            domainModel.addServices(MemoryEntityStoreService.class,
-                                    UuidIdentityGeneratorService.class);
-            new RdfMemoryStoreAssembler().assemble(domainModel);
+            domainModel.addServices( MemoryEntityStoreService.class,
+                                     UuidIdentityGeneratorService.class );
+            new RdfMemoryStoreAssembler().assemble( domainModel );
         }
         return app;
     }

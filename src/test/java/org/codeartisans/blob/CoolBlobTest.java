@@ -29,8 +29,8 @@ import org.codeartisans.blob.FixtureBuilder.FixtureSettings;
 import org.codeartisans.blob.FixtureBuilder.Fixtures;
 import org.codeartisans.blob.domain.entities.RootEntity;
 import org.codeartisans.blob.domain.entities.TagEntity;
-import org.codeartisans.blob.domain.entities.TagRepository;
 import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.domain.entities.ThingFactory;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
@@ -99,6 +99,7 @@ public class CoolBlobTest
         return assembly;
     }
 
+    @Ignore
     @Test // TODO Unit test FixtureBuilder itself asserting settings are strictly followed.
     public void testFixtureBuilder()
             throws UnitOfWorkCompletionException
@@ -115,9 +116,39 @@ public class CoolBlobTest
         uow.complete();
     }
 
-    @Ignore
     @Test
     public void test()
+            throws UnitOfWorkCompletionException
+    {
+        Module modelModule = application.findModule( Layers.DOMAIN, DomainModules.MODEL );
+        ServiceReference<ThingFactory> ref = modelModule.serviceFinder().findService( ThingFactory.class );
+
+        ThingFactory thingFactory = ref.get();
+        UnitOfWorkFactory modelUowf = modelModule.unitOfWorkFactory();
+
+        {
+            UnitOfWork uow = modelUowf.newUnitOfWork();
+
+            ThingEntity truc = thingFactory.newThingInstance( "Truc", "Mega truc", Arrays.asList( "foo", "bar" ) );
+            ThingEntity machin = thingFactory.newThingInstance( "Machin", "Super machin", Arrays.asList( "zoo", "jar" ) );
+
+            uow.apply(); // WARNING !!
+            
+            ThingEntity bidule = thingFactory.newThingInstance( "Bidule", "Uber bidule", Arrays.asList( "zoo", "bar" ) );
+
+            uow.complete();
+        }
+        {
+            UnitOfWork uow = modelUowf.newUnitOfWork();
+
+            ThingEntity ersatz = thingFactory.newThingInstance( "Ersatz", "Terrible ersatz", Arrays.asList( "foo", "jar" ) );
+
+            uow.complete();
+        }
+    }
+
+    @Test
+    public void testDomainEvents()
             throws InterruptedException, UnitOfWorkCompletionException
     {
 
@@ -127,7 +158,6 @@ public class CoolBlobTest
         Module eventsModule = application.findModule( Layers.DOMAIN, DomainModules.EVENTS );
         Module modelModule = application.findModule( Layers.DOMAIN, DomainModules.MODEL );
         UnitOfWorkFactory modelUowf = modelModule.unitOfWorkFactory();
-        ServiceFinder modelServiceFinder = modelModule.serviceFinder();
         UnitOfWorkFactory eventsUowf = eventsModule.unitOfWorkFactory();
         ServiceFinder eventsServiceFinder = eventsModule.serviceFinder();
 
@@ -169,6 +199,8 @@ public class CoolBlobTest
 
             thingCreatedEvent = uow.get( thingCreatedEvent );
 
+            System.out.println( "ThingCreatedEvent: " + thingCreatedEvent.eventHash() );
+
             RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
             ThingEntity thing = root.newThingCreated( thingCreatedEvent );
             Assert.assertEquals( "Blob", thing.name().get() );
@@ -190,14 +222,9 @@ public class CoolBlobTest
             UnitOfWork uow = eventsUowf.newUnitOfWork();
 
             ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService( DomainEventsFactory.class );
-            ServiceReference<TagRepository> trRef = modelServiceFinder.findService( TagRepository.class );
             DomainEventsFactory eventsFactory = defRef.get();
-            TagRepository tagRepos = trRef.get();
 
-
-            tagRenamedEvent = eventsFactory.newTagRenamedEvent( tagRepos.findByName( "ddd" ).identity().get(),
-                                                                "dddd" );
-
+            tagRenamedEvent = eventsFactory.newTagRenamedEvent( "ddd", "dddd" );
 
             uow.complete();
         }
@@ -210,6 +237,8 @@ public class CoolBlobTest
 
             RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
             TagEntity renamedTag = root.tagRenamed( tagRenamedEvent );
+            Assert.assertNotNull( renamedTag );
+            Assert.assertNotNull( renamedTag.name() );
             Assert.assertEquals( "dddd", renamedTag.name().get() );
 
             uow.complete();

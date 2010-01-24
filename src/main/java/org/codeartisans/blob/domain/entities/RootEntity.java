@@ -23,6 +23,7 @@ package org.codeartisans.blob.domain.entities;
 
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
+import org.codeartisans.java.toolbox.exceptions.NullArgumentException;
 import org.joda.time.DateTime;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
@@ -38,8 +39,8 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-@Mixins(RootEntity.Mixin.class)
-@Concerns(RootEntity.Concern.class)
+@Mixins( RootEntity.Mixin.class )
+@Concerns( RootEntity.Concern.class )
 public interface RootEntity
         extends EntityComposite
 {
@@ -47,9 +48,9 @@ public interface RootEntity
     @Optional
     Property<DateTime> lastProcessedEventDateTime();
 
-    ThingEntity newThingCreated(ThingCreatedEvent thingCreatedEvent);
+    ThingEntity newThingCreated( ThingCreatedEvent thingCreatedEvent );
 
-    TagEntity tagRenamed(TagRenamedEvent tagRenamedEvent);
+    TagEntity tagRenamed( TagRenamedEvent tagRenamedEvent );
 
     abstract class Mixin
             implements RootEntity
@@ -58,35 +59,36 @@ public interface RootEntity
         @Structure
         private UnitOfWorkFactory uowf;
         @Service
+        private ThingFactory thingFactory;
+        @Service
+        private ThingRepository thingRepos;
+        @Service
         private TagRepository tagRepos;
 
-        public ThingEntity newThingCreated(ThingCreatedEvent thingCreatedEvent)
+        public ThingEntity newThingCreated( ThingCreatedEvent event )
         {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            ThingEntity thing = uow.newEntity(ThingEntity.class, thingCreatedEvent.thingIdentity().get());
-            thing.name().set(thingCreatedEvent.name().get());
-            thing.shortdesc().set(thingCreatedEvent.shortdesc().get());
-            if (thingCreatedEvent.tags().get() != null) {
-                for (String eachTag : thingCreatedEvent.tags().get()) {
-                    TagEntity tagEntity = tagRepos.findByName(eachTag);
-                    if (tagEntity == null) {
-                        tagEntity = uow.newEntity(TagEntity.class);
-                        tagEntity.name().set(eachTag);
-                    }
-                    tagEntity.count().set(tagEntity.count().get() + 1);
-                    thing.tags().add(tagEntity);
-                }
-            }
-            thing.mimeType().set(thingCreatedEvent.mimetype().get());
-            return thing;
+            return thingFactory.newThingInstance( event.name().get(),
+                                                  event.description().get(),
+                                                  event.tags().get() );
         }
 
-        public TagEntity tagRenamed(TagRenamedEvent tagRenamedEvent)
+        public TagEntity tagRenamed( TagRenamedEvent event )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
-            TagEntity tag = uow.get(TagEntity.class, tagRenamedEvent.tagIdentity().get());
-            tag.name().set(tagRenamedEvent.newName().get());
-            return tag;
+            TagEntity originalTag = tagRepos.findByName( event.oldName().get() );
+            NullArgumentException.ensureNotNull( "No tag named " + event.oldName().get(), originalTag );
+            TagEntity existingTag = tagRepos.findByName( event.newName().get() );
+            if ( existingTag == null ) {
+                originalTag.name().set( event.newName().get() );
+                return originalTag;
+            }
+            for ( ThingEntity eachThingWithOriginalTag : thingRepos.findByTag( originalTag.name().get() ) ) {
+                eachThingWithOriginalTag.tags().remove( originalTag );
+                eachThingWithOriginalTag.tags().add( existingTag );
+                existingTag.incrementCount();
+            }
+            uow.remove( originalTag );
+            return existingTag;
         }
 
     }
@@ -96,17 +98,17 @@ public interface RootEntity
             implements RootEntity
     {
 
-        public ThingEntity newThingCreated(ThingCreatedEvent thingCreatedEvent)
+        public ThingEntity newThingCreated( ThingCreatedEvent thingCreatedEvent )
         {
-            ThingEntity thing = next.newThingCreated(thingCreatedEvent);
-            lastProcessedEventDateTime().set(thingCreatedEvent.creationDate().get());
+            ThingEntity thing = next.newThingCreated( thingCreatedEvent );
+            lastProcessedEventDateTime().set( thingCreatedEvent.creationDate().get() );
             return thing;
         }
 
-        public TagEntity tagRenamed(TagRenamedEvent tagRenamedEvent)
+        public TagEntity tagRenamed( TagRenamedEvent tagRenamedEvent )
         {
-            TagEntity tag = next.tagRenamed(tagRenamedEvent);
-            lastProcessedEventDateTime().set(tagRenamedEvent.creationDate().get());
+            TagEntity tag = next.tagRenamed( tagRenamedEvent );
+            lastProcessedEventDateTime().set( tagRenamedEvent.creationDate().get() );
             return tag;
         }
 

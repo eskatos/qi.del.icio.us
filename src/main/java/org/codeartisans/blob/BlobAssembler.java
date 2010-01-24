@@ -22,17 +22,18 @@
 package org.codeartisans.blob;
 
 import org.codeartisans.blob.domain.RootEntityService;
+import org.codeartisans.blob.domain.entities.IlkEntity;
 import org.codeartisans.blob.domain.entities.RootEntity;
 import org.codeartisans.blob.domain.entities.SetOfTagsEntity;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
 import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.domain.entities.ThingFactory;
+import org.codeartisans.blob.domain.entities.ThingRepository;
+import org.codeartisans.blob.domain.values.PayloadValue;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
-import org.qi4j.bootstrap.ApplicationAssembler;
-import org.qi4j.bootstrap.ApplicationAssembly;
-import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -52,26 +53,30 @@ public class BlobAssembler
         implements Assembler
 {
 
-    public void assemble(ModuleAssembly module)
+    public void assemble( ModuleAssembly module )
             throws AssemblyException
     {
         // Domain Events
-        module.addEntities(ThingCreatedEvent.class,
-                           TagRenamedEvent.class);
-        module.addServices(DomainEventsFactory.class);
+        module.addEntities( ThingCreatedEvent.class,
+                            TagRenamedEvent.class );
+        module.addServices( DomainEventsFactory.class );
 
         // Entities
-        module.addEntities(RootEntity.class,
-                           ThingEntity.class,
-                           TagEntity.class,
-                           SetOfTagsEntity.class);
-        module.addServices(RootEntityService.class).instantiateOnStartup();
-        module.addServices(TagRepository.class);
+        module.addEntities( RootEntity.class,
+                            ThingEntity.class,
+                            IlkEntity.class,
+                            TagEntity.class,
+                            SetOfTagsEntity.class );
+        module.addValues( PayloadValue.class );
+        module.addServices( RootEntityService.class ).instantiateOnStartup();
+        module.addServices( ThingFactory.class,
+                            ThingRepository.class,
+                            TagRepository.class );
 
         // Infrastructure Services
-        module.addServices(MemoryEntityStoreService.class,
-                           UuidIdentityGeneratorService.class);
-        new RdfMemoryStoreAssembler().assemble(module);
+        module.addServices( MemoryEntityStoreService.class,
+                            UuidIdentityGeneratorService.class );
+        new RdfMemoryStoreAssembler().assemble( module );
 
     }
 

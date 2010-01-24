@@ -19,17 +19,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.fragments;
+package org.codeartisans.blob.domain.entities;
 
-import org.codeartisans.blob.domain.entities.TagEntity;
-import org.qi4j.api.entity.association.ManyAssociation;
+import org.codeartisans.blob.domain.fragments.Name;
+import org.codeartisans.blob.domain.fragments.Text;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityComposite;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface HasTags
+public interface IlkEntity
+        extends EntityComposite
 {
 
-    ManyAssociation<TagEntity> tags();
+    @Optional
+    Name name();
+
+    @Optional
+    Text description();
 
 }

@@ -21,11 +21,14 @@
  */
 package org.codeartisans.blob.domain.entities;
 
+import org.codeartisans.blob.domain.values.PayloadValue;
 import org.codeartisans.blob.domain.fragments.MimeType;
-import org.codeartisans.blob.domain.fragments.Listable;
-import org.codeartisans.blob.domain.fragments.HasTags;
+import org.codeartisans.blob.domain.fragments.Name;
+import org.codeartisans.blob.domain.fragments.Text;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 
 /**
@@ -41,23 +44,33 @@ import org.qi4j.api.mixin.Mixins;
  *
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins(ThingEntity.Mixin.class)
+@Mixins( ThingEntity.Mixin.class )
 public interface ThingEntity
-        extends Listable, HasTags, EntityComposite
+        extends EntityComposite
 {
 
     @Optional
-    MimeType mimeType();
+    Name name();
 
-    void nameChanged(String name);
+    @Optional
+    Text description();
+
+    @Optional
+    Association<IlkEntity> ilk();
+
+    ManyAssociation<PayloadValue> payloads();
+
+    ManyAssociation<TagEntity> tags();
+
+    void nameChanged( String name );
 
     abstract class Mixin
             implements ThingEntity
     {
 
-        public void nameChanged(String name)
+        public void nameChanged( String name )
         {
-            name().set(name);
+            name().set( name );
         }
 
     }

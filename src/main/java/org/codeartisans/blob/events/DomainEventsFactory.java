@@ -42,7 +42,7 @@ public interface DomainEventsFactory
 
     ThingCreatedEvent newThingCreatedEvent( String name, String shortdesc, List<String> tags );
 
-    TagRenamedEvent newTagRenamedEvent( String identity, String newName );
+    TagRenamedEvent newTagRenamedEvent( String oldName, String newName );
 
     abstract class Mixin
             implements DomainEventsFactory
@@ -60,17 +60,17 @@ public interface DomainEventsFactory
             ThingCreatedEvent state = builder.instance();
             state.thingIdentity().set( uuidGenerator.generate( ThingEntity.class ) );
             state.name().set( name );
-            state.shortdesc().set( shortdesc );
+            state.description().set( shortdesc );
             state.tags().set( tags );
             return builder.newInstance();
         }
 
-        public TagRenamedEvent newTagRenamedEvent( String tagIdentity, String newName )
+        public TagRenamedEvent newTagRenamedEvent( String oldName, String newName )
         {
             UnitOfWork uow = unitOfWorkFactory.currentUnitOfWork();
             EntityBuilder<TagRenamedEvent> builder = uow.newEntityBuilder( TagRenamedEvent.class );
             TagRenamedEvent state = builder.instance();
-            state.tagIdentity().set( tagIdentity );
+            state.oldName().set( oldName );
             state.newName().set( newName );
             return builder.newInstance();
         }
