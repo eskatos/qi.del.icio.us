@@ -19,34 +19,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob;
+package org.codeartisans.blob.presentation.http;
+
+import org.codeartisans.blob.presentation.http.resources.TagResource;
+import org.codeartisans.blob.presentation.http.resources.TagsResource;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface CoolBlobStructure
+public class ResourcesAssembler
+        implements Assembler
 {
 
-    static String ROOT_ENTITY_IDENTITY = "563daf02-3e3d-4e75-9a7e-86ab2719ca6c-0";
-
-    public interface Layers
+    public void assemble( ModuleAssembly module )
+            throws AssemblyException
     {
-
-        static String DOMAIN = "Domain";
-        static String PRESENTATION = "Presentation";
-    }
-
-    public interface DomainModules
-    {
-
-        static String EVENTS = "DomainEvents";
-        static String MODEL = "DomainModel";
-    }
-
-    public interface PresentationModules
-    {
-
-        static String HTTP = "HttpPresentation";
+        module.addObjects( TagsResource.class,
+                           TagResource.class );
     }
 
 }

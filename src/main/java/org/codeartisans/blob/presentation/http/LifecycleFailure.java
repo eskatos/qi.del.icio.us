@@ -19,34 +19,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob;
+package org.codeartisans.blob.presentation.http;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface CoolBlobStructure
+public class LifecycleFailure
+        extends RuntimeException
 {
 
-    static String ROOT_ENTITY_IDENTITY = "563daf02-3e3d-4e75-9a7e-86ab2719ca6c-0";
+    private static final long serialVersionUID = 1L;
 
-    public interface Layers
+    public LifecycleFailure( String msg )
     {
-
-        static String DOMAIN = "Domain";
-        static String PRESENTATION = "Presentation";
+        super( msg );
     }
 
-    public interface DomainModules
+    public LifecycleFailure( String msg, Throwable cause )
     {
-
-        static String EVENTS = "DomainEvents";
-        static String MODEL = "DomainModel";
-    }
-
-    public interface PresentationModules
-    {
-
-        static String HTTP = "HttpPresentation";
+        super( msg, cause );
     }
 
 }

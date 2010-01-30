@@ -19,34 +19,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob;
+package org.codeartisans.blob.presentation.http;
+
+import javax.ws.rs.core.UriInfo;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface CoolBlobStructure
+public abstract class AbstractQi4jResource<T extends AbstractQi4jResource>
 {
 
-    static String ROOT_ENTITY_IDENTITY = "563daf02-3e3d-4e75-9a7e-86ab2719ca6c-0";
+    @Structure
+    protected UnitOfWorkFactory uowf;
+    @Structure
+    protected ObjectBuilderFactory obf;
+    protected UriInfo uriInfo;
 
-    public interface Layers
+    public final T withUriInfo( UriInfo uriInfo )
     {
-
-        static String DOMAIN = "Domain";
-        static String PRESENTATION = "Presentation";
-    }
-
-    public interface DomainModules
-    {
-
-        static String EVENTS = "DomainEvents";
-        static String MODEL = "DomainModel";
-    }
-
-    public interface PresentationModules
-    {
-
-        static String HTTP = "HttpPresentation";
+        this.uriInfo = uriInfo;
+        return ( T ) this;
     }
 
 }

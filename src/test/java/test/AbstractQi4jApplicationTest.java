@@ -45,8 +45,8 @@ import org.qi4j.spi.structure.ApplicationSPI;
 public abstract class AbstractQi4jApplicationTest
         implements ApplicationAssembler
 {
-    // Qi4j
 
+    // Qi4j
     protected Qi4j api;
     protected Qi4jSPI spi;
     protected Energy4Java qi4j;
@@ -61,14 +61,14 @@ public abstract class AbstractQi4jApplicationTest
     {
         qi4j = new Energy4Java();
         applicationModel = newApplication();
-        if (applicationModel == null) {
+        if ( applicationModel == null ) {
             // An AssemblyException has occurred that the Test wants to check for.
             return;
         }
-        descriptor = ApplicationDetailDescriptorBuilder.createApplicationDetailDescriptor(applicationModel);
+        descriptor = ApplicationDetailDescriptorBuilder.createApplicationDetailDescriptor( applicationModel );
 
-        application = applicationModel.newInstance(qi4j.spi());
-        initApplication(application);
+        application = applicationModel.newInstance( qi4j.spi() );
+        initApplication( application );
         api = spi = qi4j.spi();
         application.activate();
 
@@ -78,9 +78,9 @@ public abstract class AbstractQi4jApplicationTest
             throws AssemblyException
     {
         try {
-            return qi4j.newApplicationModel(this);
-        } catch (AssemblyException e) {
-            assemblyException(e);
+            return qi4j.newApplicationModel( this );
+        } catch ( AssemblyException e ) {
+            assemblyException( e );
             return null;
         }
     }
@@ -92,13 +92,13 @@ public abstract class AbstractQi4jApplicationTest
      * @param exception the exception thrown.
      * @throws AssemblyException The default implementation of this method will simply re-throw the exception.
      */
-    protected void assemblyException(AssemblyException exception)
+    protected void assemblyException( AssemblyException exception )
             throws AssemblyException
     {
         throw exception;
     }
 
-    protected void initApplication(Application app)
+    protected void initApplication( Application app )
             throws Exception
     {
     }
@@ -107,28 +107,28 @@ public abstract class AbstractQi4jApplicationTest
     public void tearDown()
             throws Exception
     {
-        for (LayerDetailDescriptor eachLayer : descriptor.layers()) {
-            for (ModuleDetailDescriptor eachModule : eachLayer.modules()) {
+        for ( LayerDetailDescriptor eachLayer : descriptor.layers() ) {
+            for ( ModuleDetailDescriptor eachModule : eachLayer.modules() ) {
                 String layerName = eachLayer.descriptor().name();
                 String moduleName = eachModule.descriptor().name();
-                System.out.println("TearDown UOWF check in: Application > " + layerName + " > " + moduleName);
-                Module module = application.findModule(layerName, moduleName);
+                System.out.println( "TearDown UOWF check in: Application > " + layerName + " > " + moduleName );
+                Module module = application.findModule( layerName, moduleName );
                 UnitOfWorkFactory eachUowf = module.unitOfWorkFactory();
-                if (eachUowf != null && eachUowf.currentUnitOfWork() != null) {
+                if ( eachUowf != null && eachUowf.currentUnitOfWork() != null ) {
                     UnitOfWork current;
-                    while ((current = eachUowf.currentUnitOfWork()) != null) {
-                        if (current.isOpen()) {
+                    while ( ( current = eachUowf.currentUnitOfWork() ) != null ) {
+                        if ( current.isOpen() ) {
                             current.discard();
                         } else {
-                            throw new InternalError("I have seen a case where a UoW is on the stack, but not opened.");
+                            throw new InternalError( "I have seen a case where a UoW is on the stack, but not opened." );
                         }
                     }
 
-                    new Exception("UnitOfWork not properly cleaned up").printStackTrace();
+                    new Exception( "UnitOfWork not properly cleaned up" ).printStackTrace();
                 }
             }
         }
-        if (application != null) {
+        if ( application != null ) {
             application.passivate();
         }
     }

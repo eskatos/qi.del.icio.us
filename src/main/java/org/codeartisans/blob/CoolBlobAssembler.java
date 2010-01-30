@@ -34,6 +34,8 @@ import org.codeartisans.blob.domain.values.PayloadValue;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
+import org.codeartisans.blob.presentation.http.ResourcesAssembler;
+import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
@@ -59,9 +61,9 @@ public class CoolBlobAssembler
         app.setMode( Application.Mode.development );
         app.setVersion( "0.1-testing" );
         app.setName( "CoolBlob" );
+
         LayerAssembly domain = app.layerAssembly( CoolBlobStructure.Layers.DOMAIN );
         ModuleAssembly domainEvents = domain.moduleAssembly( CoolBlobStructure.DomainModules.EVENTS );
-        ModuleAssembly domainModel = domain.moduleAssembly( CoolBlobStructure.DomainModules.MODEL );
         {
             // Domain Events
             domainEvents.addEntities( ThingCreatedEvent.class,
@@ -73,6 +75,7 @@ public class CoolBlobAssembler
                                       UuidIdentityGeneratorService.class );
             new RdfMemoryStoreAssembler().assemble( domainEvents );
         }
+        ModuleAssembly domainModel = domain.moduleAssembly( CoolBlobStructure.DomainModules.MODEL );
         {
             // Entities
             domainModel.addEntities( RootEntity.class,
@@ -82,15 +85,25 @@ public class CoolBlobAssembler
                                      SetOfTagsEntity.class );
             domainModel.addValues( PayloadValue.class );
             domainModel.addServices( RootEntityService.class ).instantiateOnStartup();
-            domainModel.addServices( ThingFactory.class,
-                                     ThingRepository.class,
-                                     TagRepository.class );
+            domainModel.addServices( ThingFactory.class );
+            domainModel.addServices( ThingRepository.class,
+                                     TagRepository.class ).visibleIn( Visibility.application );
 
             // Infrastructure Services
             domainModel.addServices( MemoryEntityStoreService.class,
                                      UuidIdentityGeneratorService.class );
             new RdfMemoryStoreAssembler().assemble( domainModel );
         }
+
+        LayerAssembly presentation = app.layerAssembly( CoolBlobStructure.Layers.PRESENTATION );
+        ModuleAssembly http = presentation.moduleAssembly( CoolBlobStructure.PresentationModules.HTTP );
+        {
+            new ResourcesAssembler().assemble( http );
+
+        }
+
+        presentation.uses( domain );
+
         return app;
     }
 
