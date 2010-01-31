@@ -32,6 +32,7 @@ import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.library.constraints.annotation.NotEmpty;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
@@ -45,7 +46,7 @@ public interface DomainEventsRepository
 
     Query<DomainEvent> findAll();
 
-    Query<DomainEvent> findWithNumberGreaterThan( Long eventNumber );
+    Query<DomainEvent> findWithNumberGreaterThan( @NotEmpty Long eventNumber );
 
     abstract class Mixin
             implements DomainEventsRepository

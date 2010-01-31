@@ -21,22 +21,23 @@
  */
 package org.codeartisans.blob.presentation.http.resources;
 
-import org.codeartisans.blob.presentation.http.ResourceURIsBuilder;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
+import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.domain.entities.ThingRepository;
 import org.codeartisans.blob.presentation.http.AbstractQi4jResource;
 import org.codeartisans.blob.presentation.http.ResourceSerializer;
+import org.codeartisans.blob.presentation.http.ResourceURIsBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
@@ -45,43 +46,36 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public class TagsResource
-        extends AbstractQi4jResource<TagsResource>
+public class TagThingsResource
+        extends AbstractQi4jResource<TagThingsResource>
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( TagsResource.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( TagThingsResource.class );
     @Service
-    private TagRepository tagRepos;
+    private ThingRepository thingRepos;
     @Service
     private ResourceSerializer serializer;
+    private String name;
 
-    @Path( "{name}/" )
-    public TagResource tag( @PathParam( "name" ) String name )
+    public TagThingsResource withName( String name )
     {
-        return obf.newObject( TagResource.class ).withUriInfo( uriInfo ).withName( name );
-    }
-
-    @Path( "{name}/things" )
-    public TagThingsResource tagThings( @PathParam( "name" ) String name )
-    {
-        return obf.newObject( TagThingsResource.class ).withUriInfo( uriInfo ).withName( name );
+        this.name = name;
+        return this;
     }
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
-    public Response tags()
+    public Response tagThings()
     {
-        LOGGER.info( "URI INFO: " + uriInfo.getRequestUri().toString() );
         try {
             UnitOfWork uow = uowf.newUnitOfWork();
-            JSONArray jsonArray = serializer.tagsAsJson( tagRepos.findAll(), new ResourceURIsBuilder<TagEntity>()
+            JSONArray jsonArray = serializer.thingsAsJson( thingRepos.findByTag( name ), new ResourceURIsBuilder<ThingEntity>()
             {
 
-                public Map<String, URI> buildURIs( TagEntity resource )
+                public Map<String, URI> buildURIs( ThingEntity resource )
                 {
                     Map<String, URI> uris = new LinkedHashMap<String, URI>();
-                    uris.put( "uri", uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).build() );
-                    uris.put( "things-uri", uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).path( "things" ).build() );
+                    uris.put( "uri", uriInfo.getBaseUriBuilder().path( "things" ).path( resource.identity().get() ).build() );
                     return uris;
                 }
 
@@ -91,6 +85,7 @@ public class TagsResource
         } catch ( JSONException ex ) {
             throw new RuntimeException( ex );
         }
+
     }
 
 }

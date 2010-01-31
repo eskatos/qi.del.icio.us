@@ -22,13 +22,14 @@
 package org.codeartisans.blob.presentation.http;
 
 import java.net.URI;
+import java.util.Map;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public interface ResourceURIBuilder<T>
+public interface ResourceURIsBuilder<T>
 {
 
-    URI buildURI( T resource );
+    Map<String, URI> buildURIs( T resource );
 
 }

@@ -31,6 +31,8 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.library.constraints.annotation.NotEmpty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
@@ -48,6 +50,7 @@ public interface ThingRepository
             implements ThingRepository
     {
 
+        private static final Logger LOGGER = LoggerFactory.getLogger( ThingRepository.Mixin.class );
         @Structure
         private UnitOfWorkFactory uowf;
         @Structure
@@ -62,6 +65,7 @@ public interface ThingRepository
 
         public Query<ThingEntity> findByTag( String tag )
         {
+            LOGGER.debug( "findByTag(" + tag + ")" );
             UnitOfWork uow = uowf.currentUnitOfWork();
             QueryBuilder<ThingEntity> queryBuilder = qbf.newQueryBuilder( ThingEntity.class );
             TagEntity tagTemplate = templateFor( TagEntity.class );

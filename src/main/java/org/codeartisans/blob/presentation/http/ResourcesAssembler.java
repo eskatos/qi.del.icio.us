@@ -22,6 +22,7 @@
 package org.codeartisans.blob.presentation.http;
 
 import org.codeartisans.blob.presentation.http.resources.TagResource;
+import org.codeartisans.blob.presentation.http.resources.TagThingsResource;
 import org.codeartisans.blob.presentation.http.resources.TagsResource;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
@@ -38,7 +39,8 @@ public class ResourcesAssembler
             throws AssemblyException
     {
         module.addObjects( TagsResource.class,
-                           TagResource.class );
+                           TagResource.class,
+                           TagThingsResource.class );
     }
 
 }

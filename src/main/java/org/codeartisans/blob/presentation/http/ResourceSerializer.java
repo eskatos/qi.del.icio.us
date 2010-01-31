@@ -22,12 +22,16 @@
 package org.codeartisans.blob.presentation.http;
 
 import java.net.URI;
+import java.util.Map;
 import org.codeartisans.blob.domain.entities.TagEntity;
+import org.codeartisans.blob.domain.entities.ThingEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
@@ -37,33 +41,67 @@ public interface ResourceSerializer
         extends ServiceComposite
 {
 
-    JSONObject representJson( TagEntity tag, URI uri )
+    JSONObject tagAsJson( TagEntity tag, Map<String, URI> uri )
             throws JSONException;
 
-    JSONArray representJson( Iterable<TagEntity> tags, ResourceURIBuilder<TagEntity> tagURIBuilder )
+    JSONArray tagsAsJson( Iterable<TagEntity> tags, ResourceURIsBuilder<TagEntity> tagURIBuilder )
+            throws JSONException;
+
+    JSONObject thingAsJson( ThingEntity thing, Map<String, URI> uris )
+            throws JSONException;
+
+    JSONArray thingsAsJson( Iterable<ThingEntity> things, ResourceURIsBuilder<ThingEntity> thingURIBuilder )
             throws JSONException;
 
     abstract class Mixin
             implements ResourceSerializer
     {
 
-        public JSONObject representJson( TagEntity tag, URI uri )
+        private static final Logger LOGGER = LoggerFactory.getLogger( ResourceSerializer.Mixin.class );
+
+        public JSONObject tagAsJson( TagEntity tag, Map<String, URI> uris )
                 throws JSONException
         {
-            JSONObject jsonTag = new JSONObject();
-            jsonTag.put( "name", tag.name().get() );
-            jsonTag.put( "count", tag.count().get() );
-            jsonTag.put( "uri", uri.toASCIIString() );
-            return jsonTag;
+            JSONObject json = new JSONObject();
+            json.put( "name", tag.name().get() );
+            json.put( "count", tag.count().get() );
+            for ( Map.Entry<String, URI> eachUri : uris.entrySet() ) {
+                json.put( eachUri.getKey(), eachUri.getValue().toASCIIString() );
+            }
+            return json;
         }
 
-        public JSONArray representJson( Iterable<TagEntity> tags, ResourceURIBuilder<TagEntity> tagURIBuilder )
+        public JSONArray tagsAsJson( Iterable<TagEntity> tags, ResourceURIsBuilder<TagEntity> tagURIBuilder )
                 throws JSONException
         {
             JSONArray json = new JSONArray();
             for ( TagEntity tag : tags ) {
-                json.put( representJson( tag, tagURIBuilder.buildURI( tag ) ) );
+                json.put( tagAsJson( tag, tagURIBuilder.buildURIs( tag ) ) );
             }
+            return json;
+        }
+
+        public JSONObject thingAsJson( ThingEntity thing, Map<String, URI> uris )
+                throws JSONException
+        {
+            JSONObject json = new JSONObject();
+            json.put( "name", thing.name().get() );
+            json.put( "description", thing.description().get() );
+            for ( Map.Entry<String, URI> eachUri : uris.entrySet() ) {
+                json.put( eachUri.getKey(), eachUri.getValue().toASCIIString() );
+            }
+            LOGGER.debug( "thingAsJson: " + json.toString() );
+            return json;
+        }
+
+        public JSONArray thingsAsJson( Iterable<ThingEntity> things, ResourceURIsBuilder<ThingEntity> thingURIBuilder )
+                throws JSONException
+        {
+            JSONArray json = new JSONArray();
+            for ( ThingEntity thing : things ) {
+                json.put( thingAsJson( thing, thingURIBuilder.buildURIs( thing ) ) );
+            }
+            LOGGER.debug( "thingsAsJson: " + json.toString() );
             return json;
         }
 

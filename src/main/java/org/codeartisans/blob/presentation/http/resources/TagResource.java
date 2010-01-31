@@ -22,6 +22,8 @@
 package org.codeartisans.blob.presentation.http.resources;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -70,7 +72,10 @@ public class TagResource
             if ( tag == null ) {
                 return Response.status( Response.Status.NOT_FOUND ).build();
             }
-            JSONObject jsonTag = serializer.representJson( tag, uriInfo.getRequestUri() );
+            Map<String, URI> uris = new LinkedHashMap<String, URI>();
+            uris.put( "uri", uriInfo.getRequestUri() );
+            uris.put( "things-uri", uriInfo.getRequestUriBuilder().path( "things" ).build() );
+            JSONObject jsonTag = serializer.tagAsJson( tag, uris );
             uow.discard();
             return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonTag.toString( 2 ) ).build();
         } catch ( JSONException ex ) {
