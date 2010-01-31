@@ -119,7 +119,7 @@ public class HttpLifecycleListener
 
             thingCreatedEvent = uow.get( thingCreatedEvent );
 
-            System.out.println( "ThingCreatedEvent: " + thingCreatedEvent.eventHash() );
+            LOGGER.info( "ThingCreatedEvent: " + thingCreatedEvent.eventHash() );
 
             RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
             ThingEntity thing = root.newThingCreated( thingCreatedEvent );
@@ -127,9 +127,9 @@ public class HttpLifecycleListener
             DateTime eventCreation = thingCreatedEvent.creationDate().get();
             DateTime lastProcessedEvent = root.lastProcessedEventDateTime().get();
             DateTime now = new DateTime();
-            System.out.println( "Event created at: " + eventCreation );
-            System.out.println( "Last processed event datetime: " + lastProcessedEvent );
-            System.out.println( "Now is: " + now );
+            LOGGER.info( "Event created at: " + eventCreation );
+            LOGGER.info( "Last processed event datetime: " + lastProcessedEvent );
+            LOGGER.info( "Now is: " + now );
 
             uow.complete();
         }

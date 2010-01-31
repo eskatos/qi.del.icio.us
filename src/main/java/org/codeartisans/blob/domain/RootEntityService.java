@@ -30,6 +30,8 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
@@ -43,6 +45,7 @@ public interface RootEntityService
             implements RootEntityService
     {
 
+        private static final Logger LOGGER = LoggerFactory.getLogger( RootEntityService.Mixin.class );
         @Structure
         private UnitOfWorkFactory uowf;
 
@@ -52,11 +55,11 @@ public interface RootEntityService
             UnitOfWork uow = uowf.newUnitOfWork();
             try {
                 RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
-                System.out.println( "RootEntityService::activate, will use RootEntity: " + root.identity().get() );
+                LOGGER.info( "Will use RootEntity: " + root.identity().get() );
             } catch ( NoSuchEntityException ex ) {
                 EntityBuilder<RootEntity> builder = uow.newEntityBuilder( RootEntity.class, RootEntity.IDENTITY );
                 RootEntity root = builder.newInstance();
-                System.out.println( "RootEntityService::activate, created new RootEntity: " + root.identity().get() );
+                LOGGER.info( "Created new RootEntity: " + root.identity().get() );
             }
             uow.complete();
         }
@@ -67,9 +70,9 @@ public interface RootEntityService
             UnitOfWork uow = uowf.newUnitOfWork();
             try {
                 RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
-                System.out.println( "RootEntityService::passivate, existing RootEntity: " + root.identity().get() );
+                LOGGER.info( "Existing RootEntity: " + root.identity().get() );
             } catch ( NoSuchEntityException ex ) {
-                System.out.println( "RootEntityService::passivate, no RootEntity" );
+                LOGGER.info( "No RootEntity" );
             }
             uow.complete();
         }
