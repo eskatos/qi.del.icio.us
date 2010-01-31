@@ -21,6 +21,8 @@
  */
 package org.codeartisans.blob.presentation.http.resources;
 
+import org.codeartisans.blob.presentation.http.ResourceURIBuilder;
+import java.net.URI;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,9 +31,9 @@ import javax.ws.rs.core.Response;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
 import org.codeartisans.blob.presentation.http.AbstractQi4jResource;
+import org.codeartisans.blob.presentation.http.ResourceSerializer;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
@@ -47,6 +49,8 @@ public class TagsResource
     private static final Logger LOGGER = LoggerFactory.getLogger( TagsResource.class );
     @Service
     private TagRepository tagRepos;
+    @Service
+    private ResourceSerializer serializer;
 
     @Path( "{name}/" )
     public TagResource tag( @PathParam( "name" ) String name )
@@ -61,15 +65,15 @@ public class TagsResource
         LOGGER.info( "URI INFO: " + uriInfo.getRequestUri().toString() );
         try {
             UnitOfWork uow = uowf.newUnitOfWork();
-            JSONArray jsonArray = new JSONArray();
-            for ( TagEntity eachTag : tagRepos.findAll() ) {
-                LOGGER.debug( "TagEntity: " + eachTag.identity() + " " + eachTag.name() + " " + eachTag.count() );
-                JSONObject jsonTag = new JSONObject();
-                jsonTag.put( "name", eachTag.name().get() );
-                jsonTag.put( "count", eachTag.count().get() );
-                jsonTag.put( "uri", uriInfo.getAbsolutePathBuilder().path( eachTag.name().get() ).build().toASCIIString() );
-                jsonArray.put( jsonTag );
-            }
+            JSONArray jsonArray = serializer.representJson( tagRepos.findAll(), new ResourceURIBuilder<TagEntity>()
+            {
+
+                public URI buildURI( TagEntity resource )
+                {
+                    return uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).build();
+                }
+
+            } );
             uow.discard();
             return Response.ok().entity( jsonArray.toString( 2 ) ).build();
         } catch ( JSONException ex ) {

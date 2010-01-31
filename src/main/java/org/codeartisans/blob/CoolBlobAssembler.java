@@ -34,6 +34,7 @@ import org.codeartisans.blob.domain.values.PayloadValue;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
+import org.codeartisans.blob.presentation.http.ResourceSerializer;
 import org.codeartisans.blob.presentation.http.ResourcesAssembler;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
@@ -98,8 +99,8 @@ public class CoolBlobAssembler
         LayerAssembly presentation = app.layerAssembly( CoolBlobStructure.Layers.PRESENTATION );
         ModuleAssembly http = presentation.moduleAssembly( CoolBlobStructure.PresentationModules.HTTP );
         {
+            http.addServices( ResourceSerializer.class );
             new ResourcesAssembler().assemble( http );
-
         }
 
         presentation.uses( domain );

@@ -29,8 +29,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
-import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.presentation.http.AbstractQi4jResource;
+import org.codeartisans.blob.presentation.http.ResourceSerializer;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.injection.scope.Service;
@@ -49,6 +49,8 @@ public class TagResource
     private static final Logger LOGGER = LoggerFactory.getLogger( TagResource.class );
     @Service
     private TagRepository tagRepos;
+    @Service
+    private ResourceSerializer serializer;
     private String name;
 
     public TagResource withName( String name )
@@ -67,10 +69,7 @@ public class TagResource
             if ( tag == null ) {
                 return Response.status( Response.Status.NOT_FOUND ).build();
             }
-            JSONObject jsonTag = new JSONObject();
-            jsonTag.put( "name", tag.name().get() );
-            jsonTag.put( "count", tag.count().get() );
-            jsonTag.put( "uri", uriInfo.getRequestUri().toASCIIString() );
+            JSONObject jsonTag = serializer.representJson( tag, uriInfo.getRequestUri() );
             uow.discard();
             return Response.ok().entity( jsonTag.toString( 2 ) ).build();
         } catch ( JSONException ex ) {
