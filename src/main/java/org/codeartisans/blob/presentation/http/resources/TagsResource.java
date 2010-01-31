@@ -27,6 +27,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
@@ -59,7 +60,7 @@ public class TagsResource
     }
 
     @GET
-    @Produces( "application/json" )
+    @Produces( MediaType.APPLICATION_JSON )
     public Response tags()
     {
         LOGGER.info( "URI INFO: " + uriInfo.getRequestUri().toString() );
@@ -75,7 +76,7 @@ public class TagsResource
 
             } );
             uow.discard();
-            return Response.ok().entity( jsonArray.toString( 2 ) ).build();
+            return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonArray.toString( 2 ) ).build();
         } catch ( JSONException ex ) {
             throw new RuntimeException( ex );
         }

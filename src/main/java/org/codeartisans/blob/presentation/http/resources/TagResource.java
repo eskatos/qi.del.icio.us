@@ -26,6 +26,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
@@ -60,7 +61,7 @@ public class TagResource
     }
 
     @GET
-    @Produces( "application/json" )
+    @Produces( MediaType.APPLICATION_JSON )
     public Response tag()
     {
         try {
@@ -71,16 +72,17 @@ public class TagResource
             }
             JSONObject jsonTag = serializer.representJson( tag, uriInfo.getRequestUri() );
             uow.discard();
-            return Response.ok().entity( jsonTag.toString( 2 ) ).build();
+            return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonTag.toString( 2 ) ).build();
         } catch ( JSONException ex ) {
             throw new RuntimeException( ex );
         }
     }
 
-    // TODO Sanitize input !
+    // TODO Set request param name and change accordingly for URI building
     // TODO Use DomainEvents !
+    // TODO Sanitize input ! (DomainEvent responsibility)
     @POST
-    @Consumes( "text/plain" )
+    @Consumes( MediaType.TEXT_PLAIN )
     public Response renameTag( String newName )
     {
         try {
