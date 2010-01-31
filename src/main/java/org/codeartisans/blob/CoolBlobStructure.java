@@ -27,8 +27,6 @@ package org.codeartisans.blob;
 public interface CoolBlobStructure
 {
 
-    static String ROOT_ENTITY_IDENTITY = "563daf02-3e3d-4e75-9a7e-86ab2719ca6c-0";
-
     public interface Layers
     {
 

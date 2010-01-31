@@ -21,7 +21,6 @@
  */
 package org.codeartisans.blob.domain;
 
-import org.codeartisans.blob.CoolBlobStructure;
 import org.codeartisans.blob.domain.entities.RootEntity;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
@@ -35,7 +34,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins(RootEntityService.Mixin.class)
+@Mixins( RootEntityService.Mixin.class )
 public interface RootEntityService
         extends Activatable, ServiceComposite
 {
@@ -52,12 +51,12 @@ public interface RootEntityService
         {
             UnitOfWork uow = uowf.newUnitOfWork();
             try {
-                RootEntity root = uow.get(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
-                System.out.println("RootEntityService::activate, will use RootEntity: " + root.identity().get());
-            } catch (NoSuchEntityException ex) {
-                EntityBuilder<RootEntity> builder = uow.newEntityBuilder(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
+                RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
+                System.out.println( "RootEntityService::activate, will use RootEntity: " + root.identity().get() );
+            } catch ( NoSuchEntityException ex ) {
+                EntityBuilder<RootEntity> builder = uow.newEntityBuilder( RootEntity.class, RootEntity.IDENTITY );
                 RootEntity root = builder.newInstance();
-                System.out.println("RootEntityService::activate, created new RootEntity: " + root.identity().get());
+                System.out.println( "RootEntityService::activate, created new RootEntity: " + root.identity().get() );
             }
             uow.complete();
         }
@@ -67,10 +66,10 @@ public interface RootEntityService
         {
             UnitOfWork uow = uowf.newUnitOfWork();
             try {
-                RootEntity root = uow.get(RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY);
-                System.out.println("RootEntityService::passivate, existing RootEntity: " + root.identity().get());
-            } catch (NoSuchEntityException ex) {
-                System.out.println("RootEntityService::passivate, no RootEntity");
+                RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
+                System.out.println( "RootEntityService::passivate, existing RootEntity: " + root.identity().get() );
+            } catch ( NoSuchEntityException ex ) {
+                System.out.println( "RootEntityService::passivate, no RootEntity" );
             }
             uow.complete();
         }

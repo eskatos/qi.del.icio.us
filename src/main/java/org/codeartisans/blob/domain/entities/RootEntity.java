@@ -45,6 +45,8 @@ public interface RootEntity
         extends EntityComposite
 {
 
+    static String IDENTITY = "563daf02-3e3d-4e75-9a7e-86ab2719ca6c-0";
+
     @Optional
     Property<DateTime> lastProcessedEventDateTime();
 

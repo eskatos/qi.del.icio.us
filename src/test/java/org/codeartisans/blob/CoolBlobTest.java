@@ -166,8 +166,8 @@ public class CoolBlobTest
             UnitOfWork uow = modelUowf.newUnitOfWork();
 
             try {
-                RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
-                Assert.assertEquals( CoolBlobStructure.ROOT_ENTITY_IDENTITY, root.identity().get() );
+                RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
+                Assert.assertEquals( RootEntity.IDENTITY, root.identity().get() );
                 Assert.assertNull( root.lastProcessedEventDateTime().get() );
 
             } catch ( NoSuchEntityException ex ) {
@@ -201,7 +201,7 @@ public class CoolBlobTest
 
             System.out.println( "ThingCreatedEvent: " + thingCreatedEvent.eventHash() );
 
-            RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
+            RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
             ThingEntity thing = root.newThingCreated( thingCreatedEvent );
             Assert.assertEquals( "Blob", thing.name().get() );
 
@@ -235,7 +235,7 @@ public class CoolBlobTest
 
             tagRenamedEvent = uow.get( tagRenamedEvent );
 
-            RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
+            RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
             TagEntity renamedTag = root.tagRenamed( tagRenamedEvent );
             Assert.assertNotNull( renamedTag );
             Assert.assertNotNull( renamedTag.name() );

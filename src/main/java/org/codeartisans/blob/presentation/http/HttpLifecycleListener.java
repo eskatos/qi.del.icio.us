@@ -23,7 +23,6 @@ package org.codeartisans.blob.presentation.http;
 
 import java.util.Arrays;
 import org.codeartisans.blob.CoolBlobAssembler;
-import org.codeartisans.blob.CoolBlobStructure;
 import org.codeartisans.blob.CoolBlobStructure.DomainModules;
 import org.codeartisans.blob.CoolBlobStructure.Layers;
 import org.codeartisans.blob.domain.entities.RootEntity;
@@ -92,7 +91,7 @@ public class HttpLifecycleListener
             UnitOfWork uow = modelUowf.newUnitOfWork();
 
             try {
-                RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
+                RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
 
             } catch ( NoSuchEntityException ex ) {
                 ex.printStackTrace();
@@ -122,7 +121,7 @@ public class HttpLifecycleListener
 
             System.out.println( "ThingCreatedEvent: " + thingCreatedEvent.eventHash() );
 
-            RootEntity root = uow.get( RootEntity.class, CoolBlobStructure.ROOT_ENTITY_IDENTITY );
+            RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
             ThingEntity thing = root.newThingCreated( thingCreatedEvent );
 
             DateTime eventCreation = thingCreatedEvent.creationDate().get();
