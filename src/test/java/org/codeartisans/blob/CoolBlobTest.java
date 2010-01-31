@@ -27,6 +27,7 @@ import org.codeartisans.blob.CoolBlobStructure.DomainModules;
 import org.codeartisans.blob.CoolBlobStructure.Layers;
 import org.codeartisans.blob.FixtureBuilder.FixtureSettings;
 import org.codeartisans.blob.FixtureBuilder.Fixtures;
+import org.codeartisans.blob.domain.RootEntityService;
 import org.codeartisans.blob.domain.entities.RootEntity;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.ThingEntity;
@@ -34,7 +35,6 @@ import org.codeartisans.blob.domain.entities.ThingFactory;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
-import org.joda.time.DateTime;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.qi4j.api.service.ServiceFinder;
@@ -133,7 +133,7 @@ public class CoolBlobTest
             ThingEntity machin = thingFactory.newThingInstance( "Machin", "Super machin", Arrays.asList( "zoo", "jar" ) );
 
             uow.apply(); // WARNING !!
-            
+
             ThingEntity bidule = thingFactory.newThingInstance( "Bidule", "Uber bidule", Arrays.asList( "zoo", "bar" ) );
 
             uow.complete();
@@ -149,7 +149,7 @@ public class CoolBlobTest
 
     @Test
     public void testDomainEvents()
-            throws InterruptedException, UnitOfWorkCompletionException
+            throws UnitOfWorkCompletionException
     {
 
         ThingCreatedEvent thingCreatedEvent;
@@ -160,15 +160,16 @@ public class CoolBlobTest
         UnitOfWorkFactory modelUowf = modelModule.unitOfWorkFactory();
         UnitOfWorkFactory eventsUowf = eventsModule.unitOfWorkFactory();
         ServiceFinder eventsServiceFinder = eventsModule.serviceFinder();
+        RootEntityService rootEntityService = eventsServiceFinder.<RootEntityService>findService( RootEntityService.class ).get();
 
         // Checking RootEntity
         {
             UnitOfWork uow = modelUowf.newUnitOfWork();
 
             try {
-                RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
+                RootEntity root = rootEntityService.rootEntity();
                 Assert.assertEquals( RootEntity.IDENTITY, root.identity().get() );
-                Assert.assertNull( root.lastProcessedEventDateTime().get() );
+                // Assert.assertNull( root.lastProcessedEventDateTime().get() ); WARN Commented because of DomainLifecycleService creating test data upon activation
 
             } catch ( NoSuchEntityException ex ) {
                 ex.printStackTrace();
@@ -176,7 +177,6 @@ public class CoolBlobTest
             }
 
             uow.complete();
-            Thread.sleep( 100 );
         }
 
         // Creating a DomainEvent : ThingCreatedEvent
@@ -190,7 +190,6 @@ public class CoolBlobTest
                                                                     Arrays.asList( "qi4j", "cop", "ddd" ) );
 
             uow.complete();
-            Thread.sleep( 100 );
         }
 
         // Applying ThingCreatedEvent
@@ -199,20 +198,17 @@ public class CoolBlobTest
 
             thingCreatedEvent = uow.get( thingCreatedEvent );
 
-            System.out.println( "ThingCreatedEvent: " + thingCreatedEvent.eventHash() );
+            System.out.println( "ThingCreatedEvent: " + thingCreatedEvent.eventNumber().get() );
 
-            RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
+            RootEntity root = rootEntityService.rootEntity();
             ThingEntity thing = root.newThingCreated( thingCreatedEvent );
             Assert.assertEquals( "Blob", thing.name().get() );
 
-            DateTime eventCreation = thingCreatedEvent.creationDate().get();
-            DateTime lastProcessedEvent = root.lastProcessedEventDateTime().get();
-            DateTime now = new DateTime();
-            System.out.println( "Event created at: " + eventCreation );
-            System.out.println( "Last processed event datetime: " + lastProcessedEvent );
-            System.out.println( "Now is: " + now );
-            Assert.assertEquals( lastProcessedEvent, eventCreation );
-            Assert.assertTrue( now.isAfter( lastProcessedEvent ) );
+            Long eventNumber = thingCreatedEvent.eventNumber().get();
+            Long lastProcessedEventNumber = root.lastProcessedEventNumber().get();
+            System.out.println( "Event number: " + eventNumber );
+            System.out.println( "Last processed event number: " + lastProcessedEventNumber );
+            Assert.assertEquals( lastProcessedEventNumber, eventNumber );
 
             uow.complete();
         }
@@ -235,7 +231,7 @@ public class CoolBlobTest
 
             tagRenamedEvent = uow.get( tagRenamedEvent );
 
-            RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
+            RootEntity root = rootEntityService.rootEntity();
             TagEntity renamedTag = root.tagRenamed( tagRenamedEvent );
             Assert.assertNotNull( renamedTag );
             Assert.assertNotNull( renamedTag.name() );

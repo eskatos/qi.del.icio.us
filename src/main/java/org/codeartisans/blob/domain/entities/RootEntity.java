@@ -21,10 +21,10 @@
  */
 package org.codeartisans.blob.domain.entities;
 
+import org.codeartisans.blob.events.DomainEvent;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
 import org.codeartisans.java.toolbox.exceptions.NullArgumentException;
-import org.joda.time.DateTime;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
@@ -35,6 +35,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.spi.Qi4jSPI;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
@@ -48,7 +49,9 @@ public interface RootEntity
     static String IDENTITY = "563daf02-3e3d-4e75-9a7e-86ab2719ca6c-0";
 
     @Optional
-    Property<DateTime> lastProcessedEventDateTime();
+    Property<Long> lastProcessedEventNumber();
+
+    void processDomainEvent( DomainEvent domainEvent );
 
     ThingEntity newThingCreated( ThingCreatedEvent thingCreatedEvent );
 
@@ -59,6 +62,8 @@ public interface RootEntity
     {
 
         @Structure
+        private Qi4jSPI spi;
+        @Structure
         private UnitOfWorkFactory uowf;
         @Service
         private ThingFactory thingFactory;
@@ -66,6 +71,16 @@ public interface RootEntity
         private ThingRepository thingRepos;
         @Service
         private TagRepository tagRepos;
+
+        public void processDomainEvent( DomainEvent domainEvent )
+        {
+            Class entityClass = spi.getEntityDescriptor( ( EntityComposite ) domainEvent ).type();
+            if ( entityClass.isAssignableFrom( ThingCreatedEvent.class ) ) {
+                newThingCreated( ( ThingCreatedEvent ) domainEvent );
+            } else if ( entityClass.isAssignableFrom( TagRenamedEvent.class ) ) {
+                tagRenamed( ( TagRenamedEvent ) domainEvent );
+            }
+        }
 
         public ThingEntity newThingCreated( ThingCreatedEvent event )
         {
@@ -103,14 +118,14 @@ public interface RootEntity
         public ThingEntity newThingCreated( ThingCreatedEvent thingCreatedEvent )
         {
             ThingEntity thing = next.newThingCreated( thingCreatedEvent );
-            lastProcessedEventDateTime().set( thingCreatedEvent.creationDate().get() );
+            lastProcessedEventNumber().set( thingCreatedEvent.eventNumber().get() );
             return thing;
         }
 
         public TagEntity tagRenamed( TagRenamedEvent tagRenamedEvent )
         {
             TagEntity tag = next.tagRenamed( tagRenamedEvent );
-            lastProcessedEventDateTime().set( tagRenamedEvent.creationDate().get() );
+            lastProcessedEventNumber().set( tagRenamedEvent.eventNumber().get() );
             return tag;
         }
 

@@ -21,19 +21,14 @@
  */
 package org.codeartisans.blob.events;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joda.time.DateTime;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
-import org.qi4j.spi.util.Base64Encoder;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
@@ -44,11 +39,10 @@ public interface DomainEvent
 {
 
     @Immutable
-    Property<DateTime> creationDate();
+    Property<DateTime> recordDate();
 
-    // FIXME QUID ? Not used ATM.
     @Immutable
-    Property<String> eventHash();
+    Property<Long> eventNumber();
 
     abstract class Mixin
             implements DomainEvent
@@ -56,20 +50,20 @@ public interface DomainEvent
 
         @This
         private DomainEvent meAsDomainEvent;
+        @Service
+        private DomainEventsRepository domainEventsRepos;
 
         public void create()
                 throws LifecycleException
         {
-            try {
-                DateTime now = new DateTime();
-                meAsDomainEvent.creationDate().set( now );
-                MessageDigest md = MessageDigest.getInstance( "SHA" );
-                md.update( ( now.getMillis() + UUID.randomUUID().toString() ).getBytes() );
-                meAsDomainEvent.eventHash().set( new String( Base64Encoder.encode( md.digest(), false ) ) );
-            } catch ( NoSuchAlgorithmException ex ) {
-                throw new LifecycleException( "Unable to compute DomainEvent hash", ex );
+            DateTime now = new DateTime();
+            meAsDomainEvent.recordDate().set( now );
+            DomainEvent lastRecorded = domainEventsRepos.findLastRecordedEvent();
+            if ( lastRecorded == null ) {
+                meAsDomainEvent.eventNumber().set( 1L );
+            } else {
+                meAsDomainEvent.eventNumber().set( lastRecorded.eventNumber().get() + 1 );
             }
-
         }
 
         public void remove()

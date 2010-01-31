@@ -32,6 +32,7 @@ import org.codeartisans.blob.domain.entities.ThingFactory;
 import org.codeartisans.blob.domain.entities.ThingRepository;
 import org.codeartisans.blob.domain.values.PayloadValue;
 import org.codeartisans.blob.events.DomainEventsFactory;
+import org.codeartisans.blob.events.DomainEventsRepository;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
 import org.qi4j.bootstrap.Assembler;
@@ -59,7 +60,9 @@ public class BlobAssembler
         // Domain Events
         module.addEntities( ThingCreatedEvent.class,
                             TagRenamedEvent.class );
-        module.addServices( DomainEventsFactory.class );
+        module.addServices( DomainEventsFactory.class,
+                            DomainEventsRepository.class,
+                            RootEntityService.class );
 
         // Entities
         module.addEntities( RootEntity.class,

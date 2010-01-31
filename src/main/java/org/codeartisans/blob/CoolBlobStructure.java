@@ -39,6 +39,7 @@ public interface CoolBlobStructure
 
         static String EVENTS = "DomainEvents";
         static String MODEL = "DomainModel";
+        static String LIFECYCLE = "DomainLifecycle";
     }
 
     public interface PresentationModules

@@ -21,22 +21,8 @@
  */
 package org.codeartisans.blob.presentation.http;
 
-import java.util.Arrays;
 import org.codeartisans.blob.CoolBlobAssembler;
-import org.codeartisans.blob.CoolBlobStructure.DomainModules;
-import org.codeartisans.blob.CoolBlobStructure.Layers;
-import org.codeartisans.blob.domain.entities.RootEntity;
-import org.codeartisans.blob.domain.entities.ThingEntity;
-import org.codeartisans.blob.events.DomainEventsFactory;
-import org.codeartisans.blob.events.ThingCreatedEvent;
-import org.joda.time.DateTime;
-import org.qi4j.api.service.ServiceFinder;
-import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Application;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
@@ -76,63 +62,7 @@ public class HttpLifecycleListener
     protected void afterApplicationActivation( Application application )
             throws Exception
     {
-        LOGGER.info( "CoolBlob Application " + application.version() );
-
-        ThingCreatedEvent thingCreatedEvent;
-
-        Module eventsModule = application.findModule( Layers.DOMAIN, DomainModules.EVENTS );
-        Module modelModule = application.findModule( Layers.DOMAIN, DomainModules.MODEL );
-        UnitOfWorkFactory modelUowf = modelModule.unitOfWorkFactory();
-        UnitOfWorkFactory eventsUowf = eventsModule.unitOfWorkFactory();
-        ServiceFinder eventsServiceFinder = eventsModule.serviceFinder();
-
-        // Checking RootEntity
-        {
-            UnitOfWork uow = modelUowf.newUnitOfWork();
-
-            try {
-                RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
-
-            } catch ( NoSuchEntityException ex ) {
-                ex.printStackTrace();
-            }
-
-            uow.complete();
-        }
-
-        // Creating a DomainEvent : ThingCreatedEvent
-        {
-            UnitOfWork uow = eventsUowf.newUnitOfWork();
-
-            ServiceReference<DomainEventsFactory> defRef = eventsServiceFinder.findService( DomainEventsFactory.class );
-            DomainEventsFactory eventsFactory = defRef.get();
-
-            thingCreatedEvent = eventsFactory.newThingCreatedEvent( "Blob", "This is a blob",
-                                                                    Arrays.asList( "qi4j", "cop", "ddd" ) );
-
-            uow.complete();
-        }
-
-        // Applying ThingCreatedEvent
-        {
-            UnitOfWork uow = modelUowf.newUnitOfWork();
-
-            thingCreatedEvent = uow.get( thingCreatedEvent );
-
-            LOGGER.info( "ThingCreatedEvent: " + thingCreatedEvent.eventHash() );
-
-            RootEntity root = uow.get( RootEntity.class, RootEntity.IDENTITY );
-            ThingEntity thing = root.newThingCreated( thingCreatedEvent );
-
-            DateTime eventCreation = thingCreatedEvent.creationDate().get();
-            DateTime lastProcessedEvent = root.lastProcessedEventDateTime().get();
-            DateTime now = new DateTime();
-            LOGGER.info( "Event created at: " + eventCreation );
-            LOGGER.info( "Last processed event datetime: " + lastProcessedEvent );
-            LOGGER.info( "Now is: " + now );
-
-            uow.complete();
-        }
+        LOGGER.info( "CoolBlob Application " + application.version() + " successfully activated" );
     }
 
 }

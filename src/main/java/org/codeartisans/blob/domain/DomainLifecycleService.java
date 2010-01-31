@@ -21,14 +21,19 @@
  */
 package org.codeartisans.blob.domain;
 
+import java.util.Arrays;
 import org.codeartisans.blob.domain.entities.RootEntity;
-import org.qi4j.api.entity.EntityBuilder;
+import org.codeartisans.blob.events.DomainEvent;
+import org.codeartisans.blob.events.DomainEventsFactory;
+import org.codeartisans.blob.events.DomainEventsRepository;
+import org.codeartisans.blob.events.ThingCreatedEvent;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,37 +41,40 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins( RootEntityService.Mixin.class )
-public interface RootEntityService
+@Mixins( DomainLifecycleService.Mixin.class )
+public interface DomainLifecycleService
         extends Activatable, ServiceComposite
 {
 
-    RootEntity rootEntity();
-
     abstract class Mixin
-            implements RootEntityService
+            implements DomainLifecycleService
     {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger( RootEntityService.Mixin.class );
+        private static final Logger LOGGER = LoggerFactory.getLogger( DomainLifecycleService.Mixin.class );
         @Structure
         private UnitOfWorkFactory uowf;
-
-        public RootEntity rootEntity()
-        {
-            return uowf.currentUnitOfWork().get( RootEntity.class, RootEntity.IDENTITY );
-        }
+        @Service
+        private RootEntityService rootEntityService;
+        @Service
+        private DomainEventsRepository domainEventsRepos;
 
         public void activate()
                 throws Exception
         {
+            LOGGER.info( "Activating Domain Layer" );
+            populateTestData();
             UnitOfWork uow = uowf.newUnitOfWork();
-            try {
-                RootEntity root = rootEntity();
-                LOGGER.info( "Will use RootEntity: " + root.identity().get() );
-            } catch ( NoSuchEntityException ex ) {
-                EntityBuilder<RootEntity> builder = uow.newEntityBuilder( RootEntity.class, RootEntity.IDENTITY );
-                RootEntity root = builder.newInstance();
-                LOGGER.info( "Created new RootEntity: " + root.identity().get() );
+            RootEntity root = rootEntityService.rootEntity();
+            Iterable<DomainEvent> toProcessEvents;
+            if ( root.lastProcessedEventNumber().get() == null ) {
+                toProcessEvents = domainEventsRepos.findAll();
+            } else {
+                toProcessEvents = domainEventsRepos.findWithNumberGreaterThan( root.lastProcessedEventNumber().get() );
+            }
+            if ( toProcessEvents != null ) {
+                for ( DomainEvent eachEvent : toProcessEvents ) {
+                    root.processDomainEvent( eachEvent );
+                }
             }
             uow.complete();
         }
@@ -74,14 +82,19 @@ public interface RootEntityService
         public void passivate()
                 throws Exception
         {
+            LOGGER.info( "Passivating Domain Layer" );
+        }
+
+        @Service
+        private DomainEventsFactory eventsFactory;
+
+        private void populateTestData()
+                throws UnitOfWorkCompletionException
+        {
             UnitOfWork uow = uowf.newUnitOfWork();
-            try {
-                RootEntity root = rootEntity();
-                LOGGER.info( "Existing RootEntity: " + root.identity().get() );
-            } catch ( NoSuchEntityException ex ) {
-                LOGGER.info( "No RootEntity" );
-            }
+            ThingCreatedEvent thingCreatedEvent = eventsFactory.newThingCreatedEvent( "Blob", "This is a blob", Arrays.asList( "qi4j", "cop", "ddd" ) );
             uow.complete();
+
         }
 
     }

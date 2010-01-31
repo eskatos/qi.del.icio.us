@@ -21,6 +21,7 @@
  */
 package org.codeartisans.blob;
 
+import org.codeartisans.blob.domain.DomainLifecycleService;
 import org.codeartisans.blob.domain.RootEntityService;
 import org.codeartisans.blob.domain.entities.IlkEntity;
 import org.codeartisans.blob.domain.entities.RootEntity;
@@ -32,6 +33,7 @@ import org.codeartisans.blob.domain.entities.ThingFactory;
 import org.codeartisans.blob.domain.entities.ThingRepository;
 import org.codeartisans.blob.domain.values.PayloadValue;
 import org.codeartisans.blob.events.DomainEventsFactory;
+import org.codeartisans.blob.events.DomainEventsRepository;
 import org.codeartisans.blob.events.TagRenamedEvent;
 import org.codeartisans.blob.events.ThingCreatedEvent;
 import org.codeartisans.blob.presentation.http.ResourceSerializer;
@@ -69,12 +71,15 @@ public class CoolBlobAssembler
             // Domain Events
             domainEvents.addEntities( ThingCreatedEvent.class,
                                       TagRenamedEvent.class );
-            domainEvents.addServices( DomainEventsFactory.class );
+            domainEvents.addServices( DomainEventsFactory.class,
+                                      DomainEventsRepository.class ).
+                    visibleIn( Visibility.layer );
 
             // Infrastructure Services
             domainEvents.addServices( MemoryEntityStoreService.class,
-                                      UuidIdentityGeneratorService.class );
-            new RdfMemoryStoreAssembler().assemble( domainEvents );
+                                      UuidIdentityGeneratorService.class ).
+                    visibleIn( Visibility.module );
+            new RdfMemoryStoreAssembler( null, Visibility.module, Visibility.module ).assemble( domainEvents );
         }
         ModuleAssembly domainModel = domain.moduleAssembly( CoolBlobStructure.DomainModules.MODEL );
         {
@@ -85,15 +90,21 @@ public class CoolBlobAssembler
                                      TagEntity.class,
                                      SetOfTagsEntity.class );
             domainModel.addValues( PayloadValue.class );
-            domainModel.addServices( RootEntityService.class ).instantiateOnStartup();
+            domainModel.addServices( RootEntityService.class ).
+                    visibleIn( Visibility.layer ).instantiateOnStartup();
             domainModel.addServices( ThingFactory.class );
             domainModel.addServices( ThingRepository.class,
-                                     TagRepository.class ).visibleIn( Visibility.application );
+                                     TagRepository.class ).
+                    visibleIn( Visibility.application );
 
             // Infrastructure Services
             domainModel.addServices( MemoryEntityStoreService.class,
                                      UuidIdentityGeneratorService.class );
             new RdfMemoryStoreAssembler().assemble( domainModel );
+        }
+        ModuleAssembly domainLifecycle = domain.moduleAssembly( CoolBlobStructure.DomainModules.LIFECYCLE );
+        {
+            domainLifecycle.addServices( DomainLifecycleService.class ).instantiateOnStartup();
         }
 
         LayerAssembly presentation = app.layerAssembly( CoolBlobStructure.Layers.PRESENTATION );

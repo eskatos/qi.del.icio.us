@@ -49,9 +49,9 @@ public interface DomainEventsFactory
     {
 
         @Structure
-        UnitOfWorkFactory unitOfWorkFactory;
+        private UnitOfWorkFactory unitOfWorkFactory;
         @Service
-        UuidIdentityGeneratorService uuidGenerator;
+        private UuidIdentityGeneratorService uuidGenerator;
 
         public ThingCreatedEvent newThingCreatedEvent( String name, String shortdesc, List<String> tags )
         {
