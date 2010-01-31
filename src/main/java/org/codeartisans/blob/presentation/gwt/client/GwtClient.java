@@ -22,8 +22,15 @@
 package org.codeartisans.blob.presentation.gwt.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.codeartisans.blob.presentation.gwt.client.store.TagJSO;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
@@ -34,7 +41,37 @@ public final class GwtClient
 
     public void onModuleLoad()
     {
-        RootPanel.get().add( new Label( "Wow freaking cool stuff!" ) );
+        try {
+            RootPanel.get().add( new Label( "Wow freaking cool stuff!" ) );
+            // List tags
+            //String encodedUrl = "http://localhost:8888/api/tags/qi4j";
+            String encodedUrl = "http://localhost:8888/api/tags";
+            RequestBuilder builder = new RequestBuilder( RequestBuilder.GET, encodedUrl );
+            builder.setHeader( "Accept", "application/json" );
+            builder.sendRequest( null, new RequestCallback()
+            {
+
+                public void onResponseReceived( Request request, Response response )
+                {
+                    RootPanel.get().add( new Label( "RESPONSE: " + response.getText() ) );
+
+//                    Tag tag = TagJSO.fromJSON( response.getText() );
+//                    RootPanel.get().add( new Label( "TAG: " + tag.name() ) );
+
+                    JsArray<TagJSO> tags = TagJSO.fromJSONArray( response.getText() );
+                    RootPanel.get().add( new Label( "TAGS: " + tags.length() ) );
+
+                }
+
+                public void onError( Request request, Throwable ex )
+                {
+                    RootPanel.get().add( new Label( "FUCK FAILED: " + ex.getMessage() ) );
+                }
+
+            } );
+        } catch ( RequestException ex ) {
+            RootPanel.get().add( new Label( "FUCK FAILED: " + ex.getMessage() ) );
+        }
     }
 
 }
