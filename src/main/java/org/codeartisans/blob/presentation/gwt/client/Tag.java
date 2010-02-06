@@ -19,34 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.presentation.gwt.client.store;
-
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
-import org.codeartisans.blob.presentation.gwt.client.model.Tag;
+package org.codeartisans.blob.presentation.gwt.client;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public class TagJSO
-        extends JavaScriptObject
-        implements Tag
+public interface Tag
 {
 
-    protected TagJSO()
-    {
-    }
+    String name();
 
-    public static final native TagJSO fromJSON( String input ) /*-{ return eval('(' + input + ')') }-*/;
+    int count();
 
-    public static final native JsArray<TagJSO> fromJSONArray( String input ) /*-{ return eval('(' + input + ')') }-*/;
-
-    public final native String toJSON() /*-{ return this.toString(); }-*/;
-
-    public final native String name() /*-{ return this.name; }-*/;
-
-    public final native int count() /*-{ return this.count; }-*/;
-
-    public final native String uri() /*-{ return this.uri; }-*/;
+    String uri();
 
 }

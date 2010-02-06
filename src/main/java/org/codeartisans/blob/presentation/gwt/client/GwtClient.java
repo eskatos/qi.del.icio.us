@@ -30,7 +30,6 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import org.codeartisans.blob.presentation.gwt.client.store.TagJSO;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
