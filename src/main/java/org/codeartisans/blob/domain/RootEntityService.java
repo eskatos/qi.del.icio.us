@@ -51,11 +51,13 @@ public interface RootEntityService
         @Structure
         private UnitOfWorkFactory uowf;
 
+        @Override
         public RootEntity rootEntity()
         {
             return uowf.currentUnitOfWork().get( RootEntity.class, RootEntity.IDENTITY );
         }
 
+        @Override
         public void activate()
                 throws Exception
         {
@@ -71,6 +73,7 @@ public interface RootEntityService
             uow.complete();
         }
 
+        @Override
         public void passivate()
                 throws Exception
         {

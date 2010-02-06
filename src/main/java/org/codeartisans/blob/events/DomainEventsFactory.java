@@ -53,6 +53,7 @@ public interface DomainEventsFactory
         @Service
         private UuidIdentityGeneratorService uuidGenerator;
 
+        @Override
         public ThingCreatedEvent newThingCreatedEvent( String name, String shortdesc, List<String> tags )
         {
             UnitOfWork uow = unitOfWorkFactory.currentUnitOfWork();
@@ -65,6 +66,7 @@ public interface DomainEventsFactory
             return builder.newInstance();
         }
 
+        @Override
         public TagRenamedEvent newTagRenamedEvent( String oldName, String newName )
         {
             UnitOfWork uow = unitOfWorkFactory.currentUnitOfWork();

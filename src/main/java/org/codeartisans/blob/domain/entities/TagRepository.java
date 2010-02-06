@@ -54,6 +54,7 @@ public interface TagRepository
         @Structure
         private QueryBuilderFactory qbf;
 
+        @Override
         public Query<TagEntity> findAll()
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
@@ -61,6 +62,7 @@ public interface TagRepository
             return queryBuilder.newQuery( uow );
         }
 
+        @Override
         public TagEntity findByName( String name )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();

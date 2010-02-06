@@ -41,14 +41,15 @@ public class DeeplyAggregatedTest
         extends AbstractQi4jTest
 {
 
-    public void assemble(ModuleAssembly module)
+    @Override
+    public void assemble( ModuleAssembly module )
             throws AssemblyException
     {
-        module.addEntities(GroupEntity.class, CompanyEntity.class, EmployeeEntity.class, PersonEntity.class);
+        module.addEntities( GroupEntity.class, CompanyEntity.class, EmployeeEntity.class, PersonEntity.class );
 
-        module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class);
+        module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class );
 
-        module.addObjects(getClass());
+        module.addObjects( getClass() );
     }
 
     @Test
@@ -63,94 +64,94 @@ public class DeeplyAggregatedTest
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
                 {
-                    EntityBuilder<PersonEntity> builder = unitOfWork.newEntityBuilder(PersonEntity.class);
+                    EntityBuilder<PersonEntity> builder = unitOfWork.newEntityBuilder( PersonEntity.class );
                     personEntity1 = builder.instance();
-                    personEntity1.name().set("John");
+                    personEntity1.name().set( "John" );
                     personEntity1 = builder.newInstance();
                 }
 
                 {
-                    EntityBuilder<PersonEntity> builder = unitOfWork.newEntityBuilder(PersonEntity.class);
+                    EntityBuilder<PersonEntity> builder = unitOfWork.newEntityBuilder( PersonEntity.class );
                     personEntity2 = builder.instance();
-                    personEntity2.name().set("Bob");
+                    personEntity2.name().set( "Bob" );
                     builder.newInstance();
                 }
 
                 {
-                    EntityBuilder<EmployeeEntity> builder = unitOfWork.newEntityBuilder(EmployeeEntity.class);
+                    EntityBuilder<EmployeeEntity> builder = unitOfWork.newEntityBuilder( EmployeeEntity.class );
                     employeeEntity = builder.instance();
-                    employeeEntity.person().set(personEntity1);
-                    employeeEntity.salary().set(50000);
-                    employeeEntity.title().set("Director");
+                    employeeEntity.person().set( personEntity1 );
+                    employeeEntity.salary().set( 50000 );
+                    employeeEntity.title().set( "Director" );
                     employeeEntity = builder.newInstance();
                 }
 
                 {
-                    EntityBuilder<EmployeeEntity> builder = unitOfWork.newEntityBuilder(EmployeeEntity.class);
+                    EntityBuilder<EmployeeEntity> builder = unitOfWork.newEntityBuilder( EmployeeEntity.class );
                     employeeEntity2 = builder.instance();
-                    employeeEntity2.person().set(personEntity2);
-                    employeeEntity2.salary().set(40000);
-                    employeeEntity2.title().set("Developer");
+                    employeeEntity2.person().set( personEntity2 );
+                    employeeEntity2.salary().set( 40000 );
+                    employeeEntity2.title().set( "Developer" );
                     employeeEntity2 = builder.newInstance();
                 }
 
                 {
-                    EntityBuilder<EmployeeEntity> builder = unitOfWork.newEntityBuilder(EmployeeEntity.class);
+                    EntityBuilder<EmployeeEntity> builder = unitOfWork.newEntityBuilder( EmployeeEntity.class );
                     employeeEntity3 = builder.instance();
-                    employeeEntity3.person().set(personEntity2);
-                    employeeEntity3.salary().set(50000);
-                    employeeEntity3.title().set("Director");
+                    employeeEntity3.person().set( personEntity2 );
+                    employeeEntity3.salary().set( 50000 );
+                    employeeEntity3.title().set( "Director" );
                     employeeEntity3 = builder.newInstance();
                 }
 
                 {
-                    EntityBuilder<EmployeeEntity> builder = unitOfWork.newEntityBuilder(EmployeeEntity.class);
+                    EntityBuilder<EmployeeEntity> builder = unitOfWork.newEntityBuilder( EmployeeEntity.class );
                     employeeEntity4 = builder.instance();
-                    employeeEntity4.person().set(personEntity1);
-                    employeeEntity4.salary().set(40000);
-                    employeeEntity4.title().set("Developer");
+                    employeeEntity4.person().set( personEntity1 );
+                    employeeEntity4.salary().set( 40000 );
+                    employeeEntity4.title().set( "Developer" );
                     employeeEntity4 = builder.newInstance();
                 }
 
                 {
-                    EntityBuilder<CompanyEntity> builder = unitOfWork.newEntityBuilder(CompanyEntity.class);
+                    EntityBuilder<CompanyEntity> builder = unitOfWork.newEntityBuilder( CompanyEntity.class );
                     firstCompany = builder.instance();
-                    firstCompany.director().set(employeeEntity);
-                    firstCompany.employees().add(0, employeeEntity);
-                    firstCompany.employees().add(0, employeeEntity2);
+                    firstCompany.director().set( employeeEntity );
+                    firstCompany.employees().add( 0, employeeEntity );
+                    firstCompany.employees().add( 0, employeeEntity2 );
                     firstCompany = builder.newInstance();
                 }
 
                 {
-                    EntityBuilder<CompanyEntity> builder = unitOfWork.newEntityBuilder(CompanyEntity.class);
+                    EntityBuilder<CompanyEntity> builder = unitOfWork.newEntityBuilder( CompanyEntity.class );
                     secondCompany = builder.instance();
-                    secondCompany.director().set(employeeEntity3);
-                    secondCompany.employees().add(0, employeeEntity3);
-                    secondCompany.employees().add(0, employeeEntity4);
+                    secondCompany.director().set( employeeEntity3 );
+                    secondCompany.employees().add( 0, employeeEntity3 );
+                    secondCompany.employees().add( 0, employeeEntity4 );
                     secondCompany = builder.newInstance();
                 }
 
                 {
-                    EntityBuilder<GroupEntity> builder = unitOfWork.newEntityBuilder(GroupEntity.class);
+                    EntityBuilder<GroupEntity> builder = unitOfWork.newEntityBuilder( GroupEntity.class );
                     groupEntity = builder.instance();
-                    groupEntity.companies().add(0, firstCompany);
-                    groupEntity.companies().add(0, secondCompany);
+                    groupEntity.companies().add( 0, firstCompany );
+                    groupEntity.companies().add( 0, secondCompany );
                     groupEntity = builder.newInstance();
                 }
 
-                System.out.println("EntitiesIdentities::");
-                System.out.println("    groupEntity:     " + groupEntity.identity().get());
-                System.out.println("    firstCompany:    " + firstCompany.identity().get());
-                System.out.println("    secondCompany:   " + secondCompany.identity().get());
-                System.out.println("    employeeEntity:  " + employeeEntity.identity().get());
-                System.out.println("    employeeEntity2: " + employeeEntity2.identity().get());
-                System.out.println("    employeeEntity3: " + employeeEntity3.identity().get());
-                System.out.println("    employeeEntity4: " + employeeEntity4.identity().get());
-                System.out.println("    personEntity1:   " + personEntity1.identity().get());
-                System.out.println("    personEntity2:   " + personEntity2.identity().get());
+                System.out.println( "EntitiesIdentities::" );
+                System.out.println( "    groupEntity:     " + groupEntity.identity().get() );
+                System.out.println( "    firstCompany:    " + firstCompany.identity().get() );
+                System.out.println( "    secondCompany:   " + secondCompany.identity().get() );
+                System.out.println( "    employeeEntity:  " + employeeEntity.identity().get() );
+                System.out.println( "    employeeEntity2: " + employeeEntity2.identity().get() );
+                System.out.println( "    employeeEntity3: " + employeeEntity3.identity().get() );
+                System.out.println( "    employeeEntity4: " + employeeEntity4.identity().get() );
+                System.out.println( "    personEntity1:   " + personEntity1.identity().get() );
+                System.out.println( "    personEntity2:   " + personEntity2.identity().get() );
 
                 unitOfWork.complete();
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 unitOfWork.discard();
                 throw e;
             }
@@ -160,13 +161,13 @@ public class DeeplyAggregatedTest
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
 
-                groupEntity = unitOfWork.get(groupEntity);
-                firstCompany = unitOfWork.get(firstCompany);
-                groupEntity.companies().remove(firstCompany);
-                unitOfWork.remove(firstCompany);
+                groupEntity = unitOfWork.get( groupEntity );
+                firstCompany = unitOfWork.get( firstCompany );
+                groupEntity.companies().remove( firstCompany );
+                unitOfWork.remove( firstCompany );
 
                 unitOfWork.complete();
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 unitOfWork.discard();
                 throw e;
             }
@@ -175,8 +176,8 @@ public class DeeplyAggregatedTest
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
 
-            unitOfWork.get(personEntity1);
-            unitOfWork.get(personEntity2);
+            unitOfWork.get( personEntity1 );
+            unitOfWork.get( personEntity2 );
 
             unitOfWork.complete();
         }
@@ -184,12 +185,12 @@ public class DeeplyAggregatedTest
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
-                unitOfWork.get(employeeEntity);
+                unitOfWork.get( employeeEntity );
 
-                fail("Should not work");
+                fail( "Should not work" );
 
                 unitOfWork.complete();
-            } catch (NoSuchEntityException e) {
+            } catch ( NoSuchEntityException e ) {
                 unitOfWork.discard();
             }
         }
@@ -197,28 +198,28 @@ public class DeeplyAggregatedTest
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
-                unitOfWork.get(employeeEntity2);
-                fail("Should not work");
+                unitOfWork.get( employeeEntity2 );
+                fail( "Should not work" );
 
                 unitOfWork.complete();
-            } catch (NoSuchEntityException e) {
+            } catch ( NoSuchEntityException e ) {
                 unitOfWork.discard();
             }
         }
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
-                unitOfWork.get(firstCompany);
-                fail("Should not work");
+                unitOfWork.get( firstCompany );
+                fail( "Should not work" );
 
                 unitOfWork.complete();
-            } catch (NoSuchEntityException e) {
+            } catch ( NoSuchEntityException e ) {
                 unitOfWork.discard();
             }
         }
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
-            unitOfWork.get(secondCompany);
+            unitOfWork.get( secondCompany );
             unitOfWork.complete();
         }
 
@@ -226,12 +227,12 @@ public class DeeplyAggregatedTest
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
-                EntityBuilder<GroupEntity> builder = unitOfWork.newEntityBuilder(GroupEntity.class);
+                EntityBuilder<GroupEntity> builder = unitOfWork.newEntityBuilder( GroupEntity.class );
                 groupEntity2 = builder.instance();
-                groupEntity2.companies().add(0, secondCompany);
+                groupEntity2.companies().add( 0, secondCompany );
                 groupEntity2 = builder.newInstance();
                 unitOfWork.complete();
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 unitOfWork.discard();
                 throw e;
             }
@@ -239,13 +240,13 @@ public class DeeplyAggregatedTest
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
-                groupEntity = unitOfWork.get(groupEntity);
-                groupEntity2 = unitOfWork.get(groupEntity2);
+                groupEntity = unitOfWork.get( groupEntity );
+                groupEntity2 = unitOfWork.get( groupEntity2 );
 
-                assertEquals(groupEntity.companies().get(0), groupEntity2.companies().get(0));
+                assertEquals( groupEntity.companies().get( 0 ), groupEntity2.companies().get( 0 ) );
 
                 unitOfWork.complete();
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 unitOfWork.discard();
                 throw e;
             }
@@ -253,11 +254,11 @@ public class DeeplyAggregatedTest
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
-                groupEntity = unitOfWork.get(groupEntity);
-                unitOfWork.remove(groupEntity);
+                groupEntity = unitOfWork.get( groupEntity );
+                unitOfWork.remove( groupEntity );
 
                 unitOfWork.complete();
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 unitOfWork.discard();
                 throw e;
             }
@@ -265,11 +266,11 @@ public class DeeplyAggregatedTest
         {
             UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
             try {
-                unitOfWork.get(secondCompany);
-                fail("Should not work");
+                unitOfWork.get( secondCompany );
+                fail( "Should not work" );
 
                 unitOfWork.complete();
-            } catch (NoSuchEntityException e) {
+            } catch ( NoSuchEntityException e ) {
                 unitOfWork.discard();
             }
         }

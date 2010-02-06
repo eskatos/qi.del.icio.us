@@ -47,6 +47,7 @@ public interface ThingFactory
         @Service
         private TagRepository tagRepos;
 
+        @Override
         public ThingEntity newThingInstance( String name, String description, Iterable<String> tags )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();

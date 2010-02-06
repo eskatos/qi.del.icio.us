@@ -57,6 +57,7 @@ public class CoolBlobAssembler
         implements ApplicationAssembler
 {
 
+    @Override
     public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory )
             throws AssemblyException
     {

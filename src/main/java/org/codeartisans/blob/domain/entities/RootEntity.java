@@ -72,6 +72,7 @@ public interface RootEntity
         @Service
         private TagRepository tagRepos;
 
+        @Override
         public void processDomainEvent( DomainEvent domainEvent )
         {
             Class entityClass = spi.getEntityDescriptor( ( EntityComposite ) domainEvent ).type();
@@ -82,6 +83,7 @@ public interface RootEntity
             }
         }
 
+        @Override
         public ThingEntity newThingCreated( ThingCreatedEvent event )
         {
             return thingFactory.newThingInstance( event.name().get(),
@@ -89,6 +91,7 @@ public interface RootEntity
                                                   event.tags().get() );
         }
 
+        @Override
         public TagEntity tagRenamed( TagRenamedEvent event )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
@@ -115,6 +118,7 @@ public interface RootEntity
             implements RootEntity
     {
 
+        @Override
         public ThingEntity newThingCreated( ThingCreatedEvent thingCreatedEvent )
         {
             ThingEntity thing = next.newThingCreated( thingCreatedEvent );
@@ -122,6 +126,7 @@ public interface RootEntity
             return thing;
         }
 
+        @Override
         public TagEntity tagRenamed( TagRenamedEvent tagRenamedEvent )
         {
             TagEntity tag = next.tagRenamed( tagRenamedEvent );

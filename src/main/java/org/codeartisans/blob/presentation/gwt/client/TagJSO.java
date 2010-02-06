@@ -23,7 +23,6 @@ package org.codeartisans.blob.presentation.gwt.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import org.codeartisans.blob.presentation.gwt.client.Tag;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>

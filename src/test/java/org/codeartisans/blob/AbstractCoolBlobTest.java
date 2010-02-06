@@ -35,11 +35,12 @@ public abstract class AbstractCoolBlobTest
         extends AbstractQi4jApplicationTest
 {
 
-    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
+    @Override
+    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory )
             throws AssemblyException
     {
-        ApplicationAssembly assembly = new CoolBlobAssembler().assemble(applicationFactory);
-        assembly.setMode(Application.Mode.test);
+        ApplicationAssembly assembly = new CoolBlobAssembler().assemble( applicationFactory );
+        assembly.setMode( Application.Mode.test );
         return assembly;
     }
 

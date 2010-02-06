@@ -58,11 +58,13 @@ public interface TagEntity
         @This
         private TagEntity state;
 
+        @Override
         public void incrementCount()
         {
             state.count().set( state.count().get() + 1 );
         }
 
+        @Override
         public void decrementCount()
         {
             if ( state.count().get() > 0 ) {

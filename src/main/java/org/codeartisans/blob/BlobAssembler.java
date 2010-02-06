@@ -54,6 +54,7 @@ public class BlobAssembler
         implements Assembler
 {
 
+    @Override
     public void assemble( ModuleAssembly module )
             throws AssemblyException
     {

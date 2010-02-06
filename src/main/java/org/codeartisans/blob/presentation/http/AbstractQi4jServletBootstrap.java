@@ -59,6 +59,7 @@ public abstract class AbstractQi4jServletBootstrap
     protected ApplicationSPI application;
     protected ApplicationDetailDescriptor descriptor;
 
+    @Override
     public final void contextInitialized( ServletContextEvent sce )
     {
         try {
@@ -106,6 +107,7 @@ public abstract class AbstractQi4jServletBootstrap
     {
     }
 
+    @Override
     public final void contextDestroyed( ServletContextEvent sce )
     {
         LOGGER.info( "contextDestroying" );

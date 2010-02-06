@@ -57,6 +57,7 @@ public interface DomainEventsRepository
         @Structure
         private QueryBuilderFactory qbf;
 
+        @Override
         public DomainEvent findLastRecordedEvent()
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
@@ -66,6 +67,7 @@ public interface DomainEventsRepository
             return CollectionUtils.firstElementOrNull( query );
         }
 
+        @Override
         public Query<DomainEvent> findAll()
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
@@ -74,6 +76,7 @@ public interface DomainEventsRepository
             return queryBuilder.newQuery( uow ).orderBy( orderBy( template.eventNumber(), Order.ASCENDING ) );
         }
 
+        @Override
         public Query<DomainEvent> findWithNumberGreaterThan( Long eventNumber )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();

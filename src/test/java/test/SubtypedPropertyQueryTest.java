@@ -23,25 +23,35 @@ public class SubtypedPropertyQueryTest
         extends AbstractQi4jTest
 {
 
-    public void assemble(ModuleAssembly module)
+    @Override
+    public void assemble( ModuleAssembly module )
             throws AssemblyException
     {
-        module.addEntities(FlatEntity.class, WoupsEntity.class);
-        module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class);
-        new RdfMemoryStoreAssembler().assemble(module);
+        module.addEntities( FlatEntity.class, WoupsEntity.class );
+        module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class );
+        new RdfMemoryStoreAssembler().assemble( module );
     }
 
-    interface FlatEntity extends EntityComposite
+    interface FlatEntity
+            extends EntityComposite
     {
+
         Property<String> name();
+
     }
 
-    interface WoupsEntity extends EntityComposite
+    interface WoupsEntity
+            extends EntityComposite
     {
+
         Name name();
+
     }
 
-    interface Name extends Property<String> { }
+    interface Name
+            extends Property<String>
+    {
+    }
 
     @Test
     public void givenAnEntityWithSimplePropertyWhenQueriedOnPropertyThenJustWork()
@@ -50,24 +60,24 @@ public class SubtypedPropertyQueryTest
         FlatEntity test;
         {
             UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-            EntityBuilder<FlatEntity> builder = uow.newEntityBuilder(FlatEntity.class);
+            EntityBuilder<FlatEntity> builder = uow.newEntityBuilder( FlatEntity.class );
             test = builder.instance();
-            test.name().set("Bob");
+            test.name().set( "Bob" );
             test = builder.newInstance();
             uow.complete();
         }
         {
             UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
 
-            QueryBuilder<FlatEntity> queryBuilder = queryBuilderFactory.newQueryBuilder(FlatEntity.class);
-            FlatEntity thingTemplate = QueryExpressions.templateFor(FlatEntity.class);
-            queryBuilder.where(QueryExpressions.eq(thingTemplate.name(), "Bob"));
+            QueryBuilder<FlatEntity> queryBuilder = queryBuilderFactory.newQueryBuilder( FlatEntity.class );
+            FlatEntity thingTemplate = QueryExpressions.templateFor( FlatEntity.class );
+            queryBuilder.where( QueryExpressions.eq( thingTemplate.name(), "Bob" ) );
 
-            Query<FlatEntity> query = queryBuilder.newQuery(uow);
-            query.maxResults(1);
+            Query<FlatEntity> query = queryBuilder.newQuery( uow );
+            query.maxResults( 1 );
 
-            FlatEntity foundByName = CollectionUtils.firstElementOrNull(query);
-            Assert.assertEquals("Bob", foundByName.name().get());
+            FlatEntity foundByName = CollectionUtils.firstElementOrNull( query );
+            Assert.assertEquals( "Bob", foundByName.name().get() );
 
             uow.complete();
         }
@@ -82,24 +92,24 @@ public class SubtypedPropertyQueryTest
         WoupsEntity test;
         {
             UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-            EntityBuilder<WoupsEntity> builder = uow.newEntityBuilder(WoupsEntity.class);
+            EntityBuilder<WoupsEntity> builder = uow.newEntityBuilder( WoupsEntity.class );
             test = builder.instance();
-            test.name().set("Bob");
+            test.name().set( "Bob" );
             test = builder.newInstance();
             uow.complete();
         }
         {
             UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
 
-            QueryBuilder<WoupsEntity> queryBuilder = queryBuilderFactory.newQueryBuilder(WoupsEntity.class);
-            WoupsEntity thingTemplate = QueryExpressions.templateFor(WoupsEntity.class);
-            queryBuilder.where(QueryExpressions.eq(thingTemplate.name(), "Bob"));
+            QueryBuilder<WoupsEntity> queryBuilder = queryBuilderFactory.newQueryBuilder( WoupsEntity.class );
+            WoupsEntity thingTemplate = QueryExpressions.templateFor( WoupsEntity.class );
+            queryBuilder.where( QueryExpressions.eq( thingTemplate.name(), "Bob" ) );
 
-            Query<WoupsEntity> query = queryBuilder.newQuery(uow);
-            query.maxResults(1);
+            Query<WoupsEntity> query = queryBuilder.newQuery( uow );
+            query.maxResults( 1 );
 
-            WoupsEntity foundByName = CollectionUtils.firstElementOrNull(query);
-            Assert.assertEquals("Bob", foundByName.name().get());
+            WoupsEntity foundByName = CollectionUtils.firstElementOrNull( query );
+            Assert.assertEquals( "Bob", foundByName.name().get() );
 
             uow.complete();
         }

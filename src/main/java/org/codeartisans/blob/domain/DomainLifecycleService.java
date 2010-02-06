@@ -58,6 +58,7 @@ public interface DomainLifecycleService
         @Service
         private DomainEventsRepository domainEventsRepos;
 
+        @Override
         public void activate()
                 throws Exception
         {
@@ -79,6 +80,7 @@ public interface DomainLifecycleService
             uow.complete();
         }
 
+        @Override
         public void passivate()
                 throws Exception
         {

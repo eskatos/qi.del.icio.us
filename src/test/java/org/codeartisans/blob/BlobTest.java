@@ -43,6 +43,7 @@ public class BlobTest
         extends AbstractQi4jTest
 {
 
+    @Override
     public void assemble( ModuleAssembly module )
             throws AssemblyException
     {

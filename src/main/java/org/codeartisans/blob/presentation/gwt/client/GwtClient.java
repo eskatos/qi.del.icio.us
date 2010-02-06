@@ -38,6 +38,7 @@ public final class GwtClient
         implements EntryPoint
 {
 
+    @Override
     public void onModuleLoad()
     {
         try {
@@ -50,6 +51,7 @@ public final class GwtClient
             builder.sendRequest( null, new RequestCallback()
             {
 
+                @Override
                 public void onResponseReceived( Request request, Response response )
                 {
                     RootPanel.get().add( new Label( "RESPONSE: " + response.getText() ) );
@@ -62,6 +64,7 @@ public final class GwtClient
 
                 }
 
+                @Override
                 public void onError( Request request, Throwable ex )
                 {
                     RootPanel.get().add( new Label( "FUCK FAILED: " + ex.getMessage() ) );

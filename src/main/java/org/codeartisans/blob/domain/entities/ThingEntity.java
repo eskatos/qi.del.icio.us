@@ -68,6 +68,7 @@ public interface ThingEntity
             implements ThingEntity
     {
 
+        @Override
         public void nameChanged( String name )
         {
             name().set( name );

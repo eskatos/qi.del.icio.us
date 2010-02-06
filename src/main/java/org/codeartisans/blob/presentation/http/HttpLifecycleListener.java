@@ -60,6 +60,13 @@ public class HttpLifecycleListener
     }
 
     @Override
+    protected void beforeApplicationActivation( Application app )
+            throws Exception
+    {
+        LOGGER.info( "CoolBlob Application " + application.version() + " successfully assembled" );
+    }
+
+    @Override
     protected void afterApplicationActivation( Application application )
             throws Exception
     {

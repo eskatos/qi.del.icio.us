@@ -53,6 +53,7 @@ public interface DomainEvent
         @Service
         private DomainEventsRepository domainEventsRepos;
 
+        @Override
         public void create()
                 throws LifecycleException
         {
@@ -66,6 +67,7 @@ public interface DomainEvent
             }
         }
 
+        @Override
         public void remove()
                 throws LifecycleException
         {
