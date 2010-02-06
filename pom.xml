@@ -11,8 +11,8 @@
     <url>http://codeartisans.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.5</maven.compiler.source>
-        <maven.compiler.target>1.5</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
         <qi4j.version>1.0</qi4j.version>
         <gwt.version>2.0.0</gwt.version>
         <gwt.plugin.version>1.2</gwt.plugin.version>
@@ -158,6 +158,18 @@
             <groupId>org.codeartisans.gwt</groupId>
             <artifactId>gwt-toolbox</artifactId>
             <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Apache Shiro -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>1.0-incubating-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>qi4j-lib-shiro</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Qi4j -->

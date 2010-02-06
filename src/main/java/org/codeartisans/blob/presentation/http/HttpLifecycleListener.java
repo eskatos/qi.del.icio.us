@@ -50,6 +50,7 @@ public class HttpLifecycleListener
 
     private static final Logger LOGGER = LoggerFactory.getLogger( HttpLifecycleListener.class );
 
+    @Override
     public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory )
             throws AssemblyException
     {

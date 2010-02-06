@@ -33,73 +33,94 @@ import javax.ws.rs.core.Response;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
 import org.codeartisans.blob.presentation.http.AbstractQi4jResource;
+import org.codeartisans.blob.presentation.http.Qi4jResource;
 import org.codeartisans.blob.presentation.http.ResourceSerializer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.qi4j.library.shiro.RequiresRoles;
+import org.qi4j.library.shiro.RequiresRolesConcern;
 
 /**
- * @author Paul Merlin <paul@nosphere.org>
+ * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public class TagResource
-        extends AbstractQi4jResource<TagResource>
+@Mixins( TagResource.Mixin.class )
+@Concerns( RequiresRolesConcern.class )
+public interface TagResource
+        extends Qi4jResource, TransientComposite
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( TagResource.class );
-    @Service
-    private TagRepository tagRepos;
-    @Service
-    private ResourceSerializer serializer;
-    private String name;
-
-    public TagResource withName( String name )
-    {
-        this.name = name;
-        return this;
-    }
+    void withName( String name );
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
-    public Response tag()
-    {
-        try {
-            UnitOfWork uow = uowf.newUnitOfWork();
-            TagEntity tag = tagRepos.findByName( name );
-            if ( tag == null ) {
-                return Response.status( Response.Status.NOT_FOUND ).build();
-            }
-            Map<String, URI> uris = new LinkedHashMap<String, URI>();
-            uris.put( "uri", uriInfo.getRequestUri() );
-            uris.put( "things-uri", uriInfo.getRequestUriBuilder().path( "things" ).build() );
-            JSONObject jsonTag = serializer.tagAsJson( tag, uris );
-            uow.discard();
-            return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonTag.toString( 2 ) ).build();
-        } catch ( JSONException ex ) {
-            throw new RuntimeException( ex );
-        }
-    }
+    @RequiresRoles( "admin" )
+    Response tag();
 
-    // TODO Set request param name and change accordingly for URI building
-    // TODO Use DomainEvents !
-    // TODO Sanitize input ! (DomainEvent responsibility)
     @POST
     @Consumes( MediaType.TEXT_PLAIN )
-    public Response renameTag( String newName )
+    Response renameTag( String newName );
+
+    abstract class Mixin
+            extends AbstractQi4jResource
+            implements TagResource
     {
-        try {
-            UnitOfWork uow = uowf.newUnitOfWork();
-            TagEntity tag = tagRepos.findByName( name );
-            tag.name().set( newName );
-            uow.complete();
-            URI uri = uriInfo.getRequestUriBuilder().replaceMatrixParam( "rename", newName ).build();
-            return Response.seeOther( uri ).build();
-        } catch ( UnitOfWorkCompletionException ex ) {
-            throw new RuntimeException( ex );
+
+        @Service
+        private TagRepository tagRepos;
+        @Service
+        private ResourceSerializer serializer;
+        private String name;
+
+        @Override
+        public void withName( String name )
+        {
+            this.name = name;
         }
+
+        @Override
+        public Response tag()
+        {
+            try {
+                UnitOfWork uow = uowf.newUnitOfWork();
+                TagEntity tag = tagRepos.findByName( name );
+                if ( tag == null ) {
+                    return Response.status( Response.Status.NOT_FOUND ).build();
+                }
+                Map<String, URI> uris = new LinkedHashMap<String, URI>();
+                uris.put( "uri", uriInfo.getRequestUri() );
+                uris.put( "things-uri", uriInfo.getRequestUriBuilder().path( "things" ).build() );
+                JSONObject jsonTag = serializer.tagAsJson( tag, uris );
+                uow.discard();
+                return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonTag.toString( 2 ) ).build();
+            } catch ( JSONException ex ) {
+                throw new RuntimeException( ex );
+            }
+        }
+
+        // TODO Set request param name and change accordingly for URI building
+        // TODO Use DomainEvents !
+        // TODO Sanitize input ! (DomainEvent responsibility)
+        @Override
+        public Response renameTag( String newName )
+        {
+            try {
+                UnitOfWork uow = uowf.newUnitOfWork();
+                TagEntity tag = tagRepos.findByName( name );
+                tag.name().set( newName );
+                uow.complete();
+                URI uri = uriInfo.getRequestUriBuilder().replaceMatrixParam( "rename", newName ).build();
+                return Response.seeOther( uri ).build();
+            } catch ( UnitOfWorkCompletionException ex ) {
+                throw new RuntimeException( ex );
+            }
+        }
+
     }
 
 }

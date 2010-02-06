@@ -21,6 +21,7 @@
  */
 package org.codeartisans.blob.presentation.http;
 
+import org.codeartisans.blob.presentation.http.resources.LogoutResource;
 import org.codeartisans.blob.presentation.http.resources.TagResource;
 import org.codeartisans.blob.presentation.http.resources.TagThingsResource;
 import org.codeartisans.blob.presentation.http.resources.TagsResource;
@@ -35,12 +36,14 @@ public class ResourcesAssembler
         implements Assembler
 {
 
+    @Override
     public void assemble( ModuleAssembly module )
             throws AssemblyException
     {
-        module.addObjects( TagsResource.class,
-                           TagResource.class,
-                           TagThingsResource.class );
+        module.addTransients( LogoutResource.class,
+                              TagsResource.class,
+                              TagResource.class,
+                              TagThingsResource.class );
     }
 
 }

@@ -34,10 +34,13 @@ import javax.ws.rs.core.Response;
 import org.codeartisans.blob.domain.entities.TagEntity;
 import org.codeartisans.blob.domain.entities.TagRepository;
 import org.codeartisans.blob.presentation.http.AbstractQi4jResource;
+import org.codeartisans.blob.presentation.http.Qi4jResource;
 import org.codeartisans.blob.presentation.http.ResourceSerializer;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,52 +48,76 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public class TagsResource
-        extends AbstractQi4jResource<TagsResource>
+@Mixins( TagsResource.Mixin.class )
+public interface TagsResource
+        extends Qi4jResource, TransientComposite
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( TagsResource.class );
-    @Service
-    private TagRepository tagRepos;
-    @Service
-    private ResourceSerializer serializer;
-
     @Path( "{name}/" )
-    public TagResource tag( @PathParam( "name" ) String name )
-    {
-        return obf.newObject( TagResource.class ).withUriInfo( uriInfo ).withName( name );
-    }
+    TagResource tag( @PathParam( "name" ) String name );
 
     @Path( "{name}/things" )
-    public TagThingsResource tagThings( @PathParam( "name" ) String name )
-    {
-        return obf.newObject( TagThingsResource.class ).withUriInfo( uriInfo ).withName( name );
-    }
+    TagThingsResource tagThings( @PathParam( "name" ) String name );
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
-    public Response tags()
+    Response tags();
+
+    abstract class Mixin
+            extends AbstractQi4jResource
+            implements TagsResource
     {
-        LOGGER.info( "URI INFO: " + uriInfo.getRequestUri().toString() );
-        try {
-            UnitOfWork uow = uowf.newUnitOfWork();
-            JSONArray jsonArray = serializer.tagsAsJson( tagRepos.findAll(), new ResourceURIsBuilder<TagEntity>()
-            {
 
-                public Map<String, URI> buildURIs( TagEntity resource )
-                {
-                    Map<String, URI> uris = new LinkedHashMap<String, URI>();
-                    uris.put( "uri", uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).build() );
-                    uris.put( "things-uri", uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).path( "things" ).build() );
-                    return uris;
-                }
+        private static final Logger LOGGER = LoggerFactory.getLogger( TagsResource.class );
+        @Service
+        private TagRepository tagRepos;
+        @Service
+        private ResourceSerializer serializer;
 
-            } );
-            uow.discard();
-            return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonArray.toString( 2 ) ).build();
-        } catch ( JSONException ex ) {
-            throw new RuntimeException( ex );
+        @Override
+        public TagResource tag( String name )
+        {
+            TagResource tagResource = tbf.newTransient( TagResource.class );
+            tagResource.withUriInfo( uriInfo );
+            tagResource.withName( name );
+            return tagResource;
         }
+
+        @Override
+        public TagThingsResource tagThings( String name )
+        {
+            TagThingsResource tagThings = tbf.newTransient( TagThingsResource.class );
+            tagThings.withUriInfo( uriInfo );
+            tagThings.withName( name );
+            return tagThings;
+        }
+
+        @Override
+        public Response tags()
+        {
+            LOGGER.info( "URI INFO: " + uriInfo.getRequestUri().toString() );
+            try {
+                UnitOfWork uow = uowf.newUnitOfWork();
+                JSONArray jsonArray = serializer.tagsAsJson( tagRepos.findAll(), new ResourceURIsBuilder<TagEntity>()
+                {
+
+                    @Override
+                    public Map<String, URI> buildURIs( TagEntity resource )
+                    {
+                        Map<String, URI> uris = new LinkedHashMap<String, URI>();
+                        uris.put( "uri", uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).build() );
+                        uris.put( "things-uri", uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).path( "things" ).build() );
+                        return uris;
+                    }
+
+                } );
+                uow.discard();
+                return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonArray.toString( 2 ) ).build();
+            } catch ( JSONException ex ) {
+                throw new RuntimeException( ex );
+            }
+        }
+
     }
 
 }

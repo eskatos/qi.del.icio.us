@@ -28,62 +28,73 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.codeartisans.blob.domain.entities.TagEntity;
-import org.codeartisans.blob.domain.entities.TagRepository;
 import org.codeartisans.blob.domain.entities.ThingEntity;
 import org.codeartisans.blob.domain.entities.ThingRepository;
 import org.codeartisans.blob.presentation.http.AbstractQi4jResource;
+import org.codeartisans.blob.presentation.http.Qi4jResource;
 import org.codeartisans.blob.presentation.http.ResourceSerializer;
 import org.codeartisans.blob.presentation.http.ResourceURIsBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public class TagThingsResource
-        extends AbstractQi4jResource<TagThingsResource>
+@Mixins( TagThingsResource.Mixin.class )
+public interface TagThingsResource
+        extends Qi4jResource, TransientComposite
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( TagThingsResource.class );
-    @Service
-    private ThingRepository thingRepos;
-    @Service
-    private ResourceSerializer serializer;
-    private String name;
-
-    public TagThingsResource withName( String name )
-    {
-        this.name = name;
-        return this;
-    }
+    void withName( String name );
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
-    public Response tagThings()
+    Response tagThings();
+
+    abstract class Mixin
+            extends AbstractQi4jResource
+            implements TagThingsResource
     {
-        try {
-            UnitOfWork uow = uowf.newUnitOfWork();
-            JSONArray jsonArray = serializer.thingsAsJson( thingRepos.findByTag( name ), new ResourceURIsBuilder<ThingEntity>()
-            {
 
-                public Map<String, URI> buildURIs( ThingEntity resource )
+        @Service
+        private ThingRepository thingRepos;
+        @Service
+        private ResourceSerializer serializer;
+        private String name;
+
+        @Override
+        public void withName( String name )
+        {
+            this.name = name;
+        }
+
+        @Override
+        public Response tagThings()
+        {
+            try {
+                UnitOfWork uow = uowf.newUnitOfWork();
+                JSONArray jsonArray = serializer.thingsAsJson( thingRepos.findByTag( name ), new ResourceURIsBuilder<ThingEntity>()
                 {
-                    Map<String, URI> uris = new LinkedHashMap<String, URI>();
-                    uris.put( "uri", uriInfo.getBaseUriBuilder().path( "things" ).path( resource.identity().get() ).build() );
-                    return uris;
-                }
 
-            } );
-            uow.discard();
-            return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonArray.toString( 2 ) ).build();
-        } catch ( JSONException ex ) {
-            throw new RuntimeException( ex );
+                    @Override
+                    public Map<String, URI> buildURIs( ThingEntity resource )
+                    {
+                        Map<String, URI> uris = new LinkedHashMap<String, URI>();
+                        uris.put( "uri", uriInfo.getBaseUriBuilder().path( "things" ).path( resource.identity().get() ).build() );
+                        return uris;
+                    }
+
+                } );
+                uow.discard();
+                return Response.ok().type( MediaType.APPLICATION_JSON ).entity( jsonArray.toString( 2 ) ).build();
+            } catch ( JSONException ex ) {
+                throw new RuntimeException( ex );
+            }
+
         }
 
     }

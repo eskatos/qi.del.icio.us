@@ -21,32 +21,38 @@
  */
 package org.codeartisans.blob.presentation.http.resources;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import org.codeartisans.blob.presentation.http.Constants.Qi4jContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.ws.rs.core.Response;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.mixin.Mixins;
 
 /**
- * @author Paul Merlin <paul@nosphere.org>
+ * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Path( "/alive" )
-public class AliveResource
+@Mixins( LogoutResource.Mixin.class )
+public interface LogoutResource
+        extends TransientComposite
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( AliveResource.class );
-    @Context
-    private ServletContext context;
-
     @GET
-    @Produces( "text/plain" )
-    public String isAlive()
+    Response logout();
+
+    abstract class Mixin
+            implements LogoutResource
     {
-        LOGGER.info( "isAlive? Qi4jApplication: " + context.getAttribute( Qi4jContext.APPLICATION ) );
-        return "true";
+
+        @Override
+        public Response logout()
+        {
+            Subject subject = SecurityUtils.getSubject();
+            if ( subject != null ) {
+                subject.logout();
+            }
+            return Response.ok().build();
+        }
+
     }
 
 }

@@ -30,7 +30,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import org.codeartisans.blob.CoolBlobStructure;
 import org.codeartisans.blob.presentation.http.Constants.Qi4jContext;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 
@@ -47,14 +47,14 @@ public class RootResource
     private ServletContext context;
     @Context
     private UriInfo uriInfo;
-    private ObjectBuilderFactory httpObjectBuilderFactory;
+    private TransientBuilderFactory httpTransientBuilderFactory;
 
     @PostConstruct
     public void postConstruct()
     {
         Application application = ( Application ) context.getAttribute( Qi4jContext.APPLICATION );
         Module httpModule = application.findModule( CoolBlobStructure.Layers.PRESENTATION, CoolBlobStructure.PresentationModules.HTTP );
-        httpObjectBuilderFactory = httpModule.objectBuilderFactory();
+        httpTransientBuilderFactory = httpModule.transientBuilderFactory();
     }
 
     @GET
@@ -67,7 +67,16 @@ public class RootResource
     @Path( "/tags/" )
     public TagsResource tags()
     {
-        return httpObjectBuilderFactory.newObject( TagsResource.class ).withUriInfo( uriInfo );
+        TagsResource tags = httpTransientBuilderFactory.newTransient( TagsResource.class );
+        tags.withUriInfo( uriInfo );
+        return tags;
+    }
+
+    // QUID Do not work with HTTP Basic Authentication
+    @Path( "/logout/" )
+    public LogoutResource logout()
+    {
+        return httpTransientBuilderFactory.newTransient( LogoutResource.class );
     }
 
 }

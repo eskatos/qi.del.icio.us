@@ -22,26 +22,27 @@
 package org.codeartisans.blob.presentation.http;
 
 import javax.ws.rs.core.UriInfo;
+import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
-public abstract class AbstractQi4jResource<T extends AbstractQi4jResource>
+public abstract class AbstractQi4jResource
+        implements Qi4jResource
 {
 
     @Structure
     protected UnitOfWorkFactory uowf;
     @Structure
-    protected ObjectBuilderFactory obf;
+    protected TransientBuilderFactory tbf;
     protected UriInfo uriInfo;
 
-    public final T withUriInfo( UriInfo uriInfo )
+    @Override
+    public void withUriInfo( UriInfo uriInfo )
     {
         this.uriInfo = uriInfo;
-        return ( T ) this;
     }
 
 }
