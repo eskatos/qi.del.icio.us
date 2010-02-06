@@ -25,6 +25,8 @@ import org.codeartisans.blob.presentation.http.resources.LogoutResource;
 import org.codeartisans.blob.presentation.http.resources.TagResource;
 import org.codeartisans.blob.presentation.http.resources.TagThingsResource;
 import org.codeartisans.blob.presentation.http.resources.TagsResource;
+import org.codeartisans.blob.presentation.http.resources.ThingResource;
+import org.codeartisans.blob.presentation.http.resources.ThingsResource;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -43,7 +45,9 @@ public class ResourcesAssembler
         module.addTransients( LogoutResource.class,
                               TagsResource.class,
                               TagResource.class,
-                              TagThingsResource.class );
+                              TagThingsResource.class,
+                              ThingsResource.class,
+                              ThingResource.class );
     }
 
 }

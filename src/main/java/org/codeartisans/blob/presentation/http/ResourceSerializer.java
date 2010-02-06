@@ -59,6 +59,7 @@ public interface ResourceSerializer
 
         private static final Logger LOGGER = LoggerFactory.getLogger( ResourceSerializer.Mixin.class );
 
+        @Override
         public JSONObject tagAsJson( TagEntity tag, Map<String, URI> uris )
                 throws JSONException
         {
@@ -71,6 +72,7 @@ public interface ResourceSerializer
             return json;
         }
 
+        @Override
         public JSONArray tagsAsJson( Iterable<TagEntity> tags, ResourceURIsBuilder<TagEntity> tagURIBuilder )
                 throws JSONException
         {
@@ -81,6 +83,7 @@ public interface ResourceSerializer
             return json;
         }
 
+        @Override
         public JSONObject thingAsJson( ThingEntity thing, Map<String, URI> uris )
                 throws JSONException
         {
@@ -94,6 +97,7 @@ public interface ResourceSerializer
             return json;
         }
 
+        @Override
         public JSONArray thingsAsJson( Iterable<ThingEntity> things, ResourceURIsBuilder<ThingEntity> thingURIBuilder )
                 throws JSONException
         {

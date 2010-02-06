@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Paul Merlin <paul@nosphere.org>
+ * Copyright (c) 2010 Paul Merlin <paul@nosphere.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
  */
 package org.codeartisans.blob.presentation.http.resources;
 
-import org.codeartisans.blob.presentation.http.ResourceURIsBuilder;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,11 +30,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.codeartisans.blob.domain.entities.TagEntity;
-import org.codeartisans.blob.domain.entities.TagRepository;
+import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.domain.entities.ThingRepository;
 import org.codeartisans.blob.presentation.http.AbstractQi4jResource;
 import org.codeartisans.blob.presentation.http.Qi4jResource;
 import org.codeartisans.blob.presentation.http.ResourceSerializer;
+import org.codeartisans.blob.presentation.http.ResourceURIsBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.qi4j.api.composite.TransientComposite;
@@ -44,65 +44,52 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 
 /**
- * @author Paul Merlin <paul@nosphere.org>
+ * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins( TagsResource.Mixin.class )
-public interface TagsResource
+@Mixins( ThingsResource.Mixin.class )
+public interface ThingsResource
         extends Qi4jResource, TransientComposite
 {
 
-    @Path( "{name}/" )
-    TagResource tag( @PathParam( "name" ) String name );
-
-    @Path( "{name}/things" )
-    TagThingsResource tagThings( @PathParam( "name" ) String name );
+    @Path( "{identity}/" )
+    ThingResource thing( @PathParam( "identity" ) String identity );
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
-    Response tags();
+    Response things();
 
     abstract class Mixin
             extends AbstractQi4jResource
-            implements TagsResource
+            implements ThingsResource
     {
 
         @Service
-        private TagRepository tagRepos;
+        private ThingRepository thingRepos;
         @Service
         private ResourceSerializer serializer;
 
         @Override
-        public TagResource tag( String name )
+        public ThingResource thing( String identity )
         {
-            TagResource tagResource = tbf.newTransient( TagResource.class );
-            tagResource.withUriInfo( uriInfo );
-            tagResource.withName( name );
-            return tagResource;
+            ThingResource thing = tbf.newTransient( ThingResource.class );
+            thing.withUriInfo( uriInfo );
+            thing.withIdentity( identity );
+            return thing;
         }
 
         @Override
-        public TagThingsResource tagThings( String name )
-        {
-            TagThingsResource tagThings = tbf.newTransient( TagThingsResource.class );
-            tagThings.withUriInfo( uriInfo );
-            tagThings.withName( name );
-            return tagThings;
-        }
-
-        @Override
-        public Response tags()
+        public Response things()
         {
             try {
                 UnitOfWork uow = uowf.newUnitOfWork();
-                JSONArray jsonArray = serializer.tagsAsJson( tagRepos.findAll(), new ResourceURIsBuilder<TagEntity>()
+                JSONArray jsonArray = serializer.thingsAsJson( thingRepos.findAll(), new ResourceURIsBuilder<ThingEntity>()
                 {
 
                     @Override
-                    public Map<String, URI> buildURIs( TagEntity resource )
+                    public Map<String, URI> buildURIs( ThingEntity resource )
                     {
                         Map<String, URI> uris = new LinkedHashMap<String, URI>();
-                        uris.put( "uri", uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).build() );
-                        uris.put( "things-uri", uriInfo.getAbsolutePathBuilder().path( resource.name().get() ).path( "things" ).build() );
+                        uris.put( "uri", uriInfo.getAbsolutePathBuilder().path( resource.identity().get() ).build() );
                         return uris;
                     }
 

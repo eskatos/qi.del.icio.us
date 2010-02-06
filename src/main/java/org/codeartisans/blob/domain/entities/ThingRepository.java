@@ -42,6 +42,8 @@ public interface ThingRepository
         extends ServiceComposite
 {
 
+    ThingEntity findByIdentity( String identity );
+
     Query<ThingEntity> findAll();
 
     Query<ThingEntity> findByTag( @NotEmpty String tag );
@@ -56,6 +58,14 @@ public interface ThingRepository
         @Structure
         private QueryBuilderFactory qbf;
 
+        @Override
+        public ThingEntity findByIdentity( String identity )
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            return uow.get( ThingEntity.class, identity );
+        }
+
+        @Override
         public Query<ThingEntity> findAll()
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
@@ -63,6 +73,7 @@ public interface ThingRepository
             return queryBuilder.newQuery( uow );
         }
 
+        @Override
         public Query<ThingEntity> findByTag( String tag )
         {
             LOGGER.debug( "findByTag(" + tag + ")" );

@@ -72,6 +72,14 @@ public class RootResource
         return tags;
     }
 
+    @Path( "/things/" )
+    public ThingsResource things()
+    {
+        ThingsResource tags = httpTransientBuilderFactory.newTransient( ThingsResource.class );
+        tags.withUriInfo( uriInfo );
+        return tags;
+    }
+
     // QUID Do not work with HTTP Basic Authentication
     @Path( "/logout/" )
     public LogoutResource logout()
