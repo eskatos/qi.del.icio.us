@@ -29,7 +29,6 @@ import com.google.gwt.core.client.JsArray;
  */
 public class TagJSO
         extends JavaScriptObject
-        implements Tag
 {
 
     protected TagJSO()

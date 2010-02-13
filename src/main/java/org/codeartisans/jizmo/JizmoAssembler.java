@@ -109,14 +109,12 @@ public class JizmoAssembler
                                      TagRepository.class ).
                     visibleIn( Visibility.application );
 
+            domainModel.addServices( ModelLifecycleService.class ).instantiateOnStartup();
+
             // Infrastructure Services
             domainModel.addServices( MemoryEntityStoreService.class,
                                      UuidIdentityGeneratorService.class );
             new RdfMemoryStoreAssembler().assemble( domainModel );
-        }
-        ModuleAssembly domainLifecycle = domain.moduleAssembly( JizmoStructure.DomainModules.LIFECYCLE );
-        {
-            domainLifecycle.addServices( ModelLifecycleService.class ).instantiateOnStartup();
         }
 
         LayerAssembly presentation = app.layerAssembly( JizmoStructure.Layers.PRESENTATION );
