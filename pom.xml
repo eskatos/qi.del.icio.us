@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.codeartisans</groupId>
-    <artifactId>qi.del.icio.us</artifactId>
+    <artifactId>jizmo</artifactId>
     <packaging>war</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>qi.del.icio.us</name>
+    <name>${project.artifactId}</name>
     <url>http://codeartisans.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,7 +16,7 @@
         <qi4j.version>1.0</qi4j.version>
         <gwt.version>2.0.0</gwt.version>
         <gwt.plugin.version>1.2</gwt.plugin.version>
-        <gwt.module.default>org.codeartisans.blob.presentation.gwt.GwtClient</gwt.module.default>
+        <gwt.module.default>org.codeartisans.jizmo.presentation.gwt.GwtClient</gwt.module.default>
     </properties>
     <build>
         <finalName>qi.del.icio.us</finalName>
@@ -44,7 +44,7 @@
     </build>
     <profiles>
         <profile>
-            <id>blob.default</id>
+            <id>jizmo.default</id>
             <!-- Active by default, use to build the project, should be deactivated to run the project -->
             <activation>
                 <property>
@@ -65,7 +65,7 @@
                                 <fileset>
                                     <directory>war</directory>
                                     <includes>
-                                        <include>blob</include>
+                                        <include>jizmo</include>
                                         <include>WEB-INF/classes</include>
                                         <include>WEB-INF/lib</include>
                                     </includes>
@@ -80,7 +80,7 @@
                         <version>${gwt.plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>blob.gwt</id>
+                                <id>jizmo.gwt</id>
                                 <goals>
                                     <goal>compile</goal>
                                     <goal>test</goal>
@@ -116,7 +116,7 @@
                         <version>${gwt.plugin.version}</version>
                         <configuration>
                             <module>${gwt.module.http}</module>
-                            <runTarget>blob/index.html</runTarget>
+                            <runTarget>jizmo/index.html</runTarget>
                         </configuration>
                     </plugin>
                 </plugins>

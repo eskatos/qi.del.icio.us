@@ -3,9 +3,9 @@
          xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <display-name>qi.del.icio.us</display-name>
+    <display-name>jizmo</display-name>
     <listener>
-        <listener-class>org.codeartisans.blob.presentation.http.HttpLifecycleListener</listener-class>
+        <listener-class>org.codeartisans.jizmo.presentation.http.HttpLifecycleListener</listener-class>
     </listener>
     <filter>
         <filter-name>IniShiroFilter</filter-name>
@@ -23,7 +23,7 @@
                 # config gets long and you want to keep web.xml clean.
                 [main]
 
-                blobRealmFactory = org.codeartisans.blob.security.BlobRealmFactory
+                jizmoRealmFactory = org.codeartisans.jizmo.security.JizmoRealmFactory
 
                 [users]
                 # format: username = password, role1, role2, ..., roleN
@@ -54,7 +54,7 @@
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>org.codeartisans.blob.presentation.http.resources</param-value>
+            <param-value>org.codeartisans.jizmo.presentation.http.resources</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
