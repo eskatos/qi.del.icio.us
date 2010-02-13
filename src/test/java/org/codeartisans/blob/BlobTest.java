@@ -21,8 +21,8 @@
  */
 package org.codeartisans.blob;
 
-import org.codeartisans.blob.domain.entities.TagEntity;
-import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.domain.things.TagEntity;
+import org.codeartisans.blob.domain.things.ThingEntity;
 import org.codeartisans.java.toolbox.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;

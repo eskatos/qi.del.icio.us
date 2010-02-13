@@ -21,6 +21,9 @@
                 # the 'config' init-param. Or you can specify the 'configPath' init-param and specify the
                 # path to a resource at any location (url, file or classpath). This may be desired if the
                 # config gets long and you want to keep web.xml clean.
+                [main]
+
+                blobRealmFactory = org.codeartisans.blob.security.BlobRealmFactory
 
                 [users]
                 # format: username = password, role1, role2, ..., roleN

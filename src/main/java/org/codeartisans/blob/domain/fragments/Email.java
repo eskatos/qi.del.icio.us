@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Paul Merlin <paul@nosphere.org>
+ * Copyright (c) 2010 Paul Merlin <paul@nosphere.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,24 +19,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.entities;
+package org.codeartisans.blob.domain.fragments;
 
-import org.codeartisans.blob.domain.fragments.Name;
-import org.codeartisans.blob.domain.fragments.Text;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.property.Property;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface IlkEntity
-        extends EntityComposite
+@org.qi4j.library.constraints.annotation.Email // ???
+public interface Email
+        extends Property<String>
 {
-
-    @Optional
-    Name name();
-
-    @Optional
-    Text description();
-
 }

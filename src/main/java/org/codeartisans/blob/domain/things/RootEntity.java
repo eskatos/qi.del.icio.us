@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.entities;
+package org.codeartisans.blob.domain.things;
 
 import org.codeartisans.blob.events.DomainEvent;
 import org.codeartisans.blob.events.TagRenamedEvent;

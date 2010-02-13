@@ -21,7 +21,7 @@
  */
 package org.codeartisans.blob.domain;
 
-import org.codeartisans.blob.domain.entities.RootEntity;
+import org.codeartisans.blob.domain.things.RootEntity;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;

@@ -22,7 +22,7 @@
 package org.codeartisans.blob.events;
 
 import java.util.List;
-import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.domain.things.ThingEntity;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;

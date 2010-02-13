@@ -23,8 +23,8 @@ package org.codeartisans.blob.presentation.http;
 
 import java.net.URI;
 import java.util.Map;
-import org.codeartisans.blob.domain.entities.TagEntity;
-import org.codeartisans.blob.domain.entities.ThingEntity;
+import org.codeartisans.blob.domain.things.TagEntity;
+import org.codeartisans.blob.domain.things.ThingEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

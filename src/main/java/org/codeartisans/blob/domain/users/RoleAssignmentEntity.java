@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Paul Merlin <paul@nosphere.org>
+ * Copyright (c) 2010 Paul Merlin <paul@nosphere.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,59 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.entities;
+package org.codeartisans.blob.domain.users;
 
-import org.codeartisans.blob.domain.fragments.Name;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import org.qi4j.library.constraints.annotation.GreaterThan;
+import org.qi4j.api.entity.association.Association;
 
 /**
- * TODO Taggee, Taggable !?!
- * 
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins( TagEntity.Mixin.class )
-public interface TagEntity
+public interface RoleAssignmentEntity
         extends EntityComposite
 {
 
-    @Optional
-    Name name();
+    Association<RoleEntity> role();
 
-    @UseDefaults
-    @GreaterThan( -1 )
-    Property<Integer> count();
-
-    void incrementCount();
-
-    void decrementCount();
-
-    abstract class Mixin
-            implements TagEntity
-    {
-
-        @This
-        private TagEntity state;
-
-        @Override
-        public void incrementCount()
-        {
-            state.count().set( state.count().get() + 1 );
-        }
-
-        @Override
-        public void decrementCount()
-        {
-            if ( state.count().get() > 0 ) {
-                state.count().set( state.count().get() - 1 );
-            }
-        }
-
-    }
+    Association<RoleAssignee> assignee();
 
 }

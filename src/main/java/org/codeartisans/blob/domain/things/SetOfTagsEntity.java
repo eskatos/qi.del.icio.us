@@ -19,33 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.entities;
+package org.codeartisans.blob.domain.things;
 
-import org.codeartisans.blob.domain.values.PayloadValue;
-import org.codeartisans.blob.domain.fragments.MimeType;
 import org.codeartisans.blob.domain.fragments.Name;
 import org.codeartisans.blob.domain.fragments.Text;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.mixin.Mixins;
 
 /**
- * The Thing :)
- *
- * It seems Entities extending this type will be AggregateRoots.
- * Relations to aggregated Entities shall be annotated with @Aggregated in the RootEntities.
- *
- * See AggregatedTest in qi4j-runtime
- * See DeeplyAggregatedTest in this project
- * See http://www.jroller.com/niclas/entry/entity_aggregates
- * See http://lists.ops4j.org/pipermail/qi4j-dev/2008-September/003391.html (long thread)
- *
- * @author Paul Merlin <p.merlin@nosphere.org>
+ * @author Paul Merlin <paul@nosphere.org>
  */
-@Mixins( ThingEntity.Mixin.class )
-public interface ThingEntity
+public interface SetOfTagsEntity
         extends EntityComposite
 {
 
@@ -55,25 +40,6 @@ public interface ThingEntity
     @Optional
     Text description();
 
-    @Optional
-    Association<IlkEntity> ilk();
-
-    ManyAssociation<PayloadValue> payloads();
-
     ManyAssociation<TagEntity> tags();
-
-    void nameChanged( String name );
-
-    abstract class Mixin
-            implements ThingEntity
-    {
-
-        @Override
-        public void nameChanged( String name )
-        {
-            name().set( name );
-        }
-
-    }
 
 }

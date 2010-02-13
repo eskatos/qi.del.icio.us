@@ -23,14 +23,18 @@ package org.codeartisans.blob;
 
 import org.codeartisans.blob.domain.DomainLifecycleService;
 import org.codeartisans.blob.domain.RootEntityService;
-import org.codeartisans.blob.domain.entities.IlkEntity;
-import org.codeartisans.blob.domain.entities.RootEntity;
-import org.codeartisans.blob.domain.entities.SetOfTagsEntity;
-import org.codeartisans.blob.domain.entities.TagEntity;
-import org.codeartisans.blob.domain.entities.TagRepository;
-import org.codeartisans.blob.domain.entities.ThingEntity;
-import org.codeartisans.blob.domain.entities.ThingFactory;
-import org.codeartisans.blob.domain.entities.ThingRepository;
+import org.codeartisans.blob.domain.things.IlkEntity;
+import org.codeartisans.blob.domain.things.RootEntity;
+import org.codeartisans.blob.domain.things.SetOfTagsEntity;
+import org.codeartisans.blob.domain.things.TagEntity;
+import org.codeartisans.blob.domain.things.TagRepository;
+import org.codeartisans.blob.domain.things.ThingEntity;
+import org.codeartisans.blob.domain.things.ThingFactory;
+import org.codeartisans.blob.domain.things.ThingRepository;
+import org.codeartisans.blob.domain.users.RoleAssignmentEntity;
+import org.codeartisans.blob.domain.users.RoleEntity;
+import org.codeartisans.blob.domain.users.UserEntity;
+import org.codeartisans.blob.domain.users.UserRepository;
 import org.codeartisans.blob.domain.values.PayloadValue;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.DomainEventsRepository;
@@ -84,7 +88,14 @@ public class CoolBlobAssembler
         }
         ModuleAssembly domainModel = domain.moduleAssembly( CoolBlobStructure.DomainModules.MODEL );
         {
-            // Entities
+            // Users
+            domainModel.addEntities( UserEntity.class,
+                                     RoleEntity.class,
+                                     RoleAssignmentEntity.class );
+            domainModel.addServices( UserRepository.class ).
+                    visibleIn( Visibility.application );
+
+            // Things
             domainModel.addEntities( RootEntity.class,
                                      ThingEntity.class,
                                      IlkEntity.class,

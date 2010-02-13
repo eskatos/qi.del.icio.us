@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Paul Merlin <paul@nosphere.org>
+ * Copyright (c) 2010 Paul Merlin <paul@nosphere.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,70 +19,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.blob.domain.entities;
+package org.codeartisans.blob.domain.users;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import org.codeartisans.java.toolbox.CollectionUtils;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.library.constraints.annotation.NotEmpty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-@Mixins( ThingRepository.Mixin.class )
-public interface ThingRepository
+@Mixins( UserRepository.Mixin.class )
+public interface UserRepository
         extends ServiceComposite
 {
 
-    ThingEntity findByIdentity( String identity );
+    UserEntity findByEmail( String email );
 
-    Query<ThingEntity> findAll();
-
-    Query<ThingEntity> findByTag( @NotEmpty String tag );
+    Query<RoleAssignmentEntity> findByUser( UserEntity user );
 
     abstract class Mixin
-            implements ThingRepository
+            implements UserRepository
     {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger( ThingRepository.Mixin.class );
         @Structure
         private UnitOfWorkFactory uowf;
         @Structure
         private QueryBuilderFactory qbf;
 
         @Override
-        public ThingEntity findByIdentity( String identity )
+        public UserEntity findByEmail( String email )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
-            return uow.get( ThingEntity.class, identity );
+            QueryBuilder<UserEntity> queryBuilder = qbf.newQueryBuilder( UserEntity.class );
+            UserEntity template = templateFor( UserEntity.class );
+            queryBuilder = queryBuilder.where( eq( template.email(), email ) );
+            return CollectionUtils.firstElementOrNull( queryBuilder.newQuery( uow ).maxResults( 1 ) );
         }
 
         @Override
-        public Query<ThingEntity> findAll()
+        public Query<RoleAssignmentEntity> findByUser( UserEntity user )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
-            QueryBuilder<ThingEntity> queryBuilder = qbf.newQueryBuilder( ThingEntity.class );
-            return queryBuilder.newQuery( uow );
-        }
-
-        @Override
-        public Query<ThingEntity> findByTag( String tag )
-        {
-            LOGGER.debug( "findByTag(" + tag + ")" );
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            QueryBuilder<ThingEntity> queryBuilder = qbf.newQueryBuilder( ThingEntity.class );
-            TagEntity tagTemplate = templateFor( TagEntity.class );
-            queryBuilder = queryBuilder.where(
-                    and( eq( tagTemplate.name(), tag ),
-                         contains( templateFor( ThingEntity.class ).tags(), tagTemplate ) ) );
+            QueryBuilder<RoleAssignmentEntity> queryBuilder = qbf.newQueryBuilder( RoleAssignmentEntity.class );
+            RoleAssignmentEntity roleAssignmentTemplate = templateFor( RoleAssignmentEntity.class );
+            queryBuilder = queryBuilder.where( eq( roleAssignmentTemplate.assignee(), user ) );
             return queryBuilder.newQuery( uow );
         }
 

@@ -22,7 +22,7 @@
 package org.codeartisans.blob.domain;
 
 import java.util.Arrays;
-import org.codeartisans.blob.domain.entities.RootEntity;
+import org.codeartisans.blob.domain.things.RootEntity;
 import org.codeartisans.blob.events.DomainEvent;
 import org.codeartisans.blob.events.DomainEventsFactory;
 import org.codeartisans.blob.events.DomainEventsRepository;

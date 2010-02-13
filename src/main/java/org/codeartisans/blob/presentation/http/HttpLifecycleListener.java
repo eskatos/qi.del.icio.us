@@ -22,6 +22,7 @@
 package org.codeartisans.blob.presentation.http;
 
 import org.codeartisans.blob.CoolBlobAssembler;
+import org.codeartisans.blob.security.BlobRealmFactory;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
@@ -71,6 +72,8 @@ public class HttpLifecycleListener
             throws Exception
     {
         LOGGER.info( "CoolBlob Application " + application.version() + " successfully activated" );
+        // FIXME Is this the only way ? Static call feels wrong.
+        BlobRealmFactory.setQi4jApplication( application );
     }
 
 }
