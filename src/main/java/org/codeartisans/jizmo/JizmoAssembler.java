@@ -50,6 +50,7 @@ import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.entitystore.hazelcast.HazelcastEntityStoreAssembler;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
@@ -81,9 +82,7 @@ public class JizmoAssembler
                     visibleIn( Visibility.layer );
 
             // Infrastructure Services
-            domainEvents.addServices( MemoryEntityStoreService.class,
-                                      UuidIdentityGeneratorService.class ).
-                    visibleIn( Visibility.module );
+            domainEvents.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.module );
             new RdfMemoryStoreAssembler( null, Visibility.module, Visibility.module ).assemble( domainEvents );
         }
         ModuleAssembly domainModel = domain.moduleAssembly( JizmoStructure.DomainModules.MODEL );
@@ -112,8 +111,8 @@ public class JizmoAssembler
             domainModel.addServices( ModelLifecycleService.class ).instantiateOnStartup();
 
             // Infrastructure Services
-            domainModel.addServices( MemoryEntityStoreService.class,
-                                     UuidIdentityGeneratorService.class );
+            domainModel.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.module );
+            //new HazelcastEntityStoreAssembler( Visibility.module ).assemble( domainModel );
             new RdfMemoryStoreAssembler().assemble( domainModel );
         }
 

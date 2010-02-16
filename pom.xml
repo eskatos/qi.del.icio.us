@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
-        <qi4j.version>1.0</qi4j.version>
+        <qi4j.version>1.1-SNAPSHOT</qi4j.version>
         <gwt.version>2.0.0</gwt.version>
         <gwt.plugin.version>1.2</gwt.plugin.version>
         <gwt.module.default>org.codeartisans.jizmo.presentation.gwt.GwtClient</gwt.module.default>
@@ -181,6 +181,11 @@
         <dependency>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-runtime</artifactId>
+            <version>${qi4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.qi4j.extensions</groupId>
+            <artifactId>qi4j-entitystore-hazelcast</artifactId>
             <version>${qi4j.version}</version>
         </dependency>
         <dependency>
