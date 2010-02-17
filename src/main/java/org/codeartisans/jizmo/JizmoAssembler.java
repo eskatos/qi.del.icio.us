@@ -42,6 +42,7 @@ import org.codeartisans.jizmo.domain.events.modificational.TagRenamedEvent;
 import org.codeartisans.jizmo.domain.events.creational.ThingCreatedEvent;
 import org.codeartisans.jizmo.presentation.http.ResourceSerializer;
 import org.codeartisans.jizmo.presentation.http.ResourcesAssembler;
+import org.codeartisans.jizmo.security.JizmoRealmService;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembler;
@@ -50,7 +51,6 @@ import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.hazelcast.HazelcastEntityStoreAssembler;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
@@ -116,6 +116,12 @@ public class JizmoAssembler
             new RdfMemoryStoreAssembler().assemble( domainModel );
         }
 
+        LayerAssembly application = app.layerAssembly( JizmoStructure.Layers.APPLICATION );
+        ModuleAssembly security = application.moduleAssembly( JizmoStructure.ApplicationModules.SECURITY );
+        {
+            security.addServices( JizmoRealmService.class );
+        }
+
         LayerAssembly presentation = app.layerAssembly( JizmoStructure.Layers.PRESENTATION );
         ModuleAssembly http = presentation.moduleAssembly( JizmoStructure.PresentationModules.HTTP );
         {
@@ -123,6 +129,8 @@ public class JizmoAssembler
             new ResourcesAssembler().assemble( http );
         }
 
+        application.uses( domain );
+        presentation.uses( application );
         presentation.uses( domain );
 
         return app;

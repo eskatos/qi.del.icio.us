@@ -21,15 +21,27 @@
  */
 package org.codeartisans.jizmo.security;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.codeartisans.jizmo.domain.model.users.UserEntity;
 import org.codeartisans.jizmo.domain.model.users.UserRepository;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
+@Mixins( JizmoRealmService.Mixin.class )
 public interface JizmoRealmService
         extends Realm, ServiceComposite
 {
@@ -42,8 +54,41 @@ public interface JizmoRealmService
         @Service
         private UserRepository userRepos;
 
+        public Mixin()
+        {
+            super();
+            setCachingEnabled( false );
+            setName( "JizmoRealm" );
+        }
 
-         
+        @Override
+        protected AuthenticationInfo doGetAuthenticationInfo( AuthenticationToken token )
+                throws AuthenticationException
+        {
+            // FIXME State on what kind of principal we will use
+            String email = ( String ) token.getPrincipal();
+            UserEntity user = userRepos.findByEmail( email );
+            if ( user == null ) {
+                return null;
+            }
+            // TODO Real implementation
+            SimpleAuthenticationInfo authInfo = new SimpleAuthenticationInfo( email, "chewchew", getName() );
+            return authInfo;
+        }
+
+        @Override
+        protected AuthorizationInfo doGetAuthorizationInfo( PrincipalCollection principals )
+        {
+            // FIXME State on what kind of principal we will use
+            String email = ( String ) principals.getPrimaryPrincipal();
+            UserEntity user = userRepos.findByEmail( email );
+            if ( user == null ) {
+                return null;
+            }
+            Set<String> roles = new LinkedHashSet<String>();
+            roles.add( "admin" );
+            return new SimpleAuthorizationInfo( roles );
+        }
 
     }
 

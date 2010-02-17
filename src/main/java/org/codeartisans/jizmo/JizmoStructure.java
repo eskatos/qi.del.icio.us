@@ -31,6 +31,7 @@ public interface JizmoStructure
     {
 
         static String DOMAIN = "Domain";
+        static String APPLICATION = "Application";
         static String PRESENTATION = "Presentation";
     }
 
@@ -39,6 +40,12 @@ public interface JizmoStructure
 
         static String EVENTS = "DomainEvents";
         static String MODEL = "DomainModel";
+    }
+
+    public interface ApplicationModules
+    {
+
+        static String SECURITY = "ApplicationSecurity";
     }
 
     public interface PresentationModules

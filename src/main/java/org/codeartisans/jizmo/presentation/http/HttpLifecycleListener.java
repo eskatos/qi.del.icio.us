@@ -64,15 +64,14 @@ public class HttpLifecycleListener
     protected void beforeApplicationActivation( Application app )
             throws Exception
     {
-        LOGGER.info( "CoolBlob Application " + application.version() + " successfully assembled" );
+        LOGGER.info( "Jizmo Application " + application.version() + " successfully assembled" );
     }
 
     @Override
     protected void afterApplicationActivation( Application application )
             throws Exception
     {
-        LOGGER.info( "CoolBlob Application " + application.version() + " successfully activated" );
-        // FIXME Is this the only way ? Static call feels wrong.
+        LOGGER.info( "Jizmo Application " + application.version() + " successfully activated" );
         JizmoRealmFactory.setQi4jApplication( application );
     }
 

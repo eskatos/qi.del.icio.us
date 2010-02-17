@@ -26,7 +26,6 @@ import java.util.Collection;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.RealmFactory;
 import org.codeartisans.jizmo.JizmoStructure;
-import org.codeartisans.jizmo.domain.model.users.UserRepository;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
@@ -57,11 +56,10 @@ public class JizmoRealmFactory
     public Collection<Realm> getRealms()
     {
         LOGGER.info( "==============================================> GET REALMS !!!!!!!!!!!!!!" );
-        Module domainModule = application.findModule( JizmoStructure.Layers.DOMAIN, JizmoStructure.DomainModules.MODEL );
-        ServiceReference<UserRepository> userReposRef = domainModule.serviceFinder().findService( UserRepository.class );
-        UserRepository userRepository = userReposRef.get();
-        JizmoRealm realm = new JizmoRealm( userRepository );
-        return Arrays.asList( new Realm[]{ realm } );
+        Module domainModule = application.findModule( JizmoStructure.Layers.APPLICATION, JizmoStructure.ApplicationModules.SECURITY );
+        ServiceReference<JizmoRealmService> jizmoRealmRef = domainModule.serviceFinder().findService( JizmoRealmService.class );
+        JizmoRealmService jizmoRealm = jizmoRealmRef.get();
+        return Arrays.asList( new Realm[]{ jizmoRealm } );
     }
 
 }
