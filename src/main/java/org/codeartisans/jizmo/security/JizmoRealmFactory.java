@@ -26,7 +26,7 @@ import java.util.Collection;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.RealmFactory;
 import org.codeartisans.jizmo.JizmoStructure;
-import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.slf4j.Logger;
@@ -47,18 +47,16 @@ public class JizmoRealmFactory
         JizmoRealmFactory.application = application;
     }
 
-    public JizmoRealmFactory()
-    {
-        LOGGER.info( "==============================================> BLOB REALM FACTORY INSTANCIATED !!!!!!!!!!!!!!" );
-    }
-
     @Override
     public Collection<Realm> getRealms()
     {
         LOGGER.info( "==============================================> GET REALMS !!!!!!!!!!!!!!" );
         Module domainModule = application.findModule( JizmoStructure.Layers.APPLICATION, JizmoStructure.ApplicationModules.SECURITY );
-        ServiceReference<JizmoRealmService> jizmoRealmRef = domainModule.serviceFinder().findService( JizmoRealmService.class );
-        JizmoRealmService jizmoRealm = jizmoRealmRef.get();
+        ObjectBuilderFactory obf = domainModule.objectBuilderFactory();
+        JizmoRealm jizmoRealm = obf.newObject( JizmoRealm.class );
+        LOGGER.debug( "pouet" );
+        LOGGER.debug( "" + jizmoRealm );
+        LOGGER.debug( "pouet" );
         return Arrays.asList( new Realm[]{ jizmoRealm } );
     }
 

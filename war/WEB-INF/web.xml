@@ -23,7 +23,7 @@
                 # config gets long and you want to keep web.xml clean.
                 [main]
 
-                #jizmoRealmFactory = org.codeartisans.jizmo.security.JizmoRealmFactory
+                jizmoRealmFactory = org.codeartisans.jizmo.security.JizmoRealmFactory
 
                 [users]
                 # format: username = password, role1, role2, ..., roleN

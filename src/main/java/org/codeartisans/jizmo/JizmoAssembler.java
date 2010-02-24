@@ -42,7 +42,7 @@ import org.codeartisans.jizmo.domain.events.modificational.TagRenamedEvent;
 import org.codeartisans.jizmo.domain.events.creational.ThingCreatedEvent;
 import org.codeartisans.jizmo.presentation.http.ResourceSerializer;
 import org.codeartisans.jizmo.presentation.http.ResourcesAssembler;
-import org.codeartisans.jizmo.security.JizmoRealmService;
+import org.codeartisans.jizmo.security.JizmoRealm;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembler;
@@ -119,7 +119,7 @@ public class JizmoAssembler
         LayerAssembly application = app.layerAssembly( JizmoStructure.Layers.APPLICATION );
         ModuleAssembly security = application.moduleAssembly( JizmoStructure.ApplicationModules.SECURITY );
         {
-            security.addServices( JizmoRealmService.class );
+            security.addObjects( JizmoRealm.class );
         }
 
         LayerAssembly presentation = app.layerAssembly( JizmoStructure.Layers.PRESENTATION );
