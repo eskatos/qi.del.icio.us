@@ -24,15 +24,17 @@ package org.codeartisans.jizmo.domain.model.users;
 import org.codeartisans.jizmo.domain.model.fragments.Email;
 import org.codeartisans.jizmo.domain.model.fragments.Name;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.library.shiro.domain.RoleAssignee;
+import org.qi4j.library.shiro.domain.SecureHashSecurable;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
 public interface UserEntity
-        extends RoleAssignee, EntityComposite
+        extends RoleAssignee, SecureHashSecurable, EntityComposite
 {
 
-    Name nickname();
+    Name username();
 
     Email email();
 

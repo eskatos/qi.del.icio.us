@@ -31,6 +31,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.library.shiro.domain.RoleAssignment;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
@@ -40,9 +41,11 @@ public interface UserRepository
         extends ServiceComposite
 {
 
+    UserEntity findByUsername( String username );
+
     UserEntity findByEmail( String email );
 
-    Query<RoleAssignmentEntity> findByUser( UserEntity user );
+    Query<RoleAssignment> findRoleAssignmentsByUser( UserEntity user );
 
     abstract class Mixin
             implements UserRepository
@@ -52,6 +55,16 @@ public interface UserRepository
         private UnitOfWorkFactory uowf;
         @Structure
         private QueryBuilderFactory qbf;
+
+        @Override
+        public UserEntity findByUsername( String username )
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            QueryBuilder<UserEntity> queryBuilder = qbf.newQueryBuilder( UserEntity.class );
+            UserEntity template = templateFor( UserEntity.class );
+            queryBuilder = queryBuilder.where( eq( template.username(), username ) );
+            return CollectionUtils.firstElementOrNull( queryBuilder.newQuery( uow ).maxResults( 1 ) );
+        }
 
         @Override
         public UserEntity findByEmail( String email )
@@ -64,11 +77,11 @@ public interface UserRepository
         }
 
         @Override
-        public Query<RoleAssignmentEntity> findByUser( UserEntity user )
+        public Query<RoleAssignment> findRoleAssignmentsByUser( UserEntity user )
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
-            QueryBuilder<RoleAssignmentEntity> queryBuilder = qbf.newQueryBuilder( RoleAssignmentEntity.class );
-            RoleAssignmentEntity roleAssignmentTemplate = templateFor( RoleAssignmentEntity.class );
+            QueryBuilder<RoleAssignment> queryBuilder = qbf.newQueryBuilder( RoleAssignment.class );
+            RoleAssignment roleAssignmentTemplate = templateFor( RoleAssignment.class );
             queryBuilder = queryBuilder.where( eq( roleAssignmentTemplate.assignee(), user ) );
             return queryBuilder.newQuery( uow );
         }

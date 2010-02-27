@@ -19,20 +19,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.codeartisans.jizmo.domain.model.users;
+package org.codeartisans.jizmo.security;
 
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.Association;
+import org.codeartisans.jizmo.domain.model.users.UserRepository;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.library.shiro.domain.RoleAssignee;
+import org.qi4j.library.shiro.domain.SecureHashSecurable;
+import org.qi4j.library.shiro.realms.AbstractSecureHashQi4jRealm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
-public interface RoleAssignmentEntity
-        extends EntityComposite
+public class JizmoRealm
+        extends AbstractSecureHashQi4jRealm
 {
 
-    Association<RoleEntity> role();
+    private static final Logger LOGGER = LoggerFactory.getLogger( JizmoRealm.class );
+    @Service
+    private UserRepository userRepos;
 
-    Association<RoleAssignee> assignee();
+    public JizmoRealm()
+    {
+        setName( JizmoRealm.class.getSimpleName() );
+    }
+
+    @Override
+    protected SecureHashSecurable getSecureHashSecurable( String username )
+    {
+        return userRepos.findByUsername( username );
+    }
+
+    @Override
+    protected RoleAssignee getRoleAssignee( String username )
+    {
+        return userRepos.findByUsername( username );
+    }
 
 }

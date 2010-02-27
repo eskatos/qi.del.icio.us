@@ -21,10 +21,6 @@
  */
 package org.codeartisans.jizmo.domain.model.users;
 
-import org.codeartisans.jizmo.domain.model.users.RoleEntity;
-import org.codeartisans.jizmo.domain.model.users.UserRepository;
-import org.codeartisans.jizmo.domain.model.users.UserEntity;
-import org.codeartisans.jizmo.domain.model.users.RoleAssignmentEntity;
 import org.junit.Test;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.service.ServiceReference;
@@ -34,6 +30,9 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
+import org.qi4j.library.shiro.domain.Role;
+import org.qi4j.library.shiro.domain.RoleAssignment;
+import org.qi4j.library.shiro.domain.ShiroDomainAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
 
@@ -48,17 +47,13 @@ public class UserRepositoryTest
     public void assemble( ModuleAssembly module )
             throws AssemblyException
     {
-        module.addEntities( UserEntity.class,
-                            RoleEntity.class,
-                            //RoleAssignee.class,
-                            RoleAssignmentEntity.class );
-        module.addServices( UserRepository.class );
-
+        new ShiroDomainAssembler().assemble( module );
+        module.addEntities( UserEntity.class );
+        module.addServices( UserRepository.class,
+                            UserFactory.class );
         module.addServices( MemoryEntityStoreService.class,
                             UuidIdentityGeneratorService.class );
         new RdfMemoryStoreAssembler().assemble( module );
-
-
     }
 
     @Test
@@ -69,49 +64,42 @@ public class UserRepositoryTest
         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
         // TODO test user/roleassignment/role query
 
+        ServiceReference<UserFactory> userFactoryRef = serviceLocator.findService( UserFactory.class );
+        UserFactory userFactory = userFactoryRef.get();
 
-        EntityBuilder<UserEntity> userBuilder = uow.newEntityBuilder( UserEntity.class );
-        UserEntity eskatos = userBuilder.instance();
-        eskatos.nickname().set( "eskatos" );
-        eskatos.email().set( "eskatos@n0pe.org" );
-        eskatos = userBuilder.newInstance();
+        UserEntity eskatos = userFactory.create( "eskatos", "eskatos@n0pe.org", "secret".toCharArray() );
+        UserEntity tigrou = userFactory.create( "tigrou", "tigrou@n0pe.org", "secret".toCharArray() );
 
-        userBuilder = uow.newEntityBuilder( UserEntity.class );
-        UserEntity rabbit = userBuilder.instance();
-        rabbit.nickname().set( "rabbit" );
-        rabbit.email().set( "rabbit@n0pe.org" );
-        rabbit = userBuilder.newInstance();
-
-        EntityBuilder<RoleEntity> roleBuilder = uow.newEntityBuilder( RoleEntity.class );
-        RoleEntity adminRole = roleBuilder.instance();
+        EntityBuilder<Role> roleBuilder = uow.newEntityBuilder( Role.class );
+        Role adminRole = roleBuilder.instance();
         adminRole.name().set( "admin" );
         adminRole = roleBuilder.newInstance();
 
-        roleBuilder = uow.newEntityBuilder( RoleEntity.class );
-        RoleEntity contribRole = roleBuilder.instance();
+        roleBuilder = uow.newEntityBuilder( Role.class );
+        Role contribRole = roleBuilder.instance();
         contribRole.name().set( "contributor" );
         contribRole = roleBuilder.newInstance();
 
-        EntityBuilder<RoleAssignmentEntity> roleAssignmentBuilder = uow.newEntityBuilder( RoleAssignmentEntity.class );
-        RoleAssignmentEntity eskatosAdminRole = roleAssignmentBuilder.instance();
+        EntityBuilder<RoleAssignment> roleAssignmentBuilder = uow.newEntityBuilder( RoleAssignment.class );
+        RoleAssignment eskatosAdminRole = roleAssignmentBuilder.instance();
         eskatosAdminRole.assignee().set( eskatos );
         eskatosAdminRole.role().set( adminRole );
+        eskatos.roleAssignments().add( eskatosAdminRole );
         eskatosAdminRole = roleAssignmentBuilder.newInstance();
-        // eskatos.roleAssignments().add( eskatosAdminRole );
 
-        roleAssignmentBuilder = uow.newEntityBuilder( RoleAssignmentEntity.class );
-        RoleAssignmentEntity eskatosContribRole = roleAssignmentBuilder.instance();
+        roleAssignmentBuilder = uow.newEntityBuilder( RoleAssignment.class );
+        RoleAssignment eskatosContribRole = roleAssignmentBuilder.instance();
         eskatosContribRole.assignee().set( eskatos );
         eskatosContribRole.role().set( contribRole );
+        eskatos.roleAssignments().add( eskatosContribRole );
         eskatosContribRole = roleAssignmentBuilder.newInstance();
-        // eskatos.roleAssignments().add( eskatosContribRole );
 
-        roleAssignmentBuilder = uow.newEntityBuilder( RoleAssignmentEntity.class );
-        RoleAssignmentEntity rabbitContribRole = roleAssignmentBuilder.instance();
-        rabbitContribRole.assignee().set( rabbit );
+        roleAssignmentBuilder = uow.newEntityBuilder( RoleAssignment.class );
+        RoleAssignment rabbitContribRole = roleAssignmentBuilder.instance();
+        rabbitContribRole.assignee().set( tigrou );
         rabbitContribRole.role().set( contribRole );
+        tigrou.roleAssignments().add( rabbitContribRole );
         rabbitContribRole = roleAssignmentBuilder.newInstance();
-        // rabbit.roleAssignments().add( rabbitContribRole );
 
         uow.complete();
 
@@ -121,13 +109,13 @@ public class UserRepositoryTest
         UserRepository userRepos = userReposRef.get();
 
         eskatos = uow.get( eskatos );
-        rabbit = uow.get( rabbit );
+        tigrou = uow.get( tigrou );
 
         System.out.println( "=============================================================================" );
-        for ( RoleAssignmentEntity eachRoleAssignment : userRepos.findByUser( eskatos ) ) {
+        for ( RoleAssignment eachRoleAssignment : userRepos.findRoleAssignmentsByUser( eskatos ) ) {
             System.out.println( "eskatos has role: " + eachRoleAssignment.role().get().name().get() );
         }
-        for ( RoleAssignmentEntity eachRoleAssignment : userRepos.findByUser( rabbit ) ) {
+        for ( RoleAssignment eachRoleAssignment : userRepos.findRoleAssignmentsByUser( tigrou ) ) {
             System.out.println( "rabbit has role: " + eachRoleAssignment.role().get().name().get() );
         }
         System.out.println( "=============================================================================" );

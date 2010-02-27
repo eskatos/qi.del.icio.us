@@ -1,4 +1,4 @@
 #!/bin/sh
-mvn -e -o clean test
+mvn -e -o test
 exit $?
 

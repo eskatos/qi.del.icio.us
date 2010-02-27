@@ -43,8 +43,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.library.shiro.RequiresRoles;
-import org.qi4j.library.shiro.RequiresRolesConcern;
+import org.qi4j.library.shiro.annotations.RequiresRoles;
+import org.qi4j.library.shiro.annotations.RequiresRolesConcern;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>

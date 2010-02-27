@@ -31,8 +31,6 @@ import org.codeartisans.jizmo.domain.model.things.TagRepository;
 import org.codeartisans.jizmo.domain.model.things.ThingEntity;
 import org.codeartisans.jizmo.domain.model.things.ThingFactory;
 import org.codeartisans.jizmo.domain.model.things.ThingRepository;
-import org.codeartisans.jizmo.domain.model.users.RoleAssignmentEntity;
-import org.codeartisans.jizmo.domain.model.users.RoleEntity;
 import org.codeartisans.jizmo.domain.model.users.UserEntity;
 import org.codeartisans.jizmo.domain.model.users.UserRepository;
 import org.codeartisans.jizmo.domain.model.values.PayloadValue;
@@ -40,9 +38,11 @@ import org.codeartisans.jizmo.domain.events.DomainEventsFactory;
 import org.codeartisans.jizmo.domain.events.DomainEventsRepository;
 import org.codeartisans.jizmo.domain.events.modificational.TagRenamedEvent;
 import org.codeartisans.jizmo.domain.events.creational.ThingCreatedEvent;
+import org.codeartisans.jizmo.domain.model.users.UserFactory;
 import org.codeartisans.jizmo.presentation.http.ResourceSerializer;
 import org.codeartisans.jizmo.presentation.http.ResourcesAssembler;
 import org.codeartisans.jizmo.security.JizmoRealm;
+import org.codeartisans.jizmo.security.JizmoRootUserService;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembler;
@@ -53,6 +53,7 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
+import org.qi4j.library.shiro.domain.ShiroDomainAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
@@ -69,7 +70,7 @@ public class JizmoAssembler
         ApplicationAssembly app = applicationFactory.newApplicationAssembly();
         app.setMode( Application.Mode.development );
         app.setVersion( "0.1-testing" );
-        app.setName( "CoolBlob" );
+        app.setName( "Jizmo" );
 
         LayerAssembly domain = app.layerAssembly( JizmoStructure.Layers.DOMAIN );
         ModuleAssembly domainEvents = domain.moduleAssembly( JizmoStructure.DomainModules.EVENTS );
@@ -88,10 +89,10 @@ public class JizmoAssembler
         ModuleAssembly domainModel = domain.moduleAssembly( JizmoStructure.DomainModules.MODEL );
         {
             // Users
-            domainModel.addEntities( UserEntity.class,
-                                     RoleEntity.class,
-                                     RoleAssignmentEntity.class );
-            domainModel.addServices( UserRepository.class ).
+            new ShiroDomainAssembler().assemble( domainModel );
+            domainModel.addEntities( UserEntity.class );
+            domainModel.addServices( UserRepository.class,
+                                     UserFactory.class ).
                     visibleIn( Visibility.application );
 
             // Things
@@ -120,6 +121,7 @@ public class JizmoAssembler
         ModuleAssembly security = application.moduleAssembly( JizmoStructure.ApplicationModules.SECURITY );
         {
             security.addObjects( JizmoRealm.class );
+            security.addServices( JizmoRootUserService.class ).visibleIn( Visibility.module ).instantiateOnStartup();
         }
 
         LayerAssembly presentation = app.layerAssembly( JizmoStructure.Layers.PRESENTATION );

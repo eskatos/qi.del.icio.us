@@ -24,39 +24,26 @@ package org.codeartisans.jizmo.security;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.shiro.realm.Realm;
-import org.apache.shiro.realm.RealmFactory;
 import org.codeartisans.jizmo.JizmoStructure;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.qi4j.library.shiro.authc.credential.SecureHashCredentialsMatcher;
+import org.qi4j.library.shiro.realms.AbstractQi4jRealmFactory;
 
 /**
  * @author Paul Merlin <paul@nosphere.org>
  */
 public class JizmoRealmFactory
-        implements RealmFactory
+        extends AbstractQi4jRealmFactory
 {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger( JizmoRealmFactory.class );
-    private static Application application;
-
-    public static void setQi4jApplication( Application application )
-    {
-        JizmoRealmFactory.application = application;
-    }
 
     @Override
     public Collection<Realm> getRealms()
     {
-        LOGGER.info( "==============================================> GET REALMS !!!!!!!!!!!!!!" );
         Module domainModule = application.findModule( JizmoStructure.Layers.APPLICATION, JizmoStructure.ApplicationModules.SECURITY );
         ObjectBuilderFactory obf = domainModule.objectBuilderFactory();
         JizmoRealm jizmoRealm = obf.newObject( JizmoRealm.class );
-        LOGGER.debug( "pouet" );
-        LOGGER.debug( "" + jizmoRealm );
-        LOGGER.debug( "pouet" );
+        jizmoRealm.setCredentialsMatcher( new SecureHashCredentialsMatcher() );
         return Arrays.asList( new Realm[]{ jizmoRealm } );
     }
 
