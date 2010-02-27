@@ -293,6 +293,11 @@
             <url>http://download.java.net/maven/2</url>
         </repository>
 
+        <repository>
+            <id>codeartisans-public</id>
+            <url>https://codebox.codeartisans.org/nexus/content/groups/public</url>
+        </repository>
+
         <!-- Deactivated -->
         <!--repository>
             <id>signpost-snapshots</id>
