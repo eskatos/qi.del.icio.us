@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
-        <qi4j.version>1.1-SNAPSHOT</qi4j.version>
+        <qi4j.version>1.2-SNAPSHOT</qi4j.version>
         <gwt.version>2.0.0</gwt.version>
         <gwt.plugin.version>1.2</gwt.plugin.version>
         <gwt.module.default>org.codeartisans.jizmo.presentation.gwt.GwtClient</gwt.module.default>
@@ -157,7 +157,7 @@
         <dependency>
             <groupId>org.codeartisans.gwt</groupId>
             <artifactId>gwt-toolbox</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <!-- Apache Shiro -->
@@ -232,32 +232,27 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.6</version>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
-            <version>1.5.6</version>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
-            <version>1.5.6</version>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>0.9.15</version>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>0.9.15</version>
+            <version>0.9.25</version>
         </dependency>
 
         <!-- Tests -->
