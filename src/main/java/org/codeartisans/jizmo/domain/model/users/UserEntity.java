@@ -24,8 +24,8 @@ package org.codeartisans.jizmo.domain.model.users;
 import org.codeartisans.jizmo.domain.model.fragments.Email;
 import org.codeartisans.jizmo.domain.model.fragments.Name;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.library.shiro.domain.RoleAssignee;
-import org.qi4j.library.shiro.domain.SecureHashSecurable;
+import org.qi4j.library.shiro.domain.permissions.RoleAssignee;
+import org.qi4j.library.shiro.domain.securehash.SecureHashSecurable;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>

@@ -27,7 +27,7 @@ import org.apache.shiro.realm.Realm;
 import org.codeartisans.jizmo.JizmoStructure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.structure.Module;
-import org.qi4j.library.shiro.authc.credential.SecureHashCredentialsMatcher;
+import org.qi4j.library.shiro.authc.SecureHashCredentialsMatcher;
 import org.qi4j.library.shiro.realms.AbstractQi4jRealmFactory;
 
 /**

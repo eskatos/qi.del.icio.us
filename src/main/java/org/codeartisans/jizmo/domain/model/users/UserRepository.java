@@ -31,7 +31,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.library.shiro.domain.RoleAssignment;
+import org.qi4j.library.shiro.domain.permissions.RoleAssignment;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>

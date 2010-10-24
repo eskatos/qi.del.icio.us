@@ -53,7 +53,7 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
-import org.qi4j.library.shiro.domain.ShiroDomainAssembler;
+import org.qi4j.library.shiro.ShiroAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
@@ -89,7 +89,7 @@ public class JizmoAssembler
         ModuleAssembly domainModel = domain.moduleAssembly( JizmoStructure.DomainModules.MODEL );
         {
             // Users
-            new ShiroDomainAssembler().assemble( domainModel );
+            new ShiroAssembler().assemble( domainModel );
             domainModel.addEntities( UserEntity.class );
             domainModel.addServices( UserRepository.class,
                                      UserFactory.class ).

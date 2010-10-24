@@ -23,8 +23,8 @@ package org.codeartisans.jizmo.security;
 
 import org.codeartisans.jizmo.domain.model.users.UserRepository;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.library.shiro.domain.RoleAssignee;
-import org.qi4j.library.shiro.domain.SecureHashSecurable;
+import org.qi4j.library.shiro.domain.permissions.RoleAssignee;
+import org.qi4j.library.shiro.domain.securehash.SecureHashSecurable;
 import org.qi4j.library.shiro.realms.AbstractSecureHashQi4jRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

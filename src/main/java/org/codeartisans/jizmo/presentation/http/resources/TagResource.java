@@ -43,14 +43,14 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.library.shiro.annotations.RequiresRoles;
-import org.qi4j.library.shiro.annotations.RequiresRolesConcern;
+import org.qi4j.library.shiro.concerns.RequiresRoles;
+import org.qi4j.library.shiro.concerns.SecurityConcern;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>
  */
 @Mixins( TagResource.Mixin.class )
-@Concerns( RequiresRolesConcern.class )
+@Concerns( SecurityConcern.class )
 public interface TagResource
         extends Qi4jResource, TransientComposite
 {

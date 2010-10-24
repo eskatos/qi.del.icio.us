@@ -28,7 +28,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.library.shiro.domain.SecureHashFactory;
+import org.qi4j.library.shiro.domain.securehash.SecureHashFactory;
 
 /**
  * @author Paul Merlin <p.merlin@nosphere.org>

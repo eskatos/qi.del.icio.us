@@ -132,8 +132,6 @@ public class JizmoTest
             ThingEntity truc = thingFactory.newThingInstance( "Truc", "Mega truc", Arrays.asList( "foo", "bar" ) );
             ThingEntity machin = thingFactory.newThingInstance( "Machin", "Super machin", Arrays.asList( "zoo", "jar" ) );
 
-            uow.apply(); // WARNING !!
-
             ThingEntity bidule = thingFactory.newThingInstance( "Bidule", "Uber bidule", Arrays.asList( "zoo", "bar" ) );
 
             uow.complete();
